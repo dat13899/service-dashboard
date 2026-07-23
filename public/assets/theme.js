@@ -6,18 +6,19 @@
     let s=localStorage.getItem(KEY);
     if(!s){s=window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark';localStorage.setItem(KEY,s)}
     h.setAttribute('data-theme',s);
+    updateIcons(s);
   }
+  function updateIcons(s){const n=s||T.documentElement.getAttribute('data-theme');T.querySelectorAll('.theme-btn-icon').forEach(e=>{e.textContent=n==='light'?'🌙':'☀️'})}
   function toggle(){
     const h=T.documentElement;
     const n=h.getAttribute('data-theme')==='light'?'dark':'light';
     h.setAttribute('data-theme',n);
     localStorage.setItem(KEY,n);
-    T.querySelectorAll('.theme-btn-icon').forEach(e=>{e.textContent=n==='light'?'🌙':'☀️'});
+    updateIcons(n);
   }
   init();
   T.querySelectorAll('.theme-btn').forEach(b=>b.addEventListener('click',toggle));
   T.addEventListener('click',e=>{const b=e.target.closest('.theme-btn');if(b)return toggle()});
-  // Re-run on dynamically added theme btns
   const obs=new MutationObserver(()=>T.querySelectorAll('.theme-btn:not([data-bound])').forEach(b=>{b.dataset.bound='1';b.addEventListener('click',toggle)}));
   obs.observe(T.body,{childList:true,subtree:true});
 })(document);

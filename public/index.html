@@ -22,7 +22,6 @@
 <link rel="stylesheet" href="/assets/global.css">
 <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token":"b65b6686cd0947dfbdee6dc55a1b4416"}'></script>
 <style>
-body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif}
 .hero-section{position:relative;padding:4rem 1.5rem 3rem;overflow:hidden}
 .hero-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none}
 .hero-bg .mesh{position:absolute;width:400px;height:400px;border-radius:50%;filter:blur(100px);opacity:.15}
@@ -31,7 +30,6 @@ body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif}
 @keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-20px)}}
 .hero-content{position:relative;z-index:1}
 .hero-glow{background:linear-gradient(135deg,var(--accent, #818cf8),#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.hero-sub{max-width:520px;margin:.5rem auto 1.5rem;line-height:1.7}
 #services-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem}
 .sc-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}
 .sc-dot.running{background:var(--green,#22c55e);box-shadow:0 0 6px var(--green,#22c55e)}
@@ -71,11 +69,11 @@ body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif}
 <main id="main">
 <section class="hero-section">
   <div class="hero-bg"><div class="mesh"></div><div class="mesh"></div></div>
-  <div class="container has-text-centered hero-content" style="max-width:650px">
+  <div class="container has-text-centered hero-content max-w-hero">
     <h1 class="title is-1 hero-glow" style="margin-bottom:.25rem">👋 BT Dat</h1>
-    <p class="subtitle is-5 hero-sub has-text-grey-light" id="hero-tagline"></p>
-    <p class="has-text-grey" style="max-width:500px;margin:0 auto 1.5rem">Minecraft server, AI tool, và các self-hosted service chạy 24/7.</p>
-    <div style="margin-bottom:1.5rem;display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center">
+    <p class="subtitle is-5 has-text-grey-light max-w-hero" id="hero-tagline"></p>
+    <p class="has-text-grey max-w-hero" style="margin-bottom:1.5rem">Minecraft server, AI tool, và các self-hosted service chạy 24/7.</p>
+    <div class="gap-sm text-center" style="margin-bottom:1.5rem;display:flex;flex-wrap:wrap;justify-content:center">
       <span class="tag" style="background:var(--accent);color:#fff">Node.js</span>
       <span class="tag" style="background:var(--accent);color:#fff">Cloudflare</span>
       <span class="tag" style="background:var(--accent);color:#fff">Minecraft</span>
@@ -96,8 +94,8 @@ body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif}
     <h2 class="title is-4"><span style="margin-right:8px">📦</span> Services</h2>
     <p class="subtitle is-6 has-text-grey-light" id="svc-subtitle">Đang tải...</p>
     <div id="services-grid">
-      <div class="card card-hover"><div class="card-content skeleton skel-d1" style="height:80px"></div></div>
-      <div class="card card-hover"><div class="card-content skeleton skel-d2" style="height:80px"></div></div>
+      <div class="card"><div class="card-content skeleton skel-d1" style="height:80px"></div></div>
+      <div class="card"><div class="card-content skeleton skel-d2" style="height:80px"></div></div>
     </div>
   </div>
 </section>
@@ -122,7 +120,7 @@ body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif}
 <section class="section" id="contact">
   <div class="container">
     <h2 class="title is-4"><span style="margin-right:8px">📫</span> Contact</h2>
-    <div class="card card-hover">
+    <div class="card">
       <div class="card-content has-text-centered footer-links">
         <a href="https://github.com/btdat" aria-label="GitHub"><i class="fab fa-github"></i></a>
         <a href="mailto:datel1389@gmail.com" aria-label="Email"><i class="fas fa-envelope"></i></a>
@@ -139,7 +137,20 @@ body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif}
   </div>
 </footer>
 
-<button class="theme-btn button" data-bound="1" aria-label="Toggle theme"><span class="theme-btn-icon">☀️</span></button>
+<button class="theme-btn" data-bound="1" aria-label="Toggle theme"><span class="theme-btn-icon">☀️</span></button>
+
+<!-- Confirm modal -->
+<div class="modal" id="confirm-modal">
+  <div class="modal-background" onclick="closeConfirm()"></div>
+  <div class="modal-card">
+    <header class="modal-card-head"><p class="modal-card-title is-5">⚠️ Confirm</p></header>
+    <section class="modal-card-body"><p id="confirm-msg">Are you sure?</p></section>
+    <footer class="modal-card-foot">
+      <button class="button" onclick="closeConfirm()">Cancel</button>
+      <button class="button is-danger" id="confirm-btn" onclick="">Confirm</button>
+    </footer>
+  </div>
+</div>
 
 <div class="kb-hint" id="kb-hint" onclick="this.classList.remove('show')">
   <h3>⌨</h3>
@@ -151,18 +162,30 @@ body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif}
 
 <script src="/assets/theme.js"></script>
 <script>
-function toast(msg,type,undoCb){
-  const c=document.getElementById('toast-container')||(t=>{t.id='toast-container';document.body.appendChild(t);return t})(document.createElement('div'));
-  c.className='toast-container';
-  const el=document.createElement('div');el.className='toast '+type;el.innerHTML=msg;
-  if(undoCb){const u=document.createElement('button');u.className='toast-undo';u.textContent='Undo';u.onclick=()=>{undoCb();el.classList.add('removing');setTimeout(()=>el.remove(),200)};el.appendChild(u)}
-  c.appendChild(el);setTimeout(()=>{el.classList.add('removing');setTimeout(()=>el.remove(),200)},4000);
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+const $=id=>document.getElementById(id);
+
+document.addEventListener('keydown',e=>{if(e.key==='?'&&!(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')){e.preventDefault();$('kb-hint').classList.toggle('show')}});
+
+// ── Confirm modal ──
+function showConfirm(msg,onConfirm){
+  $('confirm-msg').innerHTML=msg;$('confirm-btn').onclick=()=>{closeConfirm();if(onConfirm)onConfirm()};
+  $('confirm-modal').classList.add('is-active');
 }
-document.addEventListener('keydown',e=>{if(e.key==='?'&&!(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')){e.preventDefault();document.getElementById('kb-hint').classList.toggle('show')}});
+function closeConfirm(){$('confirm-modal').classList.remove('is-active')}
+
+// ── Health ping inline ──
+async function pingHealth(id,port,el){
+  if(!port){el.className='health-dot offline';return}
+  try{
+    const r=await fetch(`/api/services/${id}/health`,{signal:AbortSignal.timeout(4000)});
+    const d=await r.json();el.className='health-dot '+(d.ok?'online':'offline')+(d.ok?' pulse':'');
+  }catch(e){el.className='health-dot offline'}
+}
 
 // ── Typing effect ──
 (function(){
-  const el=document.getElementById('hero-tagline');
+  const el=$('hero-tagline');
   if(!el)return;
   const lines=['Chạy home lab 24/7','Tự động hóa với AI','Minecraft server luôn online','DevOps không cần ops'];
   let li=0,ci=0,dir=1;
@@ -187,36 +210,35 @@ async function actLand(id,a){
   }
   const r=await fetch(`/api/services/${id}/${a}`,{method:'POST'});
   if((await r.json()).error)return toast('❌ Failed','error');
-  toast('▶ Started','success');
-  setTimeout(loadSvcs,500);
+  toast('▶ Started','success');setTimeout(loadSvcs,500);
 }
 
 function fmt(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;return(h?h+'h ':'')+(m?m+'m ':'')+sec+'s'}
-function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
-const $=id=>document.getElementById(id);
 
 (async function loadSvcs(){
   try{
     const r=await fetch('/api/services');const svcs=await r.json();
-    const grid=document.getElementById('services-grid');
-    if(!svcs||!svcs.length){grid.innerHTML='<div class="card card-hover"><div class="card-content has-text-centered has-text-grey-light"><small>Chưa có service</small></div></div>';return}
+    const grid=$('services-grid');
+    if(!svcs||!svcs.length){grid.innerHTML='<div class="card"><div class="card-content has-text-centered has-text-grey-light"><small>Chưa có service</small></div></div>';return}
     let run=0,stop=0;
-    grid.innerHTML=svcs.map(s=>{
+    grid.innerHTML=svcs.map((s,i)=>{
       if(s.status==='running')run++;else stop++;
-      return `<div class="card card-hover"><div class="card-content"><div class="level"><div class="level-left"><div class="level-item"><span class="sc-dot ${s.status}"></span><strong>${esc(s.name||s.id)}</strong></div></div><div class="level-right"><span class="tag is-info is-light">${s.port?':'+s.port:'—'}</span></div></div><p class="is-size-7 has-text-grey-light" style="margin-top:.5rem">${esc(s.description||'')}</p><p class="is-size-7 has-text-grey" style="margin-top:.3rem;font-family:monospace">${s.status==='running'?'🟢 Running':s.status==='error'?'🔴 Error':'⚪ Stopped'} ${s.uptime>0?'⏱ '+fmt(s.uptime):''}</p><div class="svc-inline-actions"><button onclick="actLand('${s.id}','start')" ${s.status==='running'?'disabled':''}>▶ Start</button><button onclick="actLand('${s.id}','stop')" ${s.status!=='running'?'disabled':''}>■ Stop</button><button onclick="actLand('${s.id}','restart')" ${s.status!=='running'?'disabled':''}>↻ Restart</button></div></div></div>`;
+      const up=s.uptime>0?fmt(s.uptime):'';
+      return `<div class="card card-hover"><div class="card-content"><div class="level"><div class="level-left"><div class="level-item"><span class="sc-dot ${s.status}"></span><strong>${esc(s.name||s.id)}</strong><span id="lh-${s.id}" class="health-dot offline" style="margin-left:6px"></span></div></div><div class="level-right"><span class="tag is-info is-light">${s.port?':'+s.port:'—'}</span></div></div><p class="is-size-7 has-text-grey-light" style="margin-top:.5rem">${esc(s.description||'')}</p><p class="is-size-7 has-text-grey" style="margin-top:.3rem;font-family:monospace">${s.status==='running'?'🟢 Running':s.status==='error'?'🔴 Error':'⚪ Stopped'} ${up?'⏱ '+up:''}</p><div class="svc-inline-actions"><button onclick="actLand('${s.id}','start')" ${s.status==='running'?'disabled':''}>▶ Start</button><button onclick="actLand('${s.id}','stop')" ${s.status!=='running'?'disabled':''}>■ Stop</button><button onclick="actLand('${s.id}','restart')" ${s.status!=='running'?'disabled':''}>↻ Restart</button></div></div></div>`;
     }).join('');
     $('stat-running').textContent=run;
     $('stat-stopped').textContent=stop;
     $('svc-subtitle').textContent=svcs.length+' service'+(svcs.length>1?'s':'')+' — '+run+' running';
     $('footer-status').textContent='🟢 all systems nominal';
+    // Health ping with stagger
+    svcs.forEach(s=>{if(s.port)setTimeout(()=>pingHealth(s.id,s.port,($('lh-'+s.id))),svcs.indexOf(s)*300)});
   }catch(e){
-    document.getElementById('services-grid').innerHTML='<div class="card card-hover"><div class="card-content has-text-danger-light">⚠️ Không tải được</div></div>';
+    $('services-grid').innerHTML='<div class="card"><div class="card-content has-text-danger-light">⚠️ Không tải được</div></div>';
     $('svc-subtitle').textContent='Offline';
     $('footer-status').textContent='⛔ check connection';
   }
 })();
 
-// ── SW register ──
 if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{})}
 </script>
 </body>

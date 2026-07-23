@@ -26,7 +26,7 @@ body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;backgroun
 html,body{height:100%;margin:0}
 h1,h2,h3{color:var(--text-strong)}
 a{color:var(--accent)}a:hover{color:var(--accent-hover)}
-.top-bar{display:flex;align-items:center;gap:.5rem;padding:.5rem .8rem;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--surface)}
+.top-bar,nav.top-bar{display:flex;align-items:center;gap:.5rem;padding:.5rem .8rem;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--surface)}
 .top-bar .brand{font-weight:700;font-size:.95rem;color:var(--text-strong);text-decoration:none}
 .top-bar .brand small{font-weight:400;color:var(--text-dim)}
 .top-bar .spacer{flex:1}
@@ -94,14 +94,14 @@ a{color:var(--accent)}a:hover{color:var(--accent-hover)}
   .editor-overlay .editor-body .preview-pane{width:100%;height:50%}
 }
 @media print{
-  .top-bar,.sidebar,.reader-header,.theme-btn,.toast-container,.reading-progress,.font-controls,.kb-hint{display:none!important}
+  .top-bar,nav.top-bar,.sidebar,.reader-header,.theme-btn,.toast-container,.reading-progress,.font-controls,.kb-hint{display:none!important}
   .layout{display:block!important;overflow:visible!important}.reader{display:block!important;overflow:visible!important}
   .reader-content{overflow:visible!important;padding:0!important}
 }
 </style>
 </head>
 <body>
-<div class="top-bar">
+<nav class="top-bar" role="navigation" aria-label="Document tools">
   <a class="brand" href="/">btdat.io.vn <small>/ documents</small></a>
   <div class="font-controls">
     <button onclick="fontSize(-1)" title="Smaller">A−</button>
@@ -111,7 +111,7 @@ a{color:var(--accent)}a:hover{color:var(--accent-hover)}
   <button class="btn" onclick="openNew()"><i class="fas fa-plus"></i>&ensp;New</button>
   <button class="btn" style="background:var(--green)" onclick="openUpload()"><i class="fas fa-upload"></i>&ensp;Upload</button>
   <input type="file" id="upload-input" accept=".docx" style="display:none" onchange="uploadFile(this)">
-</div>
+</nav>
 
 <div class="layout">
   <div class="sidebar" id="sidebar">
@@ -185,6 +185,19 @@ a{color:var(--accent)}a:hover{color:var(--accent-hover)}
 
 <!-- Drop zone (hidden, shown on drag) -->
 <div class="drop-zone" id="drop-zone" style="display:none">📄 Drop .docx file here</div>
+
+<!-- Confirm modal -->
+<div class="modal" id="confirm-modal">
+  <div class="modal-background" onclick="closeConfirm()"></div>
+  <div class="modal-card">
+    <header class="modal-card-head"><p class="modal-card-title is-5">⚠️ Confirm</p></header>
+    <section class="modal-card-body"><p id="confirm-msg">Are you sure?</p></section>
+    <footer class="modal-card-foot">
+      <button class="button" onclick="closeConfirm()">Cancel</button>
+      <button class="button is-danger" id="confirm-btn" onclick="">Confirm</button>
+    </footer>
+  </div>
+</div>
 
 <div class="kb-hint" id="kb-hint" onclick="this.classList.remove('show')">
   <h3>⌨</h3>
@@ -379,10 +392,11 @@ window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h&&h
 
 // ── Delete ──
 async function onDelete(){
-  if(!confirm('Delete this document?'))return;
-  await fetch(API+'/'+curId,{method:'DELETE'});
-  curId=null;clearHash();$('doc-view').style.display='none';$('empty-state').style.display='flex';
-  closeEditor();loadList();toast('🗑 Deleted','info');
+  showConfirm('🗑 Delete <strong>'+esc(curId)+'</strong>?',async()=>{
+    await fetch(API+'/'+curId,{method:'DELETE'});
+    curId=null;clearHash();$('doc-view').style.display='none';$('empty-state').style.display='flex';
+    closeEditor();loadList();toast('🗑 Deleted','info');
+  });
 }
 
 // ── Create ──
@@ -423,6 +437,13 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){closeNew();if($('editor-overlay').classList.contains('show'))closeEditor()}
   if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();if($('editor-overlay').classList.contains('show'))saveAndClose()}
 });
+// ── Confirm modal ──
+function showConfirm(msg,onConfirm){
+  $('confirm-msg').innerHTML=msg;$('confirm-btn').onclick=()=>{closeConfirm();if(onConfirm)onConfirm()};
+  $('confirm-modal').classList.add('is-active');
+}
+function closeConfirm(){$('confirm-modal').classList.remove('is-active')}
+
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
 loadList();
 if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{})}

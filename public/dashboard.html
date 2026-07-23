@@ -19,12 +19,11 @@
 <link rel="stylesheet" href="/assets/global.css">
 <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token":"b65b6686cd0947dfbdee6dc55a1b4416"}'></script>
 <style>
-body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif}
 .sc-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;flex-shrink:0}
 .sc-dot.running{background:var(--green,#22c55e);box-shadow:0 0 6px var(--green,#22c55e)}
 .sc-dot.stopped{background:var(--text-dim,#6b7280)}
 .sc-dot.error{background:var(--red,#ef4444);box-shadow:0 0 6px var(--red,#ef4444)}
-#log-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--bulma-radius);padding:.75rem;font-family:monospace;font-size:.75rem;min-height:350px;max-height:60vh;overflow-y:auto;white-space:pre-wrap;color:var(--text-light);line-height:1.5}
+#log-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--bulma-radius);padding:.75rem;font-family:monospace;font-size:.75rem;min-height:200px;max-height:60vh;overflow-y:auto;white-space:pre-wrap;color:var(--text-light);line-height:1.5}
 #log-box .log-line{padding:1px 0}
 #log-box .log-line.error{color:var(--red)}
 #log-box .log-line.warn{color:var(--accent)}
@@ -43,7 +42,7 @@ body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif}
 .log-toolbar .log-status{font-size:.7rem;color:var(--text-dim)}
 .dash-layout{display:flex;gap:1rem;min-height:0;height:calc(100vh - 52px)}
 .dash-services{flex:1;min-width:0;overflow-y:auto;padding:.5rem}
-.dash-logs{width:380px;min-width:280px;flex-shrink:0;overflow-y:auto;padding:.5rem;border-left:1px solid var(--border)}
+.dash-logs{width:clamp(280px,30vw,480px);flex-shrink:0;overflow-y:auto;padding:.5rem;border-left:1px solid var(--border)}
 @media(max-width:960px){.dash-layout{flex-direction:column}.dash-logs{width:auto;border-left:none;border-top:1px solid var(--border)}}
 </style>
 </head>
@@ -89,7 +88,7 @@ body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif}
 </div>
 </main>
 
-<button class="theme-btn button" data-bound="1" aria-label="Toggle theme"><span class="theme-btn-icon">☀️</span></button>
+<button class="theme-btn" data-bound="1" aria-label="Toggle theme"><span class="theme-btn-icon">☀️</span></button>
 
 <!-- Add service modal -->
 <div class="modal" id="add-modal">
@@ -105,7 +104,7 @@ body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif}
     </section>
     <footer class="modal-card-foot">
       <button class="button" onclick="closeAddModal()">Cancel</button>
-      <button class="button is-link" onclick="addService()">➕ Add</button>
+      <button class="button is-link" id="add-btn" onclick="addService()">➕ Add</button>
     </footer>
   </div>
 </div>
@@ -134,18 +133,18 @@ body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif}
 <script src="/assets/theme.js"></script>
 <script>
 const $=id=>document.getElementById(id);
-let confirmCb=null,autoScroll=true,logSvcId=null,layoutCol=0;
+let confirmCb=null,autoScroll=true,logSvcId=null,layoutCol=0,sseRetries=0;
 
-function toast(msg,type,undoCb){
-  const c=document.getElementById('toast-container')||(t=>{t.id='toast-container';document.body.appendChild(t);return t})(document.createElement('div'));
-  c.className='toast-container';
-  const el=document.createElement('div');el.className='toast '+type;el.innerHTML=msg;
-  if(undoCb){const u=document.createElement('button');u.className='toast-undo';u.textContent='Undo';u.onclick=()=>{undoCb();el.classList.add('removing');setTimeout(()=>el.remove(),200)};el.appendChild(u)}
-  c.appendChild(el);setTimeout(()=>{el.classList.add('removing');setTimeout(()=>el.remove(),200)},4000);
+document.addEventListener('keydown',e=>{if(e.key==='?'&&!(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')){e.preventDefault();$('kb-hint').classList.toggle('show')}});
+
+// ── Confirm helper ──
+function showConfirm(msg,onConfirm){
+  $('confirm-msg').innerHTML=msg;$('confirm-btn').onclick=()=>{closeConfirm();if(onConfirm)onConfirm()};
+  $('confirm-modal').classList.add('is-active');
 }
-document.addEventListener('keydown',e=>{if(e.key==='?'&&!(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')){e.preventDefault();document.getElementById('kb-hint').classList.toggle('show')}});
+function closeConfirm(){$('confirm-modal').classList.remove('is-active');confirmCb=null}
 
-// ── SSE ──
+// ── SSE with auto-reconnect ──
 let logEventSource=null;
 function connectSSE(filterId){
   if(logEventSource)logEventSource.close();
@@ -153,7 +152,12 @@ function connectSSE(filterId){
   const url=logSvcId?`/api/logs/stream?serviceId=${logSvcId}`:'/api/logs/stream';
   logEventSource=new EventSource(url);
   logEventSource.onmessage=function(e){
-    try{const d=JSON.parse(e.data);if(logSvcId&&d.serviceId!==logSvcId)return;appendLog(d.line,false)}catch(_){}
+    try{const d=JSON.parse(e.data);if(logSvcId&&d.serviceId!==logSvcId)return;appendLog(d.line,false);sseRetries=0}catch(_){}
+  };
+  logEventSource.onerror=function(){
+    logEventSource.close();sseRetries++;
+    if(sseRetries<5)setTimeout(()=>connectSSE(logSvcId),3000*Math.min(sseRetries,3));
+    else $('log-status').textContent='⚠️ disconnected';
   };
 }
 function appendLog(line,prepend){
@@ -176,16 +180,15 @@ async function pingHealth(id,port,el){
   }catch(e){el.className='health-dot offline'}
 }
 
-// ── Layout toggle ──
-function toggleLayout(){layoutCol=(layoutCol+1)%3;const d=$('dash-logs');d.style.width=layoutCol===1?'480px':layoutCol===2?'100%':'380px'}
+function toggleLayout(){layoutCol=(layoutCol+1)%3;const d=$('dash-logs');d.style.width=layoutCol===1?'clamp(280px,40vw,600px)':layoutCol===2?'100%':'clamp(280px,30vw,480px)'}
 
-// ── Load ──
+// ── Load services ──
 async function loadSvcs(){
   try{const r=await fetch('/api/services');render(await r.json());const s=$('log-select');if(s.value&&!logSvcId)selLog(s.value)}catch(e){}
 }
 function render(svcs){
   const list=$('svc-list');
-  if(!svcs||!svcs.length){list.innerHTML='<div class="card card-hover"><div class="card-content has-text-grey-light"><small>Chưa có service</small></div></div>';return}
+  if(!svcs||!svcs.length){list.innerHTML='<div class="card"><div class="card-content has-text-grey-light text-center"><small>Chưa có service nào. Bấm + để thêm.</small></div></div>';return}
   let run=0,stop=0;
   list.innerHTML=svcs.map((s,i)=>{
     if(s.status==='running')run++;else stop++;
@@ -217,12 +220,9 @@ function render(svcs){
   }).join('');
   $('running-count').innerHTML='<span class="sc-dot running" style="margin:0"></span> '+run;
   $('stopped-count').innerHTML='<span class="sc-dot stopped" style="margin:0"></span> '+stop;
-  for(const s of svcs){if(s.port){setTimeout(()=>pingHealth(s.id,s.port,document.getElementById('health-'+s.id)),svcs.indexOf(s)*300)}}
+  svcs.forEach(s=>{if(s.port)setTimeout(()=>pingHealth(s.id,s.port,$('health-'+s.id)),svcs.indexOf(s)*300)});
 }
-function toggleExpand(id){
-  const card=document.querySelector(`[data-svc-id="${id}"]`);
-  if(card)card.classList.toggle('expanded');
-}
+function toggleExpand(id){document.querySelector(`[data-svc-id="${id}"]`)?.classList.toggle('expanded')}
 async function deleteSvc(id){
   showConfirm(`🗑 Delete service <strong>${esc(id)}</strong>?`,async ()=>{
     const r=await fetch('/api/services/'+id,{method:'DELETE'});
@@ -232,7 +232,7 @@ async function deleteSvc(id){
 }
 async function act(id,a){
   if(a==='stop'||a==='restart'){
-    showConfirm(`⚠️ ${a==='stop'?'Stop':'Restart'} service <strong>${esc(id)}</strong>?`,async ()=>{
+    showConfirm(`⚠️ ${a==='stop'?'Stop':'Restart'} <strong>${esc(id)}</strong>?`,async()=>{
       const r=await fetch(`/api/services/${id}/${a}`,{method:'POST'});const d=await r.json();
       if(d.error)return toast('❌ '+d.error,'error');
       toast(a==='stop'?'⏹ Stopped':'↻ Restarted','info');loadSvcs();
@@ -246,23 +246,16 @@ function openAddModal(){$('add-modal').classList.add('is-active')}
 function closeAddModal(){$('add-modal').classList.remove('is-active')}
 async function addService(){
   const name=$('add-name').value.trim();if(!name)return;
+  $('add-btn').disabled=true;$('add-btn').innerHTML='<span class="spinner"></span>';
   const body={name,command:$('add-cmd').value.trim(),dir:$('add-wd').value.trim(),port:parseInt($('add-port').value)||0,description:$('add-desc').value.trim()};
   try{const r=await fetch('/api/services',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const d=await r.json();if(d.error)return toast('❌ '+d.error,'error');toast('➕ Added','success');closeAddModal();loadSvcs()}catch(e){toast('❌ Failed','error')}
+  finally{$('add-btn').disabled=false;$('add-btn').innerHTML='➕ Add'}
 }
-function showConfirm(msg,onConfirm){
-  $('confirm-msg').innerHTML=msg;$('confirm-btn').onclick=()=>{closeConfirm();if(onConfirm)onConfirm()};
-  $('confirm-modal').classList.add('is-active');
-}
-function closeConfirm(){$('confirm-modal').classList.remove('is-active');confirmCb=null}
 function selLog(id){$('log-select').value=id;connectSSE(id);fetchLog(id)}
 async function fetchLog(id){
-  try{
-    const r=await fetch(`/api/services/${id}/logs?lines=100`);const d=await r.json();
-    $('log-box').innerHTML='';
-    for(const l of(d.logs||[]))appendLog(l.line||'',false);
-  }catch(e){}
+  try{const r=await fetch(`/api/services/${id}/logs?lines=100`);const d=await r.json();$('log-box').innerHTML='';for(const l of(d.logs||[]))appendLog(l.line||'',false)}catch(e){}
 }
-(async function(){
+(async function init(){
   try{
     const r=await fetch('/api/services');const svcs=await r.json();
     const sel=$('log-select');
