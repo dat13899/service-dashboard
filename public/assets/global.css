@@ -11,8 +11,11 @@
 .glass-card:active{transform:scale(.98)}
 
 /* ── Glass navbar ── */
-.navbar.is-glass{background:transparent;transition:background .3s,border .3s,box-shadow .3s}
+.navbar.is-glass{position:fixed;top:0;left:0;right:0;z-index:500;background:transparent;transition:background .3s,border .3s,box-shadow .3s}
 .navbar.is-glass.scrolled{background:var(--glass-bg);-webkit-backdrop-filter:blur(30px);backdrop-filter:blur(30px);border-bottom:1px solid var(--glass-border);box-shadow:0 4px 24px var(--glass-shadow)}
+
+/* ── Spacer for fixed navbar ── */
+.navbar-spacer{height:52px}
 
 /* ── Liquid blobs ── */
 .blob-container{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:-1}
