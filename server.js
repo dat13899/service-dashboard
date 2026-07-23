@@ -699,6 +699,8 @@ process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 
 server.listen(PORT, () => {
+  // Write PID for kill-node.sh
+  try { fs.writeFileSync(path.join(__dirname, '..', 'AppData', 'Local', 'hermes', 'scripts', '.server-pid'), String(process.pid), 'utf-8'); } catch (_) {}
   console.log(`\n  🖥  Service Dashboard running`);
   console.log(`  ─────────────────────────────`);
   for (const s of services) console.log(`  ${(s.name + '  ').padEnd(18)} → http://localhost:${s.port}`);
