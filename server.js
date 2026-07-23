@@ -285,6 +285,9 @@ function serveStatic(res, filePath) {
     if (err) { res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' }); res.end('404 Not Found'); return; }
     const ext = path.extname(filePath).toLowerCase();
     const headers = { 'Content-Type': MIME[ext] || 'application/octet-stream' };
+    // HTML: no cache so SW always fetches fresh; assets: short cache
+    if (ext === '.html') headers['Cache-Control'] = 'no-store, must-revalidate';
+    else headers['Cache-Control'] = 'public, max-age=3600';
     const accept = reqOf(res)?.headers?.['accept-encoding'] || '';
     if (accept.includes('gzip') && data.length > 1024) { zlib.gzip(data, (_, buf) => { headers['Content-Encoding'] = 'gzip'; res.writeHead(200, headers); res.end(buf); }); }
     else { res.writeHead(200, headers); res.end(data); }

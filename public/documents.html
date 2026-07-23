@@ -94,7 +94,7 @@ a{color:var(--accent)}a:hover{color:var(--accent-hover)}
   .editor-overlay .editor-body .preview-pane{width:100%;height:50%}
 }
 @media print{
-  .top-bar,nav.top-bar,.sidebar,.reader-header,.theme-btn,.toast-container,.reading-progress,.font-controls,.kb-hint{display:none!important}
+  .top-bar,nav.top-bar,.sidebar,.reader-header,.theme-btn,.toast-container,.reading-progress,.font-controls{display:none!important}
   .layout{display:block!important;overflow:visible!important}.reader{display:block!important;overflow:visible!important}
   .reader-content{overflow:visible!important;padding:0!important}
 }
@@ -107,6 +107,7 @@ a{color:var(--accent)}a:hover{color:var(--accent-hover)}
     <button onclick="fontSize(-1)" title="Smaller">A−</button>
     <button onclick="fontSize(1)" title="Larger">A+</button>
   </div>
+  <button class="button is-small" onclick="toggleTheme()" aria-label="Toggle theme"><span class="theme-btn-icon">☀️</span></button>
   <div class="spacer"></div>
   <button class="btn" onclick="openNew()"><i class="fas fa-plus"></i>&ensp;New</button>
   <button class="btn" style="background:var(--green)" onclick="openUpload()"><i class="fas fa-upload"></i>&ensp;Upload</button>
@@ -149,7 +150,6 @@ a{color:var(--accent)}a:hover{color:var(--accent-hover)}
 </div>
 
 <div class="reading-progress" id="reading-progress"></div>
-<button class="theme-btn button" data-bound="1" aria-label="Toggle theme"><span class="theme-btn-icon">☀️</span></button>
 
 <!-- Editor Overlay -->
 <div class="editor-overlay" id="editor-overlay">
@@ -199,16 +199,6 @@ a{color:var(--accent)}a:hover{color:var(--accent-hover)}
   </div>
 </div>
 
-<div class="kb-hint" id="kb-hint" onclick="this.classList.remove('show')">
-  <h3>⌨</h3>
-  <div class="kb-row"><span>Help</span><kbd>?</kbd></div>
-  <div class="kb-row"><span>Dashboard</span><kbd>g d</kbd></div>
-  <div class="kb-row"><span>Docs</span><kbd>g o</kbd></div>
-  <div class="kb-row"><span>Home</span><kbd>g h</kbd></div>
-  <div class="kb-row"><span>Save</span><kbd>Ctrl+S</kbd></div>
-  <div class="kb-row"><span>Close</span><kbd>Esc</kbd></div>
-</div>
-
 <script src="/assets/theme.js"></script>
 <script>
 const API='/api/documents';
@@ -222,7 +212,8 @@ function toast(msg,type,undoCb){
   if(undoCb){const u=document.createElement('button');u.className='toast-undo';u.textContent='Undo';u.onclick=()=>{undoCb();el.classList.add('removing');setTimeout(()=>el.remove(),200)};el.appendChild(u)}
   c.appendChild(el);setTimeout(()=>{el.classList.add('removing');setTimeout(()=>el.remove(),200)},4000);
 }
-document.addEventListener('keydown',e=>{if(e.key==='?'&&!(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')){e.preventDefault();document.getElementById('kb-hint').classList.toggle('show')}});
+
+
 
 // ── Font size ──
 function fontSize(delta){

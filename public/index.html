@@ -57,6 +57,7 @@
   </div>
   <div class="navbar-menu">
     <div class="navbar-end">
+      <div class="navbar-item"><button class="button is-small" onclick="toggleTheme()" aria-label="Toggle theme"><span class="theme-btn-icon">☀️</span></button></div>
       <a class="navbar-item" href="#services">Services</a>
       <a class="navbar-item" href="#stack">Stack</a>
       <a class="navbar-item" href="/dashboard">Dashboard</a>
@@ -137,7 +138,6 @@
   </div>
 </footer>
 
-<button class="theme-btn" data-bound="1" aria-label="Toggle theme"><span class="theme-btn-icon">☀️</span></button>
 
 <!-- Confirm modal -->
 <div class="modal" id="confirm-modal">
@@ -152,20 +152,11 @@
   </div>
 </div>
 
-<div class="kb-hint" id="kb-hint" onclick="this.classList.remove('show')">
-  <h3>⌨</h3>
-  <div class="kb-row"><span>Help</span><kbd>?</kbd></div>
-  <div class="kb-row"><span>Dashboard</span><kbd>g d</kbd></div>
-  <div class="kb-row"><span>Docs</span><kbd>g o</kbd></div>
-  <div class="kb-row"><span>Home</span><kbd>g h</kbd></div>
-</div>
-
 <script src="/assets/theme.js"></script>
 <script>
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
 const $=id=>document.getElementById(id);
 
-document.addEventListener('keydown',e=>{if(e.key==='?'&&!(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')){e.preventDefault();$('kb-hint').classList.toggle('show')}});
 
 // ── Confirm modal ──
 function showConfirm(msg,onConfirm){

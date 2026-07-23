@@ -83,6 +83,7 @@
   </div>
   <div class="navbar-menu">
     <div class="navbar-end">
+      <div class="navbar-item"><button class="button is-small" onclick="toggleTheme()" aria-label="Toggle theme"><span class="theme-btn-icon">☀️</span></button></div>
       <div class="navbar-item"><span id="running-count" class="tag is-success is-light"><span class="sc-dot running" style="margin:0"></span> 0</span></div>
       <div class="navbar-item"><span id="stopped-count" class="tag"><span class="sc-dot stopped" style="margin:0"></span> 0</span></div>
       <div class="navbar-item"><a class="button is-small is-outlined" href="/documents">📄 Docs</a></div>
@@ -145,8 +146,6 @@
 </div>
 </main>
 
-<button class="theme-btn" data-bound="1" aria-label="Toggle theme"><span class="theme-btn-icon">☀️</span></button>
-
 <!-- Add service modal -->
 <div class="modal" id="add-modal">
   <div class="modal-background" onclick="closeAddModal()"></div>
@@ -196,20 +195,11 @@
   </div>
 </div>
 
-<div class="kb-hint" id="kb-hint" onclick="this.classList.remove('show')">
-  <h3>⌨</h3>
-  <div class="kb-row"><span>Help</span><kbd>?</kbd></div>
-  <div class="kb-row"><span>Dashboard</span><kbd>g d</kbd></div>
-  <div class="kb-row"><span>Docs</span><kbd>g o</kbd></div>
-  <div class="kb-row"><span>Home</span><kbd>g h</kbd></div>
-</div>
-
 <script src="/assets/theme.js"></script>
 <script>
 const $=id=>document.getElementById(id);
 let confirmCb=null,autoScroll=true,logSvcId=null,layoutCol=0,sseRetries=0,alertBuffer=[],filesStack=[''];
 
-document.addEventListener('keydown',e=>{if(e.key==='?'&&!(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')){e.preventDefault();$('kb-hint').classList.toggle('show')}});
 
 function showConfirm(msg,onConfirm){
   $('confirm-msg').innerHTML=msg;$('confirm-btn').onclick=()=>{closeConfirm();if(onConfirm)onConfirm()};
