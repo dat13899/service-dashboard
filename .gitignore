@@ -11,3 +11,10 @@ news_*.json
 text_*.json
 weather_raw.json
 *.bat
+DESIGN.md
+PLAN.md
+aternos*.py
+aternos_config.json
+make_essay.py
+rag_server.py
+services.json
