@@ -85,6 +85,7 @@
       <div class="navbar-item"><span id="running-count" class="tag is-success is-light"><span class="sc-dot running" style="margin:0"></span> 0</span></div>
       <div class="navbar-item"><span id="stopped-count" class="tag"><span class="sc-dot stopped" style="margin:0"></span> 0</span></div>
       <div class="navbar-item"><a class="button is-small is-outlined" href="/documents">📄 Docs</a></div>
+      <div class="navbar-item"><a href="#" onclick="clearCacheAndSW();return false" style="color:var(--text-dim);font-size:.65rem">🧹</a></div>
       <div class="navbar-item"><a class="button is-small is-outlined is-link" href="/">← Home</a></div>
     </div>
   </div>
@@ -197,6 +198,11 @@
 <script>
 // SW self-destruct
 if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').then(r=>{if(r.active)r.active.postMessage('kill')}).catch(()=>{})}
+function clearCacheAndSW(){
+  if('caches' in window){caches.keys().then(ks=>Promise.all(ks.map(k=>caches.delete(k)))).then(()=>{toast('🧹 Cache cleared','success')})}
+  if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister())).then(()=>{toast('🗑 SW unregistered','info')})}
+  setTimeout(()=>location.reload(),500);
+}
 const $=id=>document.getElementById(id);
 let confirmCb=null,autoScroll=true,logSvcId=null,layoutCol=0,sseRetries=0,alertBuffer=[],filesStack=[''];
 

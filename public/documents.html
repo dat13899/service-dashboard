@@ -167,6 +167,7 @@ a{color:var(--accent)}a:hover{color:var(--accent-hover)}
     <ul class="doc-list" id="doc-list"></ul>
     <div class="sidebar-footer">
       <span><span id="doc-count">0</span> <span id="doc-count-detail" class="has-text-grey"></span></span>
+    <a href="#" onclick="clearCacheAndSW();return false" style="color:var(--text-dim);font-size:.6rem" title="Xoá SW cache + unregister">🧹 clear cache</a>
       <button class="bulk-del" id="bulk-del-btn" onclick="bulkDelete()"><i class="fas fa-trash"></i> Delete selected</button>
     </div>
   </div>
@@ -261,6 +262,11 @@ a{color:var(--accent)}a:hover{color:var(--accent-hover)}
 <script>
 // SW self-destruct — forces cache clear + unregister on all clients
 if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').then(r=>{if(r.active)r.active.postMessage('kill')}).catch(()=>{})}
+function clearCacheAndSW(){
+  if('caches' in window){caches.keys().then(ks=>Promise.all(ks.map(k=>caches.delete(k)))).then(()=>{toast('🧹 Cache cleared','success')})}
+  if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister())).then(()=>{toast('🗑 SW unregistered','info')})}
+  setTimeout(()=>location.reload(),500);
+}
 const API='/api/documents';
 let docs=[],curId=null,currentExt='md',searchTimer=null,autoSaveTimer=null,searchHistory=JSON.parse(localStorage.getItem('doc-search-hist')||'[]');
 const $=id=>document.getElementById(id);

@@ -133,6 +133,8 @@
   <div class="content has-text-grey-light is-size-7">
     BT Dat &middot; 2026 &middot;
     <span id="footer-status" class="has-text-grey">⏻ checking...</span>
+    <span class="has-text-grey-light">&nbsp;·&nbsp;</span>
+    <a href="#" onclick="clearCacheAndSW();return false" style="color:var(--text-dim);font-size:.65rem" title="Xoá SW cache + unregister">🧹 clear cache</a>
   </div>
 </footer>
 
@@ -154,6 +156,11 @@
 <script>
 // SW self-destruct
 if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').then(r=>{if(r.active)r.active.postMessage('kill')}).catch(()=>{})}
+function clearCacheAndSW(){
+  if('caches' in window){caches.keys().then(ks=>Promise.all(ks.map(k=>caches.delete(k)))).then(()=>{toast('🧹 Cache cleared','success')})}
+  if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister())).then(()=>{toast('🗑 SW unregistered','info')})}
+  setTimeout(()=>location.reload(),500);
+}
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
 const $=id=>document.getElementById(id);
 
