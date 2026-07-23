@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Dashboard — btdat.io.vn</title>
-<meta name="description" content="Service dashboard — quản lý server, logs, health checks.">
+<meta name="description" content="Service dashboard — quản lý server, logs, resource monitor, port scanner, file browser.">
 <meta property="og:title" content="Dashboard — btdat.io.vn">
 <meta property="og:type" content="website">
 <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
@@ -44,9 +44,38 @@
 .dash-services{flex:1;min-width:0;overflow-y:auto;padding:.5rem}
 .dash-logs{width:clamp(280px,30vw,480px);flex-shrink:0;overflow-y:auto;padding:.5rem;border-left:1px solid var(--border)}
 @media(max-width:960px){.dash-layout{flex-direction:column}.dash-logs{width:auto;border-left:none;border-top:1px solid var(--border)}}
+.alert-badge{position:fixed;top:1rem;right:1rem;z-index:9999;background:var(--red);color:#fff;border-radius:999px;padding:.25rem .6rem;font-size:.7rem;font-weight:700;cursor:pointer;display:none;animation:pulse-alert 1s infinite}
+@keyframes pulse-alert{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.alert-dropdown{display:none;position:fixed;top:3rem;right:1rem;z-index:9999;background:var(--surface);border:1px solid var(--border);border-radius:var(--bulma-radius);padding:.5rem;max-width:300px;max-height:200px;overflow-y:auto;box-shadow:0 4px 20px rgba(0,0,0,.3);font-size:.75rem}
+.alert-dropdown.show{display:block}
+.alert-dropdown .alert-entry{padding:.3rem .5rem;border-bottom:1px solid var(--border);cursor:pointer}
+.alert-dropdown .alert-entry:hover{background:var(--surface-2)}
+.alert-dropdown .alert-entry:last-child{border-bottom:none}
+.resource-table{width:100%;font-size:.7rem;border-collapse:collapse}
+.resource-table th,.resource-table td{text-align:left;padding:.2rem .4rem;border-bottom:1px solid var(--border)}
+.resource-table th{color:var(--text-dim);font-weight:600}
+.resource-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:2px;min-width:40px}
+.resource-bar .fill{height:100%;background:var(--accent);border-radius:2px}
+.mem-bar{width:60px}
+.chart-bar{height:20px;background:var(--surface-2);border-radius:3px;overflow:hidden;display:flex;gap:1px;padding:1px}
+.chart-bar .seg{flex:1;border-radius:1px;transition:background .5s}
+.chart-bar .seg.running{background:var(--green)}.chart-bar .seg.stopped{background:var(--border)}.chart-bar .seg.error{background:var(--red)}
+.tab-bar{display:flex;gap:.3rem;margin-bottom:.5rem;flex-wrap:wrap}
+.tab-bar button{background:none;border:1px solid var(--border);border-radius:6px;padding:.2rem .7rem;font-size:.75rem;cursor:pointer;color:var(--text-dim);transition:.15s}
+.tab-bar button.active{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600}
+.tab-bar button:hover:not(.active){border-color:var(--accent);color:var(--accent)}
+.panel{display:none}
+.panel.active{display:block}
+.svc-search{margin-bottom:.3rem;width:100%;box-sizing:border-box;padding:.3rem .5rem;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);font-size:.75rem}
+.files-entry{padding:.2rem .5rem;font-size:.75rem;display:flex;gap:.5rem;align-items:center;cursor:pointer;border-radius:3px}
+.files-entry:hover{background:var(--surface-2)}
+.files-entry .icon{width:1.2rem;text-align:center}
 </style>
 </head>
 <body>
+<div id="alert-badge" class="alert-badge" onclick="toggleAlerts()">!</div>
+<div id="alert-dropdown" class="alert-dropdown"></div>
+
 <nav class="navbar" role="navigation" aria-label="Main navigation">
   <div class="navbar-brand">
     <a class="navbar-item has-text-weight-bold" href="/">btdat.io.vn <span class="has-text-grey-light" style="font-weight:400;margin-left:4px">/ dashboard</span></a>
@@ -65,15 +94,43 @@
 <main id="dash-main">
 <div class="dash-layout">
   <div class="dash-services" id="dash-services">
-    <div class="level" style="margin-bottom:.5rem">
+    <div class="level" style="margin-bottom:.3rem">
       <div class="level-left"><h2 class="title is-5">📦 Services</h2></div>
       <div class="level-right"><button class="button is-small" onclick="toggleLayout()" title="Toggle layout">⊞</button></div>
     </div>
-    <div id="svc-list">
-      <div class="card"><div class="card-content skeleton skel-d1" style="height:80px"></div></div>
-      <div class="card"><div class="card-content skeleton skel-d2" style="height:80px"></div></div>
+    <div class="tab-bar">
+      <button class="active" onclick="switchTab('svc')" data-tab="svc">Services</button>
+      <button onclick="switchTab('res')" data-tab="res">⚡ Resources</button>
+      <button onclick="switchTab('ports')" data-tab="ports">🔌 Ports</button>
+      <button onclick="switchTab('files')" data-tab="files">📁 Files</button>
     </div>
-    <button class="button is-fullwidth is-dashed mt-2" onclick="openAddModal()" style="border-style:dashed">＋ Thêm service</button>
+    <div id="tab-svc" class="panel active">
+      <input class="svc-search" id="svc-search" placeholder="🔍 Filter services..." oninput="filterSvcs()">
+      <div id="svc-list">
+        <div class="card"><div class="card-content skeleton skel-d1" style="height:80px"></div></div>
+      </div>
+      <div style="display:flex;gap:.3rem;margin-top:.3rem">
+        <button class="button is-small" onclick="bulkStart()">▶ Start All</button>
+        <button class="button is-small" onclick="bulkStop()">■ Stop All</button>
+        <button class="button is-small is-dashed" onclick="openAddModal()" style="border-style:dashed;flex:1">＋ Thêm service</button>
+      </div>
+    </div>
+    <div id="tab-res" class="panel">
+      <div style="font-size:.75rem;margin-bottom:.3rem">Click service row to see uptime chart (72h)</div>
+      <div id="res-list"><span class="has-text-grey-light">Loading...</span></div>
+    </div>
+    <div id="tab-ports" class="panel">
+      <div style="font-size:.75rem;margin-bottom:.3rem">Unknown ports currently listening</div>
+      <div id="ports-list"><span class="has-text-grey-light">Loading...</span></div>
+    </div>
+    <div id="tab-files" class="panel">
+      <div style="font-size:.75rem;margin-bottom:.3rem;display:flex;gap:.5rem;align-items:center">
+        <span id="files-path">/</span>
+        <button class="button is-small" onclick="filesUp()" id="files-up-btn" style="display:none">⬆</button>
+        <button class="button is-small" onclick="filesRefresh()" style="margin-left:auto">↻</button>
+      </div>
+      <div id="files-list"><span class="has-text-grey-light">Loading...</span></div>
+    </div>
   </div>
   <div class="dash-logs" id="dash-logs">
     <h2 class="title is-5" style="margin-bottom:.5rem">📋 Logs</h2>
@@ -101,10 +158,27 @@
       <div class="field"><label class="label">Work dir</label><div class="control"><input class="input" id="add-wd" placeholder="/home/project"></div></div>
       <div class="field"><label class="label">Port</label><div class="control"><input class="input" id="add-port" placeholder="3000" type="number"></div></div>
       <div class="field"><label class="label">Description</label><div class="control"><input class="input" id="add-desc" placeholder="Optional"></div></div>
+      <div class="field"><label class="label">Auto-restart every (seconds, 0=off)</label><div class="control"><input class="input" id="add-restart" placeholder="0" type="number" value="0"></div></div>
     </section>
     <footer class="modal-card-foot">
       <button class="button" onclick="closeAddModal()">Cancel</button>
       <button class="button is-link" id="add-btn" onclick="addService()">➕ Add</button>
+    </footer>
+  </div>
+</div>
+
+<!-- Edit service modal -->
+<div class="modal" id="edit-modal">
+  <div class="modal-background" onclick="closeEditModal()"></div>
+  <div class="modal-card">
+    <header class="modal-card-head"><p class="modal-card-title is-5">⚙️ Edit Service</p></header>
+    <section class="modal-card-body">
+      <div class="field"><label class="label">Auto-restart every (seconds)</label><div class="control"><input class="input" id="edit-restart" placeholder="0" type="number"></div></div>
+      <input type="hidden" id="edit-id">
+    </section>
+    <footer class="modal-card-foot">
+      <button class="button" onclick="closeEditModal()">Cancel</button>
+      <button class="button is-link" id="edit-btn" onclick="saveEdit()">💾 Save</button>
     </footer>
   </div>
 </div>
@@ -133,27 +207,41 @@
 <script src="/assets/theme.js"></script>
 <script>
 const $=id=>document.getElementById(id);
-let confirmCb=null,autoScroll=true,logSvcId=null,layoutCol=0,sseRetries=0;
+let confirmCb=null,autoScroll=true,logSvcId=null,layoutCol=0,sseRetries=0,alertBuffer=[],filesStack=[''];
 
 document.addEventListener('keydown',e=>{if(e.key==='?'&&!(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')){e.preventDefault();$('kb-hint').classList.toggle('show')}});
 
-// ── Confirm helper ──
 function showConfirm(msg,onConfirm){
   $('confirm-msg').innerHTML=msg;$('confirm-btn').onclick=()=>{closeConfirm();if(onConfirm)onConfirm()};
   $('confirm-modal').classList.add('is-active');
 }
-function closeConfirm(){$('confirm-modal').classList.remove('is-active');confirmCb=null}
+function closeConfirm(){$('confirm-modal').classList.remove('is-active')}
 
-// ── SSE with auto-reconnect ──
+// ── Alerts (crash notifications) ──
+function addAlert(msg){
+  alertBuffer.push(msg);if(alertBuffer.length>20)alertBuffer.shift();
+  $('alert-badge').style.display='block';$('alert-badge').textContent=alertBuffer.length;
+}
+function toggleAlerts(){
+  const dd=$('alert-dropdown');
+  dd.innerHTML=alertBuffer.length?alertBuffer.map((m,i)=>`<div class="alert-entry" onclick="dismissAlert(${i})">${esc(m)}</div>`).join(''):'<div class="alert-entry has-text-grey">No alerts</div>';
+  dd.classList.toggle('show');
+}
+function dismissAlert(i){alertBuffer.splice(i,1);if(!alertBuffer.length){$('alert-badge').style.display='none';$('alert-dropdown').classList.remove('show')}toggleAlerts()}
+
+// ── SSE with alert support ──
 let logEventSource=null;
 function connectSSE(filterId){
   if(logEventSource)logEventSource.close();
   logSvcId=filterId||null;
   const url=logSvcId?`/api/logs/stream?serviceId=${logSvcId}`:'/api/logs/stream';
   logEventSource=new EventSource(url);
-  logEventSource.onmessage=function(e){
-    try{const d=JSON.parse(e.data);if(logSvcId&&d.serviceId!==logSvcId)return;appendLog(d.line,false);sseRetries=0}catch(_){}
-  };
+  logEventSource.addEventListener('log',function(e){
+    try{const d=JSON.parse(e.data);if(!logSvcId||d.serviceId===logSvcId)appendLog(d.line,false);sseRetries=0}catch(_){}
+  });
+  logEventSource.addEventListener('alert',function(e){
+    try{const d=JSON.parse(e.data);addAlert(d.msg||'Service crashed')}catch(_){}
+  });
   logEventSource.onerror=function(){
     logEventSource.close();sseRetries++;
     if(sseRetries<5)setTimeout(()=>connectSSE(logSvcId),3000*Math.min(sseRetries,3));
@@ -182,6 +270,34 @@ async function pingHealth(id,port,el){
 
 function toggleLayout(){layoutCol=(layoutCol+1)%3;const d=$('dash-logs');d.style.width=layoutCol===1?'clamp(280px,40vw,600px)':layoutCol===2?'100%':'clamp(280px,30vw,480px)'}
 
+function switchTab(name){
+  document.querySelectorAll('.tab-bar button').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id==='tab-'+name));
+  if(name==='res')loadResources();
+  if(name==='ports')loadPorts();
+  if(name==='files')loadFiles();
+}
+
+// ── Search filter ──
+function filterSvcs(){
+  const q=$('svc-search').value.toLowerCase();
+  document.querySelectorAll('.card-expandable').forEach(c=>{
+    const txt=c.textContent.toLowerCase();
+    c.style.display=txt.includes(q)?'':'none';
+  });
+}
+
+// ── Bulk ──
+async function bulkStart(){
+  $('svc-list').innerHTML='<div class="card"><div class="card-content has-text-centered has-text-grey-light"><small>Starting all...</small></div></div>';
+  await fetch('/api/services/start-all',{method:'POST'});setTimeout(loadSvcs,800);
+}
+async function bulkStop(){
+  showConfirm('Stop <strong>all running</strong> services?',async()=>{
+    await fetch('/api/services/stop-all',{method:'POST'});setTimeout(loadSvcs,500);
+  });
+}
+
 // ── Load services ──
 async function loadSvcs(){
   try{const r=await fetch('/api/services');render(await r.json());const s=$('log-select');if(s.value&&!logSvcId)selLog(s.value)}catch(e){}
@@ -194,10 +310,11 @@ function render(svcs){
     if(s.status==='running')run++;else stop++;
     const up=s.uptime>0?fmt(s.uptime):'',lnk=s.port>0?` href="/proxy/${s.port}/" target="_blank"`:'';
     const upPct=s.uptime>0?Math.min(100,Math.round(s.uptime/86400*100)):0;
+    const arlbl=s.autoRestart?` <span class="tag is-warning is-light" title="Auto-restart every ${fmt(s.autoRestart)}">↻ ${fmt(s.autoRestart)}</span>`:'';
     return `<div class="card card-hover card-expandable" data-svc-id="${s.id}">
       <div class="card-content" style="padding:.75rem" onclick="toggleExpand('${s.id}')">
         <div class="level is-mobile">
-          <div class="level-left"><div class="level-item"><span class="sc-dot ${s.status}"></span><strong>${esc(s.name||s.id)}</strong><span id="health-${s.id}" class="health-dot offline" style="margin-left:6px"></span></div></div>
+          <div class="level-left"><div class="level-item"><span class="sc-dot ${s.status}"></span><strong>${esc(s.name||s.id)}</strong><span id="health-${s.id}" class="health-dot offline" style="margin-left:6px"></span>${arlbl}</div></div>
           <div class="level-right">${s.port>0?`<a class="tag is-info is-light"${lnk}>:${s.port} 🔗</a>`:'<span class="tag">—</span>'}</div>
         </div>
         ${s.uptime>0?`<div class="uptime-bar"><div class="fill" style="width:${upPct}%"></div></div>`:''}
@@ -208,6 +325,8 @@ function render(svcs){
         <div class="health-row"><span>Status:</span><span class="tag ${s.status==='running'?'is-success':s.status==='error'?'is-danger':'is-light'}">${s.status}</span>${s.port?`<span>Port:</span><code>${s.port}</code>`:''}${s.pid?`<span>PID:</span><code>${s.pid}</code>`:''}</div>
         ${s.uptime>0?`<p style="margin-top:4px">⏱ Uptime: <strong>${fmt(s.uptime)}</strong></p>`:''}
         ${s.port?`<p style="margin-top:4px"><a href="/proxy/${s.port}/" target="_blank" rel="noopener">🔗 Open service →</a></p>`:''}
+        <div id="chart-${s.id}" class="chart-bar" style="margin-top:4px"><span class="has-text-grey-light is-size-7">${s.status==='running'?'Uptime chart':''}</span></div>
+        <button class="button is-small is-fullwidth" style="margin-top:4px;font-size:.65rem" onclick="editSvc('${s.id}')">⚙️ Configure</button>
       </div>
       <div class="card-footer" style="font-size:.75rem">
         <button class="card-footer-item button is-small" onclick="act('${s.id}','start')" ${s.status==='running'?'disabled':''}>▶ Start</button>
@@ -221,12 +340,21 @@ function render(svcs){
   $('running-count').innerHTML='<span class="sc-dot running" style="margin:0"></span> '+run;
   $('stopped-count').innerHTML='<span class="sc-dot stopped" style="margin:0"></span> '+stop;
   svcs.forEach(s=>{if(s.port)setTimeout(()=>pingHealth(s.id,s.port,$('health-'+s.id)),svcs.indexOf(s)*300)});
+  // Load timeline charts
+  setTimeout(()=>svcs.forEach(s=>loadChart(s.id)),500);
+}
+async function loadChart(id){
+  const el=$('chart-'+id);if(!el)return;
+  try{const r=await fetch(`/api/services/${id}/timeline`);const d=await r.json();const ev=d.events||[];
+    if(!ev.length){el.innerHTML='<span class="has-text-grey-light is-size-7">No data</span>';return}
+    const recent=ev.slice(-72);el.innerHTML=recent.map(e=>`<div class="seg ${e.status==='running'?'running':e.status==='error'?'error':'stopped'}" title="${new Date(e.ts).toLocaleTimeString('vi-VN')+': '+e.msg}"></div>`).join('');
+  }catch(e){el.innerHTML='<span class="has-text-grey-light is-size-7">—</span>'}
 }
 function toggleExpand(id){document.querySelector(`[data-svc-id="${id}"]`)?.classList.toggle('expanded')}
 async function deleteSvc(id){
-  showConfirm(`🗑 Delete service <strong>${esc(id)}</strong>?`,async ()=>{
-    const r=await fetch('/api/services/'+id,{method:'DELETE'});
-    if((await r.json()).error)return toast('❌ Delete failed','error');
+  showConfirm(`🗑 Delete service <strong>${esc(id)}</strong>?`,async()=>{
+    const r=await fetch('/api/services/'+id,{method:'DELETE'});const d=await r.json();
+    if(d.error)return toast('❌ Delete failed','error');
     toast('🗑 Deleted','info');loadSvcs();
   });
 }
@@ -242,12 +370,19 @@ async function act(id,a){
   if(d.error)return toast('❌ '+d.error,'error');
   toast('▶ Started','success');loadSvcs();
 }
+function editSvc(id){$('edit-id').value=id;$('edit-restart').value=0;$('edit-modal').classList.add('is-active')}
+async function saveEdit(){
+  const id=$('edit-id').value,restart=$('edit-restart').value;
+  await fetch('/api/services/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({autoRestart:parseInt(restart)||0})});
+  toast('💾 Saved','success');closeEditModal();loadSvcs();
+}
+function closeEditModal(){$('edit-modal').classList.remove('is-active')}
 function openAddModal(){$('add-modal').classList.add('is-active')}
 function closeAddModal(){$('add-modal').classList.remove('is-active')}
 async function addService(){
   const name=$('add-name').value.trim();if(!name)return;
   $('add-btn').disabled=true;$('add-btn').innerHTML='<span class="spinner"></span>';
-  const body={name,command:$('add-cmd').value.trim(),dir:$('add-wd').value.trim(),port:parseInt($('add-port').value)||0,description:$('add-desc').value.trim()};
+  const body={name,command:$('add-cmd').value.trim(),dir:$('add-wd').value.trim(),port:parseInt($('add-port').value)||0,description:$('add-desc').value.trim(),autoRestart:parseInt($('add-restart').value)||0};
   try{const r=await fetch('/api/services',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const d=await r.json();if(d.error)return toast('❌ '+d.error,'error');toast('➕ Added','success');closeAddModal();loadSvcs()}catch(e){toast('❌ Failed','error')}
   finally{$('add-btn').disabled=false;$('add-btn').innerHTML='➕ Add'}
 }
@@ -255,6 +390,41 @@ function selLog(id){$('log-select').value=id;connectSSE(id);fetchLog(id)}
 async function fetchLog(id){
   try{const r=await fetch(`/api/services/${id}/logs?lines=100`);const d=await r.json();$('log-box').innerHTML='';for(const l of(d.logs||[]))appendLog(l.line||'',false)}catch(e){}
 }
+
+// ── Resources tab ──
+async function loadResources(){
+  const el=$('res-list');
+  try{const r=await fetch('/api/system/resources');const d=await r.json();
+    if(!d||!d.length){el.innerHTML='<span class="has-text-grey-light">No resources found</span>';return}
+    el.innerHTML=`<table class="resource-table"><tr><th>Service</th><th>PID</th><th>Process</th><th>Memory</th></tr>${d.map(entry=>`<tr><td>${esc(entry.id)}</td><td><code>${entry.pid}</code></td><td>${esc(entry.name)}</td><td><div style="display:flex;align-items:center;gap:4px"><div class="resource-bar mem-bar"><div class="fill" style="width:${Math.min(100,entry.memMB/10)}%"></div></div>${entry.memMB} MB</div></td></tr>`).join('')}</table>`;
+  }catch(e){el.innerHTML='<span class="has-text-danger">Failed to load</span>'}
+}
+
+// ── Ports tab ──
+async function loadPorts(){
+  const el=$('ports-list');
+  try{const r=await fetch('/api/scan');const d=await r.json();
+    if(!d||!d.length){el.innerHTML='<span class="has-text-grey-light">No unknown ports</span>';return}
+    el.innerHTML=`<table class="resource-table"><tr><th>Port</th><th>PID</th><th>Process</th></tr>${d.map(p=>`<tr><td><code>${p.port}</code></td><td><code>${p.pid}</code></td><td>${esc(p.name||'—')}</td></tr>`).join('')}</table>`;
+  }catch(e){el.innerHTML='<span class="has-text-danger">Failed to load</span>'}
+}
+
+// ── Files tab ──
+async function loadFiles(sub){
+  const el=$('files-list');let fp=sub||filesStack[filesStack.length-1];
+  $('files-path').textContent='/'+fp;$('files-up-btn').style.display=fp?'':'none';
+  try{const r=await fetch('/api/files?path='+encodeURIComponent(fp));const d=await r.json();
+    if(d.error){el.innerHTML='<span class="has-text-danger">Error listing files</span>';return}
+    el.innerHTML=(d.entries||[]).map(e=>`<div class="files-entry" ${e.isDir?`onclick="filesEnter('${esc(e.name)}')"`:`onclick="filesInfo('${esc(e.name)}','${esc(fp)}')"`}><span class="icon">${e.isDir?'📁':'📄'}</span><span>${esc(e.name)}</span><span class="has-text-grey" style="margin-left:auto;font-size:.65rem">${e.isDir?'':formatSize(e.size)}</span></div>`).join('')||'<span class="has-text-grey-light">Empty</span>';
+  }catch(e){el.innerHTML='<span class="has-text-danger">Failed</span>'}
+}
+function filesEnter(name){filesStack.push((filesStack[filesStack.length-1]?filesStack[filesStack.length-1]+'/':'')+name);loadFiles()}
+function filesUp(){if(filesStack.length>1)filesStack.pop();loadFiles()}
+function filesRefresh(){loadFiles()}
+function filesInfo(name,fp){toast(`📄 ${name}`,'info')}
+function formatSize(s){if(s<1024)return s+'B';if(s<1048576)return (s/1024).toFixed(1)+'KB';return (s/1048576).toFixed(1)+'MB'}
+
+// ── Init ──
 (async function init(){
   try{
     const r=await fetch('/api/services');const svcs=await r.json();
@@ -265,6 +435,7 @@ async function fetchLog(id){
   }catch(e){}
 })();
 setInterval(loadSvcs,5000);loadSvcs();
+setInterval(loadResources,15000);
 function fmt(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;return(h?h+'h ':'')+(m?m+'m ':'')+sec+'s'}
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
 if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{})}
