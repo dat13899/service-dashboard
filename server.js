@@ -74,6 +74,7 @@ function extractMDFrontmatter(raw) {
 }
 
 function json(res, data, code = 200) {
+  if (res.headersSent) return;
   const body = JSON.stringify(data);
   const accept = reqOf(res)?.headers?.['accept-encoding'] || '';
   if (accept.includes('gzip') && body.length > 1024) {
@@ -363,7 +364,9 @@ const server = http.createServer((req, res) => {
     const svc = services.find(s => s.id === mHealth[1]);
     if (!svc || !svc.port) return json(res, { ok: false, reason: 'no-port' });
     const r = http.request({ hostname: 'localhost', port: svc.port, path: '/', method: 'HEAD', timeout: 3000 }, (r2) => json(res, { ok: true, statusCode: r2.statusCode }));
-    r.on('error', () => json(res, { ok: false })); r.on('timeout', () => { r.destroy(); json(res, { ok: false }); }); r.end(); return;
+    let timedOut = false;
+    r.on('error', () => { if (!timedOut) json(res, { ok: false }); });
+    r.on('timeout', () => { timedOut = true; r.destroy(); json(res, { ok: false }); }); r.end(); return;
   }
 
   // GET /api/services/:id/timeline
@@ -384,13 +387,13 @@ const server = http.createServer((req, res) => {
   if (mProxy && method === 'GET') {
     const opts = { hostname: 'localhost', port: parseInt(mProxy[1]), path: mProxy[2] || '/', method: 'GET', timeout: 10000 };
     const r = http.request(opts, (r2) => { res.writeHead(r2.statusCode, { 'Content-Type': r2.headers['content-type'] || 'text/html', 'Access-Control-Allow-Origin': '*' }); r2.pipe(res); });
-    r.on('error', () => { res.writeHead(502); res.end('Proxy error'); }); r.end(); return;
+    r.on('error', () => { try { res.writeHead(502); res.end('Proxy error'); } catch (_) {} }); r.end(); return;
   }
 
   // RAG proxy
-  if (u.pathname === '/api/rag/status' && method === 'GET') { http.get('http://localhost:3001/status', (r2) => { let d = ''; r2.on('data', c => d += c); r2.on('end', () => { try { json(res, JSON.parse(d)); } catch (_) { json(res, { ok: false }); } }); }).on('error', () => json(res, { ok: false })); return; }
-  if (u.pathname === '/api/rag/reindex' && method === 'POST') { const r = http.request({ hostname: 'localhost', port: 3001, path: '/reindex', method: 'POST' }, (r2) => { let d = ''; r2.on('data', c => d += c); r2.on('end', () => { try { json(res, JSON.parse(d)); } catch (_) { json(res, { ok: false }); } }); }); r.on('error', () => json(res, { error: 'rag-unreachable' }, 502)); r.end(); return; }
-  if (u.pathname === '/api/rag/query' && method === 'POST') { let b = ''; req.on('data', c => b += c); req.on('end', () => { const r = http.request({ hostname: 'localhost', port: 3001, path: '/query', method: 'POST', headers: { 'Content-Type': 'application/json' } }, (r2) => { let d = ''; r2.on('data', c => d += c); r2.on('end', () => { try { json(res, JSON.parse(d)); } catch (_) { json(res, { error: 'bad-response' }, 502); } }); }); r.on('error', () => json(res, { error: 'rag-unreachable' }, 502)); r.write(b); r.end(); }); return; }
+  if (u.pathname === '/api/rag/status' && method === 'GET') { http.get('http://localhost:3001/status', (r2) => { let d = ''; r2.on('data', c => d += c); r2.on('end', () => { try { json(res, JSON.parse(d)); } catch (_) { json(res, { ok: false }); } }); }).on('error', () => { try { json(res, { ok: false }); } catch (_) {} }); return; }
+  if (u.pathname === '/api/rag/reindex' && method === 'POST') { const r = http.request({ hostname: 'localhost', port: 3001, path: '/reindex', method: 'POST' }, (r2) => { let d = ''; r2.on('data', c => d += c); r2.on('end', () => { try { json(res, JSON.parse(d)); } catch (_) { json(res, { ok: false }); } }); }); r.on('error', () => { try { json(res, { error: 'rag-unreachable' }, 502); } catch (_) {} }); r.end(); return; }
+  if (u.pathname === '/api/rag/query' && method === 'POST') { let b = ''; req.on('data', c => b += c); req.on('end', () => { const r = http.request({ hostname: 'localhost', port: 3001, path: '/query', method: 'POST', headers: { 'Content-Type': 'application/json' } }, (r2) => { let d = ''; r2.on('data', c => d += c); r2.on('end', () => { try { json(res, JSON.parse(d)); } catch (_) { json(res, { error: 'bad-response' }, 502); } }); }); r.on('error', () => { try { json(res, { error: 'rag-unreachable' }, 502); } catch (_) {} }); r.write(b); r.end(); }); return; }
 
   // Aternos
   if (u.pathname === '/api/aternos' && method === 'GET') return json(res, aternosCall('status'));
