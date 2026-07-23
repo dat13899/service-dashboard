@@ -13,23 +13,27 @@
 <link rel="stylesheet" href="/assets/global.css">
 <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token":"b65b6686cd0947dfbdee6dc55a1b4416"}'></script>
 <style>
-.sc-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}
+.sc-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;flex-shrink:0}
 .sc-dot.running{background:var(--green,#22c55e);box-shadow:0 0 6px var(--green,#22c55e)}
 .sc-dot.stopped{background:var(--text-dim,#6b7280)}
 .sc-dot.error{background:var(--red,#ef4444);box-shadow:0 0 6px var(--red,#ef4444)}
-
 #log-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--bulma-radius);padding:.75rem;font-family:monospace;font-size:.75rem;min-height:350px;max-height:60vh;overflow-y:auto;white-space:pre-wrap;color:var(--text-light);line-height:1.5}
 #log-box .log-line{padding:1px 0}
 #log-box .log-line.error{color:var(--red)}
 #log-box .log-line.warn{color:var(--accent)}
-
 .modal-card{background:var(--surface);color:var(--text)}
 .modal-card-head,.modal-card-foot{background:var(--surface);border-color:var(--border)}
 .modal-card-title{color:var(--text-strong)}
 .modal-card-foot{border-top:1px solid var(--border)}
-
 .uptime-bar{height:4px;background:var(--border);border-radius:2px;margin-top:4px;overflow:hidden}
 .uptime-bar .fill{height:100%;background:var(--green);border-radius:2px;transition:width 1s}
+.card-expandable .card-content{cursor:pointer}
+.card-expandable .card-content:hover{opacity:.9}
+.card-expanded-body{display:none;padding:.5rem .75rem;border-top:1px solid var(--border);font-size:.75rem}
+.card-expandable.expanded .card-expanded-body{display:block}
+.health-row{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+.log-toolbar{display:flex;gap:.3rem;margin-bottom:.3rem;align-items:center;flex-wrap:wrap}
+.log-toolbar .log-status{font-size:.7rem;color:var(--text-dim)}
 </style>
 </head>
 <body>
@@ -53,15 +57,20 @@
     <div class="column">
       <h2 class="title is-5" style="margin-bottom:.75rem">📦 Services</h2>
       <div id="svc-list">
-        <div class="card"><div class="card-content skeleton" style="height:80px"></div></div>
-        <div class="card"><div class="card-content skeleton" style="height:80px"></div></div>
+        <div class="card"><div class="card-content skeleton skel-d1" style="height:80px"></div></div>
+        <div class="card"><div class="card-content skeleton skel-d2" style="height:80px"></div></div>
       </div>
       <button class="button is-fullwidth is-dashed mt-2" onclick="openAddModal()" style="border-style:dashed">＋ Thêm service</button>
     </div>
     <div class="column is-one-third">
       <h2 class="title is-5" style="margin-bottom:.75rem">📋 Logs</h2>
-      <div class="select is-fullwidth mb-2">
-        <select id="log-select"></select>
+      <div class="log-toolbar">
+        <div class="select" style="flex:1">
+          <select id="log-select"></select>
+        </div>
+        <button class="button is-small" onclick="clearLogs()" title="Clear">🧹</button>
+        <button class="button is-small" onclick="toggleAutoScroll()" id="auto-scroll-btn" title="Auto-scroll">⬇</button>
+        <span class="log-status" id="log-status"></span>
       </div>
       <div id="log-box"><span class="has-text-grey-light">Chọn service để xem log</span></div>
     </div>
@@ -94,9 +103,7 @@
   <div class="modal-background" onclick="closeConfirm()"></div>
   <div class="modal-card">
     <header class="modal-card-head"><p class="modal-card-title is-5">⚠️ Confirm</p></header>
-    <section class="modal-card-body">
-      <p id="confirm-msg">Are you sure?</p>
-    </section>
+    <section class="modal-card-body"><p id="confirm-msg">Are you sure?</p></section>
     <footer class="modal-card-foot">
       <button class="button" onclick="closeConfirm()">Cancel</button>
       <button class="button is-danger" id="confirm-btn" onclick="">Confirm</button>
@@ -104,15 +111,76 @@
   </div>
 </div>
 
+<!-- Keyboard help -->
+<div class="kb-overlay" id="kb-overlay" onclick="if(event.target===this)this.classList.toggle('show')">
+  <div class="kb-panel">
+    <h3>⌨ Keyboard Shortcuts</h3>
+    <div class="kb-row"><span>Show help</span><kbd>?</kbd></div>
+    <div class="kb-row"><span>Go to Dashboard</span><kbd>g</kbd> then <kbd>d</kbd></div>
+    <div class="kb-row"><span>Go to Documents</span><kbd>g</kbd> then <kbd>o</kbd></div>
+    <div class="kb-row"><span>Go Home</span><kbd>g</kbd> then <kbd>h</kbd></div>
+  </div>
+</div>
+
 <script src="/assets/theme.js"></script>
 <script>
 const $=id=>document.getElementById(id);
-let confirmCb=null;
+let confirmCb=null,autoScroll=true,logBuffer=[],logSvcId=null;
 
+function toast(msg,type,undoCb){
+  const c=document.getElementById('toast-container')||(t=>{t.id='toast-container';document.body.appendChild(t);return t})(document.createElement('div'));
+  c.className='toast-container';
+  const el=document.createElement('div');el.className='toast '+type;el.innerHTML=msg;
+  if(undoCb){const u=document.createElement('button');u.className='toast-undo';u.textContent='Undo';u.onclick=()=>{undoCb();el.classList.add('removing');setTimeout(()=>el.remove(),200)};el.appendChild(u)}
+  c.appendChild(el);setTimeout(()=>{el.classList.add('removing');setTimeout(()=>el.remove(),200)},4000);
+}
+document.addEventListener('keydown',e=>{if(e.key==='?'&&!(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')){e.preventDefault();const o=document.getElementById('kb-overlay');o&&o.classList.toggle('show')}});
+
+// ── SSE Log stream ──
+let logEventSource=null;
+function connectSSE(filterId){
+  if(logEventSource)logEventSource.close();
+  if(filterId&&filterId!=='__all__')logSvcId=filterId;else logSvcId=null;
+  const url=logSvcId?`/api/logs/stream?serviceId=${logSvcId}`:'/api/logs/stream';
+  logEventSource=new EventSource(url);
+  logEventSource.onmessage=function(e){
+    try{
+      const d=JSON.parse(e.data);
+      if(logSvcId&&d.serviceId!==logSvcId)return;
+      appendLog(d.line,false);
+    }catch(_){}
+  };
+  logEventSource.onerror=function(){/* reconnect automatically */};
+}
+
+function appendLog(line,prepend){
+  const box=$('log-box');
+  const cls=line.startsWith('[E]')||line.startsWith('[ERROR]')?'error':line.includes('warn')?'warn':'';
+  const el=document.createElement('div');el.className='log-line'+(cls?' '+cls:'');
+  el.textContent=line;
+  if(prepend)box.prepend(el);else box.appendChild(el);
+  if(autoScroll)box.scrollTop=box.scrollHeight;
+}
+
+function toggleAutoScroll(){autoScroll=!autoScroll;$('auto-scroll-btn').style.opacity=autoScroll?'1':'.4'}
+function clearLogs(){$('log-box').innerHTML='';$('log-status').textContent=''}
+function updateLogStatus(){const c=$('log-box').children.length;$('log-status').textContent=c+' lines'}
+
+// ── Health ping ──
+async function pingHealth(id,port,el){
+  if(!port)return;
+  try{
+    const r=await fetch(`/api/services/${id}/health`,{signal:AbortSignal.timeout(4000)});
+    const d=await r.json();
+    el.className='health-dot '+(d.ok?'online':'offline')+(d.ok?' pulse':'');
+  }catch(e){el.className='health-dot offline'}
+}
+
+// ── Load services ──
 async function loadSvcs(){
   try{
     const r=await fetch('/api/services');render(await r.json());
-    const s=$('log-select');if(s.value)fetchLog(s.value);
+    const s=$('log-select');if(s.value&&!logSvcId)selLog(s.value);
   }catch(e){}
 }
 
@@ -120,19 +188,28 @@ function render(svcs){
   const list=$('svc-list');
   if(!svcs||!svcs.length){list.innerHTML='<div class="card card-hover"><div class="card-content has-text-grey-light"><small>Chưa có service</small></div></div>';return}
   let run=0,stop=0;
-  list.innerHTML=svcs.map(s=>{
+  list.innerHTML=svcs.map((s,i)=>{
     if(s.status==='running')run++;else stop++;
     const up=s.uptime>0?fmt(s.uptime):'',lnk=s.port>0?` href="/proxy/${s.port}/" target="_blank"`:'';
     const upPct=s.uptime>0?Math.min(100,Math.round(s.uptime/86400*100)):0;
-    return `<div class="card card-hover">
-      <div class="card-content" style="padding:.75rem">
+    return `<div class="card card-hover card-expandable" data-svc-id="${s.id}">
+      <div class="card-content" style="padding:.75rem" onclick="toggleExpand('${s.id}')">
         <div class="level is-mobile">
-          <div class="level-left"><div class="level-item"><span class="sc-dot ${s.status}"></span><strong>${esc(s.name||s.id)}</strong></div></div>
+          <div class="level-left"><div class="level-item"><span class="sc-dot ${s.status}"></span><strong>${esc(s.name||s.id)}</strong><span id="health-${s.id}" class="health-dot offline" style="margin-left:6px"></span></div></div>
           <div class="level-right">${s.port>0?`<a class="tag is-info is-light"${lnk}>:${s.port} 🔗</a>`:'<span class="tag">—</span>'}</div>
         </div>
         ${s.uptime>0?`<div class="uptime-bar"><div class="fill" style="width:${upPct}%"></div></div>`:''}
         <p class="is-size-7 has-text-grey-light" style="margin-top:.25rem">${esc(s.description||'—')}</p>
         <p class="is-size-7 has-text-grey" style="margin-top:.25rem;font-family:monospace">${s.pid?'PID '+s.pid+' ':''}${up?'⏱ '+up+' ':''}${s.status==='running'?'🟢 Running':s.status==='error'?'🔴 Error':'⚪ Stopped'}</p>
+      </div>
+      <div class="card-expanded-body" id="exp-${s.id}">
+        <div class="health-row">
+          <span>Status:</span>
+          <span class="tag ${s.status==='running'?'is-success':s.status==='error'?'is-danger':'is-light'}">${s.status}</span>
+          ${s.port?`<span>Port:</span><code>${s.port}</code>`:''}
+          ${s.pid?`<span>PID:</span><code>${s.pid}</code>`:''}
+        </div>
+        ${s.uptime>0?`<p style="margin-top:4px">⏱ Uptime: <strong>${fmt(s.uptime)}</strong> (${Math.round(s.uptime/86400*10)/10} days)</p>`:''}
       </div>
       <div class="card-footer" style="font-size:.75rem">
         <button class="card-footer-item button is-small" onclick="act('${s.id}','start')" ${s.status==='running'?'disabled':''}>▶ Start</button>
@@ -144,6 +221,18 @@ function render(svcs){
   }).join('');
   $('running-count').innerHTML='<span class="sc-dot running" style="margin:0"></span> '+run;
   $('stopped-count').innerHTML='<span class="sc-dot stopped" style="margin:0"></span> '+stop;
+  // Health pings
+  for(const s of svcs){
+    if(s.port){setTimeout(()=>pingHealth(s.id,s.port,document.getElementById('health-'+s.id)),i=>i*300)(svcs.indexOf(s))}
+  }
+}
+
+let expandTimer=null;
+function toggleExpand(id){
+  const card=document.querySelector(`[data-svc-id="${id}"]`);
+  if(!card)return;
+  clearTimeout(expandTimer);
+  card.classList.toggle('expanded');
 }
 
 async function act(id,a){
@@ -166,7 +255,7 @@ function openAddModal(){$('add-modal').classList.add('is-active')}
 function closeAddModal(){$('add-modal').classList.remove('is-active')}
 async function addService(){
   const name=$('add-name').value.trim();if(!name)return;
-  const body={name,command:$('add-cmd').value.trim(),workdir:$('add-wd').value.trim(),port:parseInt($('add-port').value)||0,description:$('add-desc').value.trim()};
+  const body={name,command:$('add-cmd').value.trim(),dir:$('add-wd').value.trim(),port:parseInt($('add-port').value)||0,description:$('add-desc').value.trim()};
   try{const r=await fetch('/api/services',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const d=await r.json();if(d.error)return toast('❌ '+d.error,'error');toast('➕ Added','success');closeAddModal();loadSvcs()}catch(e){toast('❌ Failed','error')}
 }
 
@@ -179,22 +268,29 @@ function showConfirm(msg,onConfirm){
 }
 function closeConfirm(){$('confirm-modal').classList.remove('is-active');confirmCb=null}
 
-function selLog(id){$('log-select').value=id;fetchLog(id)}
+function selLog(id){
+  $('log-select').value=id;
+  connectSSE(id);
+  // Fetch historical
+  fetchLog(id);
+}
 async function fetchLog(id){
   try{
     const r=await fetch(`/api/services/${id}/logs?lines=100`);const d=await r.json();
-    const lines=(d.logs||[]).map(l=>{
-      const cls=l.level?.toLowerCase()==='error'?'error':l.level?.toLowerCase()==='warn'?'warn':'';
-      return `<div class="log-line${cls?' '+cls:''}">${esc(l.line||'')}</div>`;
-    }).join('')||'<span class="has-text-grey-light">(no logs)</span>';
-    $('log-box').innerHTML=lines;
-    $('log-box').scrollTop=$('log-box').scrollHeight;
-  }catch(e){$('log-box').textContent='Lỗi tải logs'}
+    const box=$('log-box');box.innerHTML='';
+    for(const l of (d.logs||[]))appendLog(l.line||'',false);
+    updateLogStatus();
+  }catch(e){}
 }
+
 (async function(){
-  const r=await fetch('/api/services');const svcs=await r.json();
-  const sel=$('log-select');sel.innerHTML=svcs.map(s=>`<option value="${s.id}">${esc(s.name||s.id)}</option>`).join('');
-  sel.onchange=()=>fetchLog(sel.value);if(svcs.length)fetchLog(svcs[0].id);
+  try{
+    const r=await fetch('/api/services');const svcs=await r.json();
+    const sel=$('log-select');
+    sel.innerHTML='<option value="">— All —</option>'+svcs.map(s=>`<option value="${s.id}">${esc(s.name||s.id)}</option>`).join('');
+    sel.onchange=()=>{const v=sel.value;if(v)selLog(v);else connectSSE(null)};
+    if(svcs.length)selLog(svcs[0].id);
+  }catch(e){}
 })();
 setInterval(loadSvcs,5000);
 loadSvcs();

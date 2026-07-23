@@ -1,20 +1,23 @@
 /* ── btdat.io.vn Global Styles ── */
-[data-theme="dark"]{--bg:#0a0e17;--surface:#111827;--surface-2:#1e293b;--border:#2d3a5c;--text:#f1f5f9;--text-strong:#fff;--text-dim:#94a3b8;--accent:#818cf8;--accent-hover:#6366f1;--green:#22c55e;--red:#ef4444;--page:#fff;--bulma-scheme-main:#0a0e17;--bulma-scheme-main-bis:#111827;--bulma-scheme-main-ter:#1e293b;--bulma-background:#111827;--bulma-border:#2d3a5c;--bulma-text:#f1f5f9;--bulma-text-strong:#ffffff;--bulma-text-invert:#0a0e17;--bulma-text-light:#94a3b8;--bulma-link:#818cf8;--bulma-link-hover:#6366f1;--bulma-body-background-color:#0a0e17;--bulma-card-background-color:#111827;--bulma-card-shadow:none;--bulma-navbar-background-color:#111827}
-[data-theme="light"]{--bg:#f8fafc;--surface:#fff;--surface-2:#f1f5f9;--border:#e2e8f0;--text:#1e293b;--text-strong:#0f172a;--text-dim:#64748b;--accent:#6366f1;--accent-hover:#4f46e5;--green:#16a34a;--red:#dc2626;--page:#fff;--bulma-link:#6366f1;--bulma-link-hover:#4f46e5}
+[data-theme="dark"]{--bg:#0a0e17;--surface:#111827;--surface-2:#1e293b;--border:#2d3a5c;--text:#f1f5f9;--text-strong:#fff;--text-dim:#94a3b8;--accent:#818cf8;--accent-hover:#6366f1;--green:#22c55e;--red:#ef4444;--amber:#f59e0b;--page:#fff;--bulma-scheme-main:#0a0e17;--bulma-scheme-main-bis:#111827;--bulma-scheme-main-ter:#1e293b;--bulma-background:#111827;--bulma-border:#2d3a5c;--bulma-text:#f1f5f9;--bulma-text-strong:#ffffff;--bulma-text-invert:#0a0e17;--bulma-text-light:#94a3b8;--bulma-link:#818cf8;--bulma-link-hover:#6366f1;--bulma-body-background-color:#0a0e17;--bulma-card-background-color:#111827;--bulma-card-shadow:none;--bulma-navbar-background-color:#111827}
+[data-theme="light"]{--bg:#f8fafc;--surface:#fff;--surface-2:#f1f5f9;--border:#e2e8f0;--text:#1e293b;--text-strong:#0f172a;--text-dim:#64748b;--accent:#6366f1;--accent-hover:#4f46e5;--green:#16a34a;--red:#dc2626;--amber:#d97706;--page:#fff;--bulma-link:#6366f1;--bulma-link-hover:#4f46e5}
 
 /* ── Toast system ── */
 .toast-container{position:fixed;top:1rem;right:1rem;z-index:9999;display:flex;flex-direction:column;gap:.5rem;pointer-events:none}
-.toast{pointer-events:auto;padding:.6rem 1rem;border-radius:8px;font-size:.85rem;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.35);display:flex;align-items:center;gap:.5rem;animation:slideIn .25s ease;max-width:360px;color:#fff}
+.toast{pointer-events:auto;padding:.6rem 1rem;border-radius:8px;font-size:.85rem;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.35);display:flex;align-items:center;gap:.5rem;animation:slideIn .25s ease;max-width:360px;color:#fff;position:relative}
 .toast.success{background:var(--green,#22c55e)}
 .toast.error{background:var(--red,#ef4444)}
 .toast.info{background:var(--accent,#818cf8)}
 .toast.removing{animation:slideOut .2s forwards}
+.toast .toast-undo{background:rgba(255,255,255,.2);border:none;color:#fff;padding:2px 8px;border-radius:4px;font-size:.75rem;cursor:pointer;margin-left:.5rem;font-weight:600}
+.toast .toast-undo:hover{background:rgba(255,255,255,.35)}
 @keyframes slideIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
 @keyframes slideOut{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(30px)}}
 
 /* ── Skeleton pulse ── */
 .skeleton{background:linear-gradient(90deg,var(--surface-2) 25%,var(--border) 50%,var(--surface-2) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px}
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.skel-d1{animation-delay:.1s}.skel-d2{animation-delay:.2s}.skel-d3{animation-delay:.3s}.skel-d4{animation-delay:.4s}
 
 /* ── Loading spinner ── */
 .spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite}
@@ -29,3 +32,38 @@
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 ::-webkit-scrollbar-thumb:hover{background:var(--text-dim)}
+
+/* ── Typing cursor ── */
+.typing-cursor{display:inline-block;width:2px;height:1em;background:var(--accent);margin-left:2px;animation:blink .8s step-end infinite;vertical-align:text-bottom}
+@keyframes blink{50%{opacity:0}}
+
+/* ── Health ping ── */
+.health-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;flex-shrink:0}
+.health-dot.online{background:var(--green);box-shadow:0 0 6px var(--green)}
+.health-dot.offline{background:var(--text-dim)}
+.health-dot.pulse{animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ── Expandable card ── */
+.card-expandable .card-header{cursor:pointer;user-select:none}
+.card-expandable .card-header .toggle-icon{transition:transform .2s}
+.card-expandable.expanded .card-header .toggle-icon{transform:rotate(180deg)}
+.card-expanded-body{display:none;padding:.5rem .75rem;border-top:1px solid var(--border);font-size:.75rem;overflow:hidden}
+.card-expandable.expanded .card-expanded-body{display:block}
+
+/* ── Reading progress ── */
+.reading-progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--accent),#06b6d4);z-index:9998;transition:width .1s linear;width:0}
+
+/* ── Font controls ── */
+.font-controls{display:flex;gap:.3rem;align-items:center}
+.font-controls button{background:none;border:1px solid var(--border);border-radius:4px;color:var(--text-dim);padding:.15rem .4rem;font-size:.7rem;cursor:pointer;line-height:1.4}
+.font-controls button:hover{background:var(--surface-2);color:var(--text)}
+
+/* ── Keyboard help overlay ── */
+.kb-overlay{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.kb-overlay.show{display:flex}
+.kb-overlay .kb-panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;max-width:400px;width:90%}
+.kb-overlay .kb-panel h3{margin:0 0 .75rem;font-size:1rem;color:var(--text-strong)}
+.kb-overlay .kb-panel .kb-row{display:flex;justify-content:space-between;padding:.3rem 0;font-size:.8rem;border-bottom:1px solid var(--border)}
+.kb-overlay .kb-panel .kb-row:last-child{border-bottom:none}
+.kb-overlay .kb-panel .kb-row kbd{background:var(--surface-2);border:1px solid var(--border);border-radius:3px;padding:1px 6px;font-size:.75rem;font-family:monospace}

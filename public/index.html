@@ -15,7 +15,6 @@
 <link rel="stylesheet" href="/assets/global.css">
 <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token":"b65b6686cd0947dfbdee6dc55a1b4416"}'></script>
 <style>
-/* ── Hero ── */
 .hero-section{position:relative;padding:4rem 1.5rem 3rem;overflow:hidden}
 .hero-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none}
 .hero-bg .mesh{position:absolute;width:400px;height:400px;border-radius:50%;filter:blur(100px);opacity:.15}
@@ -25,25 +24,17 @@
 .hero-content{position:relative;z-index:1}
 .hero-glow{background:linear-gradient(135deg,var(--accent, #818cf8),#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .hero-sub{max-width:520px;margin:.5rem auto 1.5rem;line-height:1.7}
-
-/* ── Services grid ── */
 #services-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem}
 .sc-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}
 .sc-dot.running{background:var(--green,#22c55e);box-shadow:0 0 6px var(--green,#22c55e)}
 .sc-dot.stopped{background:var(--text-dim,#6b7280)}
 .sc-dot.error{background:var(--red,#ef4444);box-shadow:0 0 6px var(--red,#ef4444)}
-
-/* ── Tech cloud ── */
 .tech-cloud{display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center;max-width:600px;margin:0 auto}
 .tech-cloud .badge{background:var(--surface-2);border:1px solid var(--border);padding:.35rem .9rem;border-radius:999px;font-size:.75rem;font-weight:500;transition:.15s;color:var(--text);text-decoration:none}
 .tech-cloud .badge:hover{background:var(--accent);color:#fff;border-color:var(--accent);transform:translateY(-2px)}
-
-/* ── Status bar ── */
 .status-bar{display:flex;gap:1rem;align-items:center;justify-content:center;flex-wrap:wrap;padding:.75rem;background:var(--surface);border:1px solid var(--border);border-radius:999px;margin-bottom:1rem;font-size:.8rem}
 .status-bar .stat{display:flex;align-items:center;gap:.3rem}
 .status-bar .stat .num{font-weight:700;color:var(--text-strong)}
-
-/* ── Footer ── */
 .footer{border-top:1px solid var(--border)}
 .footer-links a{font-size:1.15rem;margin:0 .5rem;color:var(--text-dim);transition:.15s}
 .footer-links a:hover{color:var(--accent)}
@@ -71,7 +62,7 @@
   <div class="hero-bg"><div class="mesh"></div><div class="mesh"></div></div>
   <div class="container has-text-centered hero-content" style="max-width:650px">
     <h1 class="title is-1 hero-glow" style="margin-bottom:.25rem">👋 BT Dat</h1>
-    <p class="subtitle is-5 hero-sub has-text-grey-light">Personal Home Lab &amp; Cloud Dashboard</p>
+    <p class="subtitle is-5 hero-sub has-text-grey-light" id="hero-tagline"></p>
     <p class="has-text-grey" style="max-width:500px;margin:0 auto 1.5rem">Minecraft server, AI tool, và các self-hosted service chạy 24/7.</p>
     <div style="margin-bottom:1.5rem;display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center">
       <span class="tag" style="background:var(--accent);color:#fff">Node.js</span>
@@ -94,8 +85,8 @@
     <h2 class="title is-4"><span style="margin-right:8px">📦</span> Services</h2>
     <p class="subtitle is-6 has-text-grey-light" id="svc-subtitle">Đang tải...</p>
     <div id="services-grid">
-      <div class="card card-hover"><div class="card-content skeleton" style="height:80px"></div></div>
-      <div class="card card-hover"><div class="card-content skeleton" style="height:80px"></div></div>
+      <div class="card card-hover"><div class="card-content skeleton skel-d1" style="height:80px"></div></div>
+      <div class="card card-hover"><div class="card-content skeleton skel-d2" style="height:80px"></div></div>
     </div>
   </div>
 </section>
@@ -138,8 +129,45 @@
 
 <button class="theme-btn button" data-bound="1"><span class="theme-btn-icon">☀️</span></button>
 
+<!-- Keyboard shortcuts help -->
+<div class="kb-overlay" id="kb-overlay" onclick="if(event.target===this)this.classList.toggle('show')">
+  <div class="kb-panel">
+    <h3>⌨ Keyboard Shortcuts</h3>
+    <div class="kb-row"><span>Show help</span><kbd>?</kbd></div>
+    <div class="kb-row"><span>Go to Dashboard</span><kbd>g</kbd> then <kbd>d</kbd></div>
+    <div class="kb-row"><span>Go to Documents</span><kbd>g</kbd> then <kbd>o</kbd></div>
+    <div class="kb-row"><span>Go Home</span><kbd>g</kbd> then <kbd>h</kbd></div>
+  </div>
+</div>
+
 <script src="/assets/theme.js"></script>
 <script>
+function toast(msg,type,undoCb){
+  const c=document.getElementById('toast-container')||(t=>{t.id='toast-container';document.body.appendChild(t);return t})(document.createElement('div'));
+  c.className='toast-container';
+  const el=document.createElement('div');el.className='toast '+type;el.innerHTML=msg;
+  if(undoCb){const u=document.createElement('button');u.className='toast-undo';u.textContent='Undo';u.onclick=()=>{undoCb();el.classList.add('removing');setTimeout(()=>el.remove(),200)};el.appendChild(u)}
+  c.appendChild(el);setTimeout(()=>{el.classList.add('removing');setTimeout(()=>el.remove(),200)},4000);
+}
+document.addEventListener('keydown',e=>{if(e.key==='?'&&!(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')){e.preventDefault();const o=document.getElementById('kb-overlay');o&&o.classList.toggle('show')}});
+
+// ── Typing effect ──
+(function(){
+  const el=document.getElementById('hero-tagline');
+  if(!el)return;
+  const lines=['Chạy home lab 24/7','Tự động hóa với AI','Minecraft server luôn online','DevOps không cần ops'];
+  let li=0,ci=0,dir=1;
+  function tick(){
+    const txt=lines[li].slice(0,ci);
+    el.innerHTML=txt+'<span class="typing-cursor"></span>';
+    ci+=dir;
+    if(ci>lines[li].length){dir=-1;setTimeout(tick,2000);return}
+    if(ci<0){dir=1;li=(li+1)%lines.length;ci=0}
+    setTimeout(tick,dir>0?80:40);
+  }
+  tick();
+})();
+
 function fmt(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;return(h?h+'h ':'')+(m?m+'m ':'')+sec+'s'}
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
 const $=id=>document.getElementById(id);
