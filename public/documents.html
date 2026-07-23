@@ -31,55 +31,85 @@ a{color:var(--accent)}a:hover{color:var(--accent-hover)}
 .top-bar .btn{background:var(--accent);color:#fff;border:none;padding:.3rem .7rem;border-radius:6px;font-size:.8rem;cursor:pointer;font-weight:600}
 .top-bar .btn:hover{opacity:.9}
 .layout{display:flex;min-height:0;height:calc(100vh - 52px)}
-.sidebar{width:280px;flex-shrink:0;border-right:1px solid var(--border);display:flex;flex-direction:column;background:var(--surface);min-height:0;height:100%}
-.sidebar .search-wrap{padding:.5rem;border-bottom:1px solid var(--border);position:relative}
+.sidebar{width:280px;flex-shrink:0;border-right:1px solid var(--border);display:flex;flex-direction:column;background:var(--surface);min-height:0;height:100%;transition:width .2s,margin .2s}
+.sidebar.collapsed{width:0;overflow:hidden;border-right:none;margin-left:-1px}
+.sidebar .search-wrap{padding:.5rem;border-bottom:1px solid var(--border);position:relative;white-space:nowrap}
 .sidebar .search-wrap input{width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:.35rem .6rem;font-size:.75rem;outline:none;box-sizing:border-box}
 .sidebar .search-wrap input:focus{border-color:var(--accent)}
+.search-history{position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:0 0 6px 6px;max-height:200px;overflow-y:auto;z-index:50;display:none;font-size:.7rem}
+.search-history.show{display:block}
+.search-history .sh-item{padding:.3rem .5rem;cursor:pointer;border-bottom:1px solid var(--border);color:var(--text-dim)}
+.search-history .sh-item:hover{background:var(--surface-2);color:var(--accent)}
 .search-results{position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:0 0 6px 6px;max-height:200px;overflow-y:auto;z-index:50;display:none;font-size:.7rem}
 .search-results.show{display:block}
 .search-results .sr-item{padding:.3rem .5rem;cursor:pointer;border-bottom:1px solid var(--border)}
 .search-results .sr-item:hover{background:var(--surface-2);color:var(--accent)}
 .search-results .sr-item .sr-match{color:var(--text-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sort-bar{display:flex;align-items:center;gap:.2rem;padding:.2rem .5rem;border-bottom:1px solid var(--border);font-size:.65rem;white-space:nowrap}
+.sort-bar select{background:var(--surface-2);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:.65rem;padding:.15rem .3rem;outline:none}
 .tag-filter{display:flex;flex-wrap:wrap;gap:4px;padding:.35rem .5rem;border-bottom:1px solid var(--border)}
 .tag-chip{padding:.15rem .5rem;border-radius:999px;font-size:.65rem;border:1px solid var(--border);background:none;color:var(--text-dim);cursor:pointer;transition:.1s;white-space:nowrap}
 .tag-chip.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 .tag-chip:hover:not(.active){border-color:var(--accent);color:var(--accent)}
 .doc-list{list-style:none;padding:0;margin:0;flex:1;overflow-y:auto}
-.doc-item{padding:.5rem .7rem;border-bottom:1px solid var(--border);cursor:pointer;transition:.1s}
+.doc-item{padding:.5rem .7rem;border-bottom:1px solid var(--border);cursor:pointer;transition:.1s;display:flex;align-items:center;gap:.4rem}
 .doc-item:hover,.doc-item.active{background:var(--accent);color:#fff}
 .doc-item:hover .d-title,.doc-item.active .d-title{color:#fff}
 .doc-item:hover .d-meta,.doc-item.active .d-meta{color:rgba(255,255,255,.7)}
 .doc-item.active{border-left:3px solid var(--accent)}
+.doc-item .d-cb{opacity:0;transition:opacity .15s;cursor:pointer;margin-right:.1rem}
+.doc-item:hover .d-cb{opacity:1}.doc-item .d-cb.show{opacity:1}
+.doc-item .d-body{flex:1;min-width:0}
 .doc-item .d-title{font-size:.8rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-strong)}
 .doc-item .d-meta{font-size:.6rem;color:var(--text-dim);margin-top:2px;display:flex;gap:.4rem}
 .doc-item .d-badge{font-size:.55rem;background:var(--accent);color:#fff;padding:0 .4rem;border-radius:3px;line-height:1.4}
-.sidebar-footer{padding:.4rem .7rem;border-top:1px solid var(--border);font-size:.65rem;color:var(--text-dim);flex-shrink:0;display:flex;justify-content:space-between}
+.sidebar-footer{padding:.4rem .7rem;border-top:1px solid var(--border);font-size:.65rem;color:var(--text-dim);flex-shrink:0;display:flex;justify-content:space-between;align-items:center;gap:.3rem}
+.sidebar-footer .bulk-del{background:none;border:none;color:var(--red);font-size:.65rem;cursor:pointer;display:none;padding:0}
+.sidebar-footer .bulk-del.show{display:inline}
 .reader{display:flex;flex-direction:column;min-height:0;flex:1;overflow:hidden;background:var(--bg)}
 .reader .empty{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;color:var(--text-dim);text-align:center;padding:2rem}
 .reader .empty .icon{font-size:3rem;margin-bottom:.5rem}
 .reader-header{display:flex;align-items:center;gap:.4rem;padding:.4rem .8rem;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--surface);flex-wrap:wrap}
-.reader-header .title{font-size:.9rem;font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-strong)}
+.reader-header .title{font-size:.9rem;font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-strong);cursor:pointer;padding:2px 4px;border-radius:3px}
+.reader-header .title:hover{background:var(--surface-2)}
+.reader-header .title-input{font-size:.9rem;font-weight:600;background:var(--surface-2);border:1px solid var(--accent);border-radius:4px;color:var(--text);padding:2px 6px;flex:1;min-width:0;outline:none}
 .reader-header .meta{font-size:.65rem;color:var(--text-dim)}
 .reader-header .actions{display:flex;gap:.3rem}
 .reader-header .actions button{background:none;border:1px solid var(--border);border-radius:5px;color:var(--text-dim);padding:.25rem .55rem;font-size:.75rem;cursor:pointer;transition:.15s}
 .reader-header .actions button:hover{background:var(--surface-2);color:var(--text);border-color:var(--accent)}
 .reader-header .actions button.danger:hover{border-color:var(--red);color:var(--red)}
+.toc-btn{position:relative}
+.toc-drop{position:absolute;top:100%;right:0;background:var(--surface);border:1px solid var(--border);border-radius:6px;min-width:200px;max-height:300px;overflow-y:auto;z-index:100;display:none;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+.toc-drop.show{display:block}
+.toc-drop a{display:block;padding:.25rem .6rem;font-size:.7rem;color:var(--text-dim);text-decoration:none;border-bottom:1px solid var(--border);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.toc-drop a:hover{background:var(--surface-2);color:var(--accent)}
+.toc-drop .toc-h2{padding-left:1.2rem}
+.toc-drop .toc-h3{padding-left:2rem}
 .reader-content{flex:1 1 0;min-height:0;overflow-y:auto;padding:0;background:var(--bg)}
 .reader-content .article{width:100%;line-height:1.8;font-size:var(--font-size);padding:2rem 1.5rem;box-sizing:border-box;max-width:900px;margin:0 auto}
 .reader-content .article img{max-width:100%;height:auto}
 .reader-content .article table{max-width:100%}
 .reader-content .article mark{background:var(--amber);color:#000;padding:0 2px;border-radius:2px}
+.reader-content .article pre{background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:.8rem 1rem;overflow-x:auto;font-size:.8rem;line-height:1.5}
+.reader-content .article code{background:var(--surface-2);padding:1px 4px;border-radius:3px;font-size:.85em}
+.reader-content .article pre code{background:none;padding:0;border-radius:0;font-size:inherit}
+.reader-content .article .word-count{font-size:.65rem;color:var(--text-dim);text-align:right;padding:.5rem 0;border-top:1px solid var(--border);margin-top:1rem}
 .reader-content .pdf-wrap{display:flex;flex-direction:column;height:100%}
 .reader-content .pdf-wrap embed{flex:1;border:none;background:var(--page)}
 .reader-content .pdf-bar{display:flex;align-items:center;gap:.5rem;padding:.3rem .8rem;font-size:.75rem;color:var(--text-dim);border-bottom:1px solid var(--border);background:var(--surface)}
 .editor-overlay{position:fixed;inset:0;z-index:500;background:var(--bg);display:none;flex-direction:column}
 .editor-overlay.show{display:flex}
-.editor-overlay .editor-toolbar{display:flex;align-items:center;gap:.5rem;padding:.5rem .8rem;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--surface)}
+.editor-overlay .editor-toolbar{display:flex;align-items:center;gap:.3rem;padding:.5rem .8rem;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--surface);flex-wrap:wrap}
 .editor-overlay .editor-toolbar .title{font-size:.9rem;font-weight:600;flex:1;color:var(--text-strong)}
+.editor-overlay .editor-toolbar .md-btn{background:none;border:1px solid var(--border);border-radius:4px;color:var(--text-dim);padding:.2rem .45rem;font-size:.75rem;cursor:pointer;line-height:1;font-weight:600}
+.editor-overlay .editor-toolbar .md-btn:hover{background:var(--surface-2);color:var(--text)}
+.editor-overlay .editor-toolbar .md-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 .editor-overlay .editor-body{flex:1;display:flex;overflow:hidden}
 .editor-overlay .editor-body textarea{width:50%;height:100%;padding:1rem;font-family:monospace;font-size:.85rem;line-height:1.7;background:var(--bg);color:var(--text);border:none;border-right:1px solid var(--border);resize:none;outline:none;min-width:30%}
 .editor-overlay .editor-body .preview-pane{width:50%;overflow-y:auto;padding:2rem 1.5rem;background:var(--bg)}
 .editor-overlay .editor-body .preview-pane .article{width:100%;line-height:1.8;font-size:.9rem}
+.auto-save{font-size:.6rem;color:var(--text-dim);transition:color .3s}
+.auto-save.saving{color:var(--amber)}.auto-save.saved{color:var(--green)}
 @media(max-width:720px){
   :root{--sidebar-w:100%}
   .sidebar{width:100%}
@@ -92,7 +122,7 @@ a{color:var(--accent)}a:hover{color:var(--accent-hover)}
   .editor-overlay .editor-body .preview-pane{width:100%;height:50%}
 }
 @media print{
-  .top-bar,nav.top-bar,.sidebar,.reader-header,.theme-btn,.toast-container,.reading-progress,.font-controls{display:none!important}
+  .top-bar,.sidebar,.reader-header,.toast-container,.reading-progress,.font-controls{display:none!important}
   .layout{display:block!important;overflow:visible!important}.reader{display:block!important;overflow:visible!important}
   .reader-content{overflow:visible!important;padding:0!important}
 }
@@ -100,6 +130,7 @@ a{color:var(--accent)}a:hover{color:var(--accent-hover)}
 </head>
 <body>
 <nav class="top-bar" role="navigation" aria-label="Document tools">
+  <button id="toggle-sidebar" onclick="toggleSidebar()" style="background:none;border:none;color:var(--text-dim);font-size:.9rem;cursor:pointer;padding:0" title="Toggle sidebar">☰</button>
   <a class="brand" href="/">btdat.io.vn <small>/ documents</small></a>
   <div class="font-controls">
     <button onclick="fontSize(-1)" title="Smaller">A−</button>
@@ -115,12 +146,29 @@ a{color:var(--accent)}a:hover{color:var(--accent-hover)}
 <div class="layout">
   <div class="sidebar" id="sidebar">
     <div class="search-wrap">
-      <input id="search-input" placeholder="🔍 Search..." oninput="onSearchInput()">
+      <input id="search-input" placeholder="🔍 Search..." oninput="onSearchInput()" onfocus="showSearchHistory()">
+      <div class="search-history" id="search-history"></div>
       <div class="search-results" id="search-results"></div>
+    </div>
+    <div class="sort-bar">
+      <span>Sort:</span>
+      <select id="sort-select" onchange="renderList()">
+        <option value="newest">Newest</option>
+        <option value="oldest">Oldest</option>
+        <option value="name-asc">A→Z</option>
+        <option value="name-desc">Z→A</option>
+      </select>
+      <span style="flex:1"></span>
+      <label style="display:flex;align-items:center;gap:2px;cursor:pointer">
+        <input type="checkbox" id="status-filter" onchange="renderList()"> Draft
+      </label>
     </div>
     <div class="tag-filter" id="tag-filter"></div>
     <ul class="doc-list" id="doc-list"></ul>
-    <div class="sidebar-footer"><span id="doc-count">0</span><span id="doc-count-detail" class="has-text-grey"></span></div>
+    <div class="sidebar-footer">
+      <span><span id="doc-count">0</span> <span id="doc-count-detail" class="has-text-grey"></span></span>
+      <button class="bulk-del" id="bulk-del-btn" onclick="bulkDelete()"><i class="fas fa-trash"></i> Delete selected</button>
+    </div>
   </div>
   <div class="reader" id="reader">
     <div class="empty" id="empty-state">
@@ -130,8 +178,13 @@ a{color:var(--accent)}a:hover{color:var(--accent-hover)}
     <div id="doc-view" style="display:none;flex-direction:column;flex:1;min-height:0;overflow:hidden">
       <div class="reader-header">
         <button id="back-btn" style="display:none;background:none;border:1px solid var(--border);border-radius:5px;color:var(--text-dim);padding:.2rem .5rem;font-size:.8rem;cursor:pointer" onclick="showList()"><i class="fas fa-arrow-left"></i></button>
-        <span class="title" id="doc-title"></span>
+        <span class="title" id="doc-title" ondblclick="renameStart()" title="Double-click to rename"></span>
+        <input class="title-input" id="doc-title-input" style="display:none" onkeydown="if(event.key==='Enter')renameSave();if(event.key==='Escape')renameCancel()" onblur="renameSave()">
         <span class="meta" id="doc-meta"></span>
+        <div class="toc-btn">
+          <button onclick="toggleToc()" title="Table of Contents"><i class="fas fa-list"></i></button>
+          <div class="toc-drop" id="toc-drop"></div>
+        </div>
         <div class="actions">
           <button onclick="onPrint()" title="Print"><i class="fas fa-print"></i></button>
           <button onclick="onDownload()" title="Download"><i class="fas fa-download"></i></button>
@@ -153,7 +206,14 @@ a{color:var(--accent)}a:hover{color:var(--accent-hover)}
 <div class="editor-overlay" id="editor-overlay">
   <div class="editor-toolbar">
     <span class="title" id="editor-title"></span>
-    <input id="editor-tags" placeholder="tags" style="background:var(--surface-2);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:.25rem .5rem;font-size:.75rem;width:120px;outline:none">
+    <span class="auto-save" id="auto-save-indicator"></span>
+    <button class="md-btn" onclick="mdWrap('**','**')" title="Bold"><b>B</b></button>
+    <button class="md-btn" onclick="mdWrap('*','*')" title="Italic"><i>I</i></button>
+    <button class="md-btn" onclick="mdWrap('## ','')" title="Heading">H</button>
+    <button class="md-btn" onclick="mdWrap('[','](url)')" title="Link">🔗</button>
+    <button class="md-btn" onclick="mdWrap('```\n','\n```')" title="Code block">{} </button>
+    <button class="md-btn" onclick="mdWrap('- ','')" title="List">⋮</button>
+    <input id="editor-tags" placeholder="tags" style="background:var(--surface-2);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:.25rem .5rem;font-size:.75rem;width:100px;outline:none">
     <button style="background:var(--accent);color:#fff;border:none;border-radius:5px;padding:.3rem .7rem;font-size:.8rem;cursor:pointer;font-weight:600" onclick="saveAndClose()"><i class="fas fa-check"></i>&ensp;Save</button>
     <button style="background:none;border:1px solid var(--border);border-radius:5px;color:var(--text-dim);padding:.3rem .7rem;font-size:.8rem;cursor:pointer" onclick="closeEditor()"><i class="fas fa-times"></i></button>
   </div>
@@ -181,7 +241,7 @@ a{color:var(--accent)}a:hover{color:var(--accent-hover)}
   </div>
 </div>
 
-<!-- Drop zone (hidden, shown on drag) -->
+<!-- Drop zone -->
 <div class="drop-zone" id="drop-zone" style="display:none">📄 Drop .docx file here</div>
 
 <!-- Confirm modal -->
@@ -200,7 +260,7 @@ a{color:var(--accent)}a:hover{color:var(--accent-hover)}
 <script src="/assets/theme.js"></script>
 <script>
 const API='/api/documents';
-let docs=[],curId=null,currentExt='md',searchTimer=null;
+let docs=[],curId=null,currentExt='md',searchTimer=null,autoSaveTimer=null,searchHistory=JSON.parse(localStorage.getItem('doc-search-hist')||'[]');
 const $=id=>document.getElementById(id);
 
 function toast(msg,type,undoCb){
@@ -211,7 +271,10 @@ function toast(msg,type,undoCb){
   c.appendChild(el);setTimeout(()=>{el.classList.add('removing');setTimeout(()=>el.remove(),200)},4000);
 }
 
-
+// ── Sidebar collapse ──
+function toggleSidebar(){
+  $('sidebar').classList.toggle('collapsed');
+}
 
 // ── Font size ──
 function fontSize(delta){
@@ -229,14 +292,31 @@ $('reader-content').addEventListener('scroll',function(){
   $('reading-progress').style.width=Math.min(100,Math.round(this.scrollTop/h*100))+'%';
 });
 
+// ── Search history ──
+function addSearchHistory(q){
+  if(!q||q.length<2)return;
+  searchHistory=searchHistory.filter(s=>s!==q);
+  searchHistory.unshift(q);
+  if(searchHistory.length>5)searchHistory.pop();
+  localStorage.setItem('doc-search-hist',JSON.stringify(searchHistory));
+}
+function showSearchHistory(){
+  const el=$('search-history');
+  if(!searchHistory.length||$('search-input').value.trim().length>=2){el.classList.remove('show');return}
+  el.innerHTML=searchHistory.map(s=>`<div class="sh-item" onclick="document.getElementById('search-input').value='${esc(s)}';filterList();document.getElementById('search-history').classList.remove('show')">⌕ ${esc(s)}</div>`).join('');
+  el.classList.add('show');
+}
+
 // ── Full-text search ──
 function onSearchInput(){
   const q=$('search-input').value.trim();
   const res=$('search-results');
+  $('search-history').classList.remove('show');
   clearTimeout(searchTimer);
   if(!q||q.length<2){res.classList.remove('show');filterList();return}
   searchTimer=setTimeout(async()=>{
     try{
+      addSearchHistory(q);
       const r=await fetch(API+'/search?q='+encodeURIComponent(q));
       const data=await r.json();
       if(!data.length){res.innerHTML='<div class="sr-item"><small>No results</small></div>';res.classList.add('show');return}
@@ -245,7 +325,7 @@ function onSearchInput(){
     }catch(e){res.classList.remove('show')}
   },300);
 }
-document.addEventListener('click',e=>{if(!e.target.closest('.search-wrap'))$('search-results').classList.remove('show')});
+document.addEventListener('click',e=>{if(!e.target.closest('.search-wrap')){$('search-results').classList.remove('show');$('search-history').classList.remove('show')}});
 
 // ── Drag-and-drop ──
 const dz=$('drop-zone');
@@ -280,6 +360,15 @@ async function exportPdf(){
   }catch(e){toast('❌ Export failed','error')}
 }
 
+// ── Sorting ──
+function getSortFn(){
+  const v=$('sort-select').value;
+  if(v==='newest')return(a,b)=>new Date(b.created)-new Date(a.created);
+  if(v==='oldest')return(a,b)=>new Date(a.created)-new Date(b.created);
+  if(v==='name-asc')return(a,b)=>a.title.localeCompare(b.title);
+  if(v==='name-desc')return(a,b)=>b.title.localeCompare(a.title);
+}
+
 // ── List ──
 async function loadList(){
   try{
@@ -301,29 +390,78 @@ function renderTagFilter(){
 function setTag(t){activeTag=t;renderList()}
 
 function renderList(){
-  const ul=$('doc-list'),q=$('search-input').value.toLowerCase();
-  let f=docs;
+  const ul=$('doc-list');
+  let f=docs.slice().sort(getSortFn());
+  // Filter: search
+  const q=$('search-input').value.toLowerCase();
   if(q)f=f.filter(d=>d.title.toLowerCase().includes(q)||(d.tags||'').toLowerCase().includes(q));
+  // Filter: tag
   if(activeTag)f=f.filter(d=>(d.tags||'').split(',').map(t=>t.trim()).includes(activeTag));
+  // Filter: status
+  if($('status-filter').checked)f=f.filter(d=>d.status==='draft');
   $('doc-count-detail').textContent=f.length<docs.length?`(${f.length} shown)`: '';
   if(!f.length){ul.innerHTML=`<li class="doc-item" style="cursor:default;text-align:center;color:var(--text-dim);padding:1rem"><small>${q?'No matches':'No documents'}</small></li>`;return}
   ul.innerHTML=f.map(d=>`<li class="doc-item${d.id===curId?' active':''}" onclick="loadDoc('${d.id}')">
-    <div class="d-title">${esc(d.title)}${d.ext==='docx'?' <span class="d-badge">DOCX</span>':''}</div>
-    <div class="d-meta"><span>${d.created?d.created.slice(0,10):''}${d.tags?' · '+esc(d.tags):''}</span></div>
+    <input type="checkbox" class="d-cb${selectedCb.size?' show':''}" onclick="event.stopPropagation();toggleCb('${d.id}')">
+    <div class="d-body">
+      <div class="d-title">${esc(d.title)}${d.ext==='docx'?' <span class="d-badge">DOCX</span>':''}</div>
+      <div class="d-meta"><span>${d.created?d.created.slice(0,10):''}${d.tags?' · '+esc(d.tags):''}${d.status==='draft'?' · ✏️':''}</span></div>
+    </div>
   </li>`).join('');
 }
+
+// ── Rename (inline) ──
+function renameStart(){
+  if(currentExt!=='md')return;
+  const t=$('doc-title').textContent;
+  $('doc-title').style.display='none';
+  $('doc-title-input').style.display='';
+  $('doc-title-input').value=t;
+  $('doc-title-input').focus();
+  $('doc-title-input').select();
+}
+async function renameSave(){
+  const v=$('doc-title-input').value.trim();
+  if(!v||v===$('doc-title').textContent){renameCancel();return}
+  $('doc-title-input').style.display='none';
+  const r=await fetch(API+'/'+curId+'/rename',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:v})});
+  const d=await r.json();
+  if(d.ok){
+    if(d.id!==curId)curId=d.id;
+    await loadList();loadDoc(curId);toast('✏️ Renamed','success');
+  }else{toast('❌ Rename failed','error');$('doc-title').style.display=''}
+}
+function renameCancel(){$('doc-title-input').style.display='none';$('doc-title').style.display=''}
+
+// ── Bulk delete ──
+const selectedCb=new Set();
+function toggleCb(id){
+  if(selectedCb.has(id))selectedCb.delete(id);else selectedCb.add(id);
+  $('bulk-del-btn').classList.toggle('show',selectedCb.size>0);
+}
+async function bulkDelete(){
+  if(!selectedCb.size||!confirm('Delete '+selectedCb.size+' docs?'))return;
+  for(const id of selectedCb){
+    try{await fetch(API+'/'+id,{method:'DELETE'})}catch(_){}
+  }
+  selectedCb.clear();$('bulk-del-btn').classList.remove('show');loadList();toast('🗑 Deleted','info');
+}
+
 function filterList(){renderList()}
 
 // ── Load doc ──
 async function loadDoc(id){
   if(closeEditor())return;
+  $('toc-drop').classList.remove('show');
   try{
     const r=await fetch(API+'/'+id);const d=await r.json();
     if(d.error)return;curId=id;currentExt=d.ext||'md';setHash(id);
     $('empty-state').style.display='none';$('doc-view').style.display='flex';
     const m=docs.find(x=>x.id===id);
     $('doc-title').textContent=m?m.title:id;
-    $('doc-meta').textContent=m?'📅 '+(m.created?m.created.slice(0,10):'')+(m.tags?' · 🏷 '+m.tags:''):'';
+    $('doc-title').style.display='';
+    $('doc-title-input').style.display='none';
+    $('doc-meta').textContent=m?'📅 '+(m.created?m.created.slice(0,10):'')+(m.tags?' · 🏷 '+m.tags:'')+(m.status==='draft'?' · ✏️ Draft':''):'';
     $('btn-edit').style.display=currentExt==='md'?'':'none';
     $('btn-export-pdf').style.display=currentExt==='md'?'':'none';
     if(currentExt==='docx'){
@@ -342,13 +480,35 @@ function showList(){$('sidebar').classList.remove('hide');$('reader').classList.
 function renderArticle(md){
   try{
     const html=marked.parse(md);
-    // Highlight search match
     const q=$('search-input').value.trim();
     const art=$('article');
     art.innerHTML=q?html.replace(new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'),'<mark>$1</mark>'):html;
     art.querySelectorAll('a').forEach(a=>{if(a.href)a.target='_blank'});
+    // Word count
+    const words=md.trim()?md.split(/\s+/).length:0;
+    const chars=md.length;
+    const wc=document.createElement('div');wc.className='word-count';wc.textContent='📝 '+words.toLocaleString()+' từ · '+chars.toLocaleString()+' ký tự';
+    art.appendChild(wc);
+    // Build TOC
+    buildToc(html);
   }catch(e){$('article').textContent=md}
 }
+function buildToc(html){
+  const el=$('toc-drop');
+  const tmp=document.createElement('div');tmp.innerHTML=html;
+  const links=[];
+  tmp.querySelectorAll('h1,h2,h3').forEach(h=>{
+    const level=h.tagName.slice(1);
+    const id='toc-'+(links.length+1);
+    h.id=id;
+    links.push({level,text:h.textContent,id});
+  });
+  if(!links.length){el.innerHTML='';return}
+  el.innerHTML=links.map(l=>`<a class="toc-h${l.level}" href="#${l.id}" onclick="document.getElementById('toc-drop').classList.remove('show')">${esc(l.text)}</a>`).join('');
+}
+function toggleToc(){$('toc-drop').classList.toggle('show')}
+document.addEventListener('click',e=>{if(!e.target.closest('.toc-btn'))$('toc-drop').classList.remove('show')});
+
 function onPrint(){window.print()}
 function onDownload(){const m=docs.find(x=>x.id===curId);if(m)window.open(API+'/'+curId+'?dl=1','_blank')}
 
@@ -360,7 +520,7 @@ function openEditor(){
   $('editor-tags').value=docs.find(x=>x.id===curId)?.tags||'';
   fetch(API+'/'+curId).then(r=>r.json()).then(d=>{$('editor').value=d.content||'';updatePreview();$('editor').focus()});
 }
-function closeEditor(){$('editor-overlay').classList.remove('show');return false}
+function closeEditor(){$('editor-overlay').classList.remove('show');$('auto-save-indicator').textContent='';clearTimeout(autoSaveTimer);return false}
 async function saveAndClose(){
   const c=$('editor').value,t=$('editor-tags').value;
   await fetch(API+'/'+curId,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:c,tags:t})});
@@ -371,7 +531,33 @@ async function saveAndClose(){
   closeEditor();loadList();toast('💾 Saved','success');
 }
 function updatePreview(){try{$('live-preview').innerHTML=marked.parse($('editor').value||'')}catch(e){}}
-$('editor').addEventListener('input',updatePreview);
+
+// ── Auto-save (debounce 3s) ──
+$('editor').addEventListener('input',function(){
+  clearTimeout(autoSaveTimer);
+  $('auto-save-indicator').textContent='Unsaved changes…';
+  $('auto-save-indicator').className='auto-save saving';
+  autoSaveTimer=setTimeout(async()=>{
+    if(!$('editor-overlay').classList.contains('show'))return;
+    const c=$('editor').value,t=$('editor-tags').value;
+    await fetch(API+'/'+curId,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:c,tags:t})});
+    const m=docs.find(x=>x.id===curId);if(m)m.tags=t;
+    $('auto-save-indicator').textContent='✓ Auto-saved';
+    $('auto-save-indicator').className='auto-save saved';
+    setTimeout(()=>{$('auto-save-indicator').textContent=''},2000);
+  },3000);
+});
+
+// ── Markdown toolbar ──
+function mdWrap(before,after){
+  const ta=$('editor');
+  const start=ta.selectionStart,end=ta.selectionEnd;
+  const sel=ta.value.slice(start,end)||'text';
+  ta.value=ta.value.slice(0,start)+before+sel+after+ta.value.slice(end);
+  const newPos=start+before.length+sel.length+after.length;
+  ta.setSelectionRange(newPos,newPos);ta.focus();
+  updatePreview();
+}
 
 // ── URL hash ──
 function setHash(id){history.replaceState(null,'','#'+encodeURIComponent(id))}
@@ -418,14 +604,12 @@ async function uploadFile(input){
   reader.readAsDataURL(f);
 }
 
-// ── Save Meta ──
-async function onSaveMeta(){const t=$('editor-tags').value,c=$('editor').value;await fetch(API+'/'+curId,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:c,tags:t})});loadList()}
-
 // ── Keyboard ──
 document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){closeNew();if($('editor-overlay').classList.contains('show'))closeEditor()}
+  if(e.key==='Escape'){closeNew();if($('editor-overlay').classList.contains('show'))closeEditor();$('toc-drop').classList.remove('show')}
   if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();if($('editor-overlay').classList.contains('show'))saveAndClose()}
 });
+
 // ── Confirm modal ──
 function showConfirm(msg,onConfirm){
   $('confirm-msg').innerHTML=msg;$('confirm-btn').onclick=()=>{closeConfirm();if(onConfirm)onConfirm()};

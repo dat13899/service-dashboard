@@ -526,7 +526,38 @@ const server = http.createServer((req, res) => {
     let body = '';
     req.on('data', c => body += c);
     req.on('end', () => {
-      try { const { title, content, tags } = JSON.parse(body); const id = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || Date.now().toString(36); const date = new Date().toISOString().split('T')[0]; const md = `---\ntitle: ${title}\ndate: ${date}\ntags: ${tags || ''}\n---\n\n${content || ''}`; fs.writeFileSync(path.join(DOCS_DIR, id + '.md'), md, 'utf-8'); return json(res, { ok: true, id }); } catch (e) { return json(res, { error: e.message }, 400); }
+      try { const { title, content, tags } = JSON.parse(body); const id = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || Date.now().toString(36); const date = new Date().toISOString().split('T')[0]; const md = `---\ntitle: ${title}\ndate: ${date}\ntags: ${tags || ''}\nstatus: published\n---\n\n${content || ''}`; fs.writeFileSync(path.join(DOCS_DIR, id + '.md'), md, 'utf-8'); return json(res, { ok: true, id }); } catch (e) { return json(res, { error: e.message }, 400); }
+    });
+    return;
+  }
+
+  // Rename
+  const mRename = u.pathname.match(/^\/api\/documents\/([^\/]+)\/rename$/);
+  if (mRename && method === 'POST') {
+    let body = '';
+    req.on('data', c => body += c);
+    req.on('end', () => {
+      try {
+        const { title } = JSON.parse(body); if (!title) return json(res, { error: 'title-required' }, 400);
+        const oldId = mRename[1];
+        const newId = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || Date.now().toString(36);
+        // Try .md then .docx
+        let oldPath = path.join(DOCS_DIR, oldId + '.md');
+        let ext = '.md';
+        if (!isSafePath(DOCS_DIR, oldPath) || !fs.existsSync(oldPath)) { oldPath = path.join(DOCS_DIR, oldId + '.docx'); ext = '.docx'; }
+        if (!isSafePath(DOCS_DIR, oldPath) || !fs.existsSync(oldPath)) return json(res, { error: 'not-found' }, 404);
+        const newPath = path.join(DOCS_DIR, newId + ext);
+        if (!isSafePath(DOCS_DIR, newPath)) return json(res, { error: 'invalid' }, 400);
+        if (ext === '.md') {
+          const content = fs.readFileSync(oldPath, 'utf-8');
+          const updated = content.replace(/^title: .+$/m, `title: ${title}`);
+          fs.writeFileSync(newPath, updated, 'utf-8');
+        } else {
+          fs.renameSync(oldPath, newPath);
+        }
+        try { fs.unlinkSync(oldPath); } catch (_) {}
+        return json(res, { ok: true, id: newId });
+      } catch (e) { return json(res, { error: e.message }, 400); }
     });
     return;
   }
