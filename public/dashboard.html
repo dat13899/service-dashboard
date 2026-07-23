@@ -21,11 +21,11 @@
 .sc-dot.running{background:var(--green,#22c55e);box-shadow:0 0 6px var(--green,#22c55e)}
 .sc-dot.stopped{background:var(--text-dim,#6b7280)}
 .sc-dot.error{background:var(--red,#ef4444);box-shadow:0 0 6px var(--red,#ef4444)}
-#log-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--bulma-radius);padding:.75rem;font-family:monospace;font-size:.75rem;min-height:200px;max-height:60vh;overflow-y:auto;white-space:pre-wrap;color:var(--text-light);line-height:1.5}
+#log-box{background:var(--glass-bg);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid var(--glass-border);border-radius:var(--bulma-radius);padding:.75rem;font-family:monospace;font-size:.75rem;min-height:200px;max-height:60vh;overflow-y:auto;white-space:pre-wrap;color:var(--text-light);line-height:1.5}
 #log-box .log-line{padding:1px 0}
 #log-box .log-line.error{color:var(--red)}
 #log-box .log-line.warn{color:var(--accent)}
-.modal-card{background:var(--surface);color:var(--text)}
+.modal-card{background:var(--glass-bg);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border:1px solid var(--glass-border);color:var(--text)}
 .modal-card-head,.modal-card-foot{background:var(--surface);border-color:var(--border)}
 .modal-card-title{color:var(--text-strong)}
 .modal-card-foot{border-top:1px solid var(--border)}
@@ -72,9 +72,10 @@
 </head>
 <body>
 <div id="alert-badge" class="alert-badge" onclick="toggleAlerts()">!</div>
-<div id="alert-dropdown" class="alert-dropdown"></div>
+<div class="alert-dropdown" id="alert-dropdown"></div>
+<div class="blob-container"><div class="blob"></div><div class="blob"></div><div class="blob"></div><div class="blob"></div></div>
 
-<nav class="navbar" role="navigation" aria-label="Main navigation">
+<nav class="navbar is-glass" role="navigation" aria-label="Main navigation">
   <div class="navbar-brand">
     <a class="navbar-item has-text-weight-bold" href="/">btdat.io.vn <span class="has-text-grey-light" style="font-weight:400;margin-left:4px">/ dashboard</span></a>
     <a role="button" class="navbar-burger" onclick="document.querySelector('.navbar-menu').classList.toggle('is-active')" aria-label="Menu"><span></span><span></span><span></span></a>
@@ -107,7 +108,7 @@
     <div id="tab-svc" class="panel active">
       <input class="svc-search" id="svc-search" placeholder="🔍 Filter services..." oninput="filterSvcs()">
       <div id="svc-list">
-        <div class="card"><div class="card-content skeleton skel-d1" style="height:80px"></div></div>
+        <div class="card glass-card"><div class="card-content skeleton skel-d1" style="height:80px"></div></div>
       </div>
       <div style="display:flex;gap:.3rem;margin-top:.3rem">
         <button class="button is-small" onclick="bulkStart()">▶ Start All</button>
@@ -148,7 +149,7 @@
 <!-- Add service modal -->
 <div class="modal" id="add-modal">
   <div class="modal-background" onclick="closeAddModal()"></div>
-  <div class="modal-card">
+  <div class="modal-card glass">
     <header class="modal-card-head"><p class="modal-card-title is-5">＋ Thêm service</p></header>
     <section class="modal-card-body">
       <div class="field"><label class="label">Name</label><div class="control"><input class="input" id="add-name" placeholder="my-service"></div></div>
@@ -168,7 +169,7 @@
 <!-- Edit service modal -->
 <div class="modal" id="edit-modal">
   <div class="modal-background" onclick="closeEditModal()"></div>
-  <div class="modal-card">
+  <div class="modal-card glass">
     <header class="modal-card-head"><p class="modal-card-title is-5">⚙️ Edit Service</p></header>
     <section class="modal-card-body">
       <div class="field"><label class="label">Auto-restart every (seconds)</label><div class="control"><input class="input" id="edit-restart" placeholder="0" type="number"></div></div>
@@ -184,7 +185,7 @@
 <!-- Confirm modal -->
 <div class="modal" id="confirm-modal">
   <div class="modal-background" onclick="closeConfirm()"></div>
-  <div class="modal-card">
+  <div class="modal-card glass">
     <header class="modal-card-head"><p class="modal-card-title is-5">⚠️ Confirm</p></header>
     <section class="modal-card-body"><p id="confirm-msg">Are you sure?</p></section>
     <footer class="modal-card-foot">
@@ -282,7 +283,7 @@ function filterSvcs(){
 
 // ── Bulk ──
 async function bulkStart(){
-  $('svc-list').innerHTML='<div class="card"><div class="card-content has-text-centered has-text-grey-light"><small>Starting all...</small></div></div>';
+  $('svc-list').innerHTML='<div class="card glass-card"><div class="card-content has-text-centered has-text-grey-light"><small>Starting all...</small></div></div>';
   await fetch('/api/services/start-all',{method:'POST'});setTimeout(loadSvcs,800);
 }
 async function bulkStop(){
@@ -297,14 +298,14 @@ async function loadSvcs(){
 }
 function render(svcs){
   const list=$('svc-list');
-  if(!svcs||!svcs.length){list.innerHTML='<div class="card"><div class="card-content has-text-grey-light text-center"><small>Chưa có service nào. Bấm + để thêm.</small></div></div>';return}
+  if(!svcs||!svcs.length){list.innerHTML='<div class="card glass-card"><div class="card-content has-text-grey-light text-center"><small>Chưa có service nào. Bấm + để thêm.</small></div></div>';return}
   let run=0,stop=0;
   list.innerHTML=svcs.map((s,i)=>{
     if(s.status==='running')run++;else stop++;
     const up=s.uptime>0?fmt(s.uptime):'',lnk=s.port>0?` href="/proxy/${s.port}/" target="_blank"`:'';
     const upPct=s.uptime>0?Math.min(100,Math.round(s.uptime/86400*100)):0;
     const arlbl=s.autoRestart?` <span class="tag is-warning is-light" title="Auto-restart every ${fmt(s.autoRestart)}">↻ ${fmt(s.autoRestart)}</span>`:'';
-    return `<div class="card card-hover card-expandable" data-svc-id="${s.id}">
+    return `<div class="card glass-card card-hover card-expandable" data-svc-id="${s.id}">
       <div class="card-content" style="padding:.75rem" onclick="toggleExpand('${s.id}')">
         <div class="level is-mobile">
           <div class="level-left"><div class="level-item"><span class="sc-dot ${s.status}"></span><strong>${esc(s.name||s.id)}</strong><span id="health-${s.id}" class="health-dot offline" style="margin-left:6px"></span>${arlbl}</div></div>
