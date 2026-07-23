@@ -152,6 +152,8 @@
 
 <script src="/assets/theme.js"></script>
 <script>
+// SW self-destruct
+if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').then(r=>{if(r.active)r.active.postMessage('kill')}).catch(()=>{})}
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
 const $=id=>document.getElementById(id);
 
