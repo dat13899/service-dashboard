@@ -66,13 +66,6 @@
 .kb-hint .kb-row{display:flex;justify-content:space-between;padding:.15rem 0;font-size:.7rem;color:var(--text-dim)}
 .kb-hint .kb-row kbd{background:var(--surface-2);border:1px solid var(--border);border-radius:3px;padding:0 5px;font-size:.65rem;font-family:monospace}
 
-/* ── View Transitions ── */
-@view-transition{navigation:auto}
-::view-transition-old(root){animation:0.3s ease fadeOut}
-::view-transition-new(root){animation:0.3s ease fadeIn}
-@keyframes fadeOut{to{opacity:0}}
-@keyframes fadeIn{from{opacity:0}}
-
 /* ── Drag-and-drop zone ── */
 .drop-zone{border:2px dashed var(--border);border-radius:12px;padding:1.5rem;text-align:center;margin:.5rem;transition:.15s;cursor:pointer}
 .drop-zone.dragover{border-color:var(--accent);background:var(--surface-2)}
