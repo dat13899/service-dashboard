@@ -52,8 +52,6 @@ body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif}
 </style>
 </head>
 <body>
-<a href="#main" class="skip-link">Skip to content</a>
-
 <nav class="navbar" role="navigation" aria-label="Main navigation">
   <div class="navbar-brand">
     <a class="navbar-item has-text-weight-bold" href="/">btdat.io.vn</a>
@@ -143,14 +141,12 @@ body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif}
 
 <button class="theme-btn button" data-bound="1" aria-label="Toggle theme"><span class="theme-btn-icon">☀️</span></button>
 
-<div class="kb-overlay" id="kb-overlay" onclick="if(event.target===this)this.classList.toggle('show')" role="dialog" aria-label="Keyboard shortcuts">
-  <div class="kb-panel">
-    <h3>⌨ Keyboard Shortcuts</h3>
-    <div class="kb-row"><span>Show help</span><kbd>?</kbd></div>
-    <div class="kb-row"><span>Go to Dashboard</span><kbd>g</kbd> then <kbd>d</kbd></div>
-    <div class="kb-row"><span>Go to Documents</span><kbd>g</kbd> then <kbd>o</kbd></div>
-    <div class="kb-row"><span>Go Home</span><kbd>g</kbd> then <kbd>h</kbd></div>
-  </div>
+<div class="kb-hint" id="kb-hint" onclick="this.classList.remove('show')">
+  <h3>⌨</h3>
+  <div class="kb-row"><span>Help</span><kbd>?</kbd></div>
+  <div class="kb-row"><span>Dashboard</span><kbd>g d</kbd></div>
+  <div class="kb-row"><span>Docs</span><kbd>g o</kbd></div>
+  <div class="kb-row"><span>Home</span><kbd>g h</kbd></div>
 </div>
 
 <script src="/assets/theme.js"></script>
@@ -162,7 +158,7 @@ function toast(msg,type,undoCb){
   if(undoCb){const u=document.createElement('button');u.className='toast-undo';u.textContent='Undo';u.onclick=()=>{undoCb();el.classList.add('removing');setTimeout(()=>el.remove(),200)};el.appendChild(u)}
   c.appendChild(el);setTimeout(()=>{el.classList.add('removing');setTimeout(()=>el.remove(),200)},4000);
 }
-document.addEventListener('keydown',e=>{if(e.key==='?'&&!(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')){e.preventDefault();const o=document.getElementById('kb-overlay');o&&o.classList.toggle('show')}});
+document.addEventListener('keydown',e=>{if(e.key==='?'&&!(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')){e.preventDefault();document.getElementById('kb-hint').classList.toggle('show')}});
 
 // ── Typing effect ──
 (function(){

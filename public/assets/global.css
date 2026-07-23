@@ -59,14 +59,12 @@
 .font-controls button{background:none;border:1px solid var(--border);border-radius:4px;color:var(--text-dim);padding:.15rem .4rem;font-size:.7rem;cursor:pointer;line-height:1.4}
 .font-controls button:hover{background:var(--surface-2);color:var(--text)}
 
-/* ── Keyboard help overlay ── */
-.kb-overlay{position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
-.kb-overlay.show{display:flex}
-.kb-overlay .kb-panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;max-width:400px;width:90%}
-.kb-overlay .kb-panel h3{margin:0 0 .75rem;font-size:1rem;color:var(--text-strong)}
-.kb-overlay .kb-panel .kb-row{display:flex;justify-content:space-between;padding:.3rem 0;font-size:.8rem;border-bottom:1px solid var(--border)}
-.kb-overlay .kb-panel .kb-row:last-child{border-bottom:none}
-.kb-overlay .kb-panel .kb-row kbd{background:var(--surface-2);border:1px solid var(--border);border-radius:3px;padding:1px 6px;font-size:.75rem;font-family:monospace}
+/* ── Keyboard help tooltip ── */
+.kb-hint{position:fixed;bottom:1rem;right:1rem;z-index:9997;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.6rem .9rem;font-size:.75rem;box-shadow:0 4px 20px rgba(0,0,0,.3);display:none;min-width:200px}
+.kb-hint.show{display:block}
+.kb-hint h3{font-size:.8rem;color:var(--text-strong);margin:0 0 .4rem;font-weight:600}
+.kb-hint .kb-row{display:flex;justify-content:space-between;padding:.15rem 0;font-size:.7rem;color:var(--text-dim)}
+.kb-hint .kb-row kbd{background:var(--surface-2);border:1px solid var(--border);border-radius:3px;padding:0 5px;font-size:.65rem;font-family:monospace}
 
 /* ── View Transitions ── */
 @view-transition{navigation:auto}
@@ -78,10 +76,6 @@
 /* ── Drag-and-drop zone ── */
 .drop-zone{border:2px dashed var(--border);border-radius:12px;padding:1.5rem;text-align:center;margin:.5rem;transition:.15s;cursor:pointer}
 .drop-zone.dragover{border-color:var(--accent);background:var(--surface-2)}
-
-/* ── Skip-to-content (a11y) ── */
-.skip-link{position:absolute;top:-100%;left:0;z-index:99999;background:var(--accent);color:#fff;padding:.5rem 1rem;border-radius:0 0 6px;font-size:.85rem;font-weight:600}
-.skip-link:focus{top:0}
 
 /* ── Reduced motion ── */
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important}}

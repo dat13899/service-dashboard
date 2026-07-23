@@ -94,15 +94,13 @@ a{color:var(--accent)}a:hover{color:var(--accent-hover)}
   .editor-overlay .editor-body .preview-pane{width:100%;height:50%}
 }
 @media print{
-  .top-bar,.sidebar,.reader-header,.theme-btn,.toast-container,.reading-progress,.font-controls,.kb-overlay{display:none!important}
+  .top-bar,.sidebar,.reader-header,.theme-btn,.toast-container,.reading-progress,.font-controls,.kb-hint{display:none!important}
   .layout{display:block!important;overflow:visible!important}.reader{display:block!important;overflow:visible!important}
   .reader-content{overflow:visible!important;padding:0!important}
 }
 </style>
 </head>
 <body>
-<a href="#reader" class="skip-link">Skip to content</a>
-
 <div class="top-bar">
   <a class="brand" href="/">btdat.io.vn <small>/ documents</small></a>
   <div class="font-controls">
@@ -188,16 +186,14 @@ a{color:var(--accent)}a:hover{color:var(--accent-hover)}
 <!-- Drop zone (hidden, shown on drag) -->
 <div class="drop-zone" id="drop-zone" style="display:none">📄 Drop .docx file here</div>
 
-<div class="kb-overlay" id="kb-overlay" onclick="if(event.target===this)this.classList.toggle('show')" role="dialog" aria-label="Keyboard shortcuts">
-  <div class="kb-panel">
-    <h3>⌨ Keyboard Shortcuts</h3>
-    <div class="kb-row"><span>Show help</span><kbd>?</kbd></div>
-    <div class="kb-row"><span>Dashboard</span><kbd>g</kbd> then <kbd>d</kbd></div>
-    <div class="kb-row"><span>Documents</span><kbd>g</kbd> then <kbd>o</kbd></div>
-    <div class="kb-row"><span>Home</span><kbd>g</kbd> then <kbd>h</kbd></div>
-    <div class="kb-row"><span>Save editor</span><kbd>Ctrl+S</kbd></div>
-    <div class="kb-row"><span>Close / Cancel</span><kbd>Esc</kbd></div>
-  </div>
+<div class="kb-hint" id="kb-hint" onclick="this.classList.remove('show')">
+  <h3>⌨</h3>
+  <div class="kb-row"><span>Help</span><kbd>?</kbd></div>
+  <div class="kb-row"><span>Dashboard</span><kbd>g d</kbd></div>
+  <div class="kb-row"><span>Docs</span><kbd>g o</kbd></div>
+  <div class="kb-row"><span>Home</span><kbd>g h</kbd></div>
+  <div class="kb-row"><span>Save</span><kbd>Ctrl+S</kbd></div>
+  <div class="kb-row"><span>Close</span><kbd>Esc</kbd></div>
 </div>
 
 <script src="/assets/theme.js"></script>
@@ -213,7 +209,7 @@ function toast(msg,type,undoCb){
   if(undoCb){const u=document.createElement('button');u.className='toast-undo';u.textContent='Undo';u.onclick=()=>{undoCb();el.classList.add('removing');setTimeout(()=>el.remove(),200)};el.appendChild(u)}
   c.appendChild(el);setTimeout(()=>{el.classList.add('removing');setTimeout(()=>el.remove(),200)},4000);
 }
-document.addEventListener('keydown',e=>{if(e.key==='?'&&!(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')){e.preventDefault();const o=document.getElementById('kb-overlay');o&&o.classList.toggle('show')}});
+document.addEventListener('keydown',e=>{if(e.key==='?'&&!(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')){e.preventDefault();document.getElementById('kb-hint').classList.toggle('show')}});
 
 // ── Font size ──
 function fontSize(delta){
