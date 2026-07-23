@@ -260,11 +260,8 @@ a{color:var(--accent)}a:hover{color:var(--accent-hover)}
 
 <script src="/assets/theme.js"></script>
 <script>
-// SW self-destruct — forces cache clear + unregister on all clients
-if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').then(r=>{if(r.active)r.active.postMessage('kill')}).catch(()=>{})}
 function clearCacheAndSW(){
   if('caches' in window){caches.keys().then(ks=>Promise.all(ks.map(k=>caches.delete(k)))).then(()=>{toast('🧹 Cache cleared','success')})}
-  if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister())).then(()=>{toast('🗑 SW unregistered','info')})}
   setTimeout(()=>location.reload(),500);
 }
 const API='/api/documents';
