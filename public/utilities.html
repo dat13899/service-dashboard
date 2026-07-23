@@ -108,12 +108,11 @@ audio{width:100%;margin-top:.5rem;border-radius:6px}
         <audio id="yt-audio" controls autoplay></audio>
         <div class="timer-bar">
           <span class="has-text-grey-light" style="font-size:.7rem">⏱ Tắt sau:</span>
-          <button onclick="setTimer(30)" data-t="30">30s</button>
-          <button onclick="setTimer(300)" data-t="300">5p</button>
-          <button onclick="setTimer(1200)" data-t="1200" class="active">20p</button>
+          <button onclick="setTimer(180)" data-t="180">3p</button>
+          <button onclick="setTimer(300)" data-t="300" class="active">5p</button>
+          <button onclick="setTimer(600)" data-t="600">10p</button>
           <button onclick="setTimer(1800)" data-t="1800">30p</button>
-          <button onclick="setTimer(3600)" data-t="3600">1h</button>
-          <span class="timer-status" id="timer-status">⏳ Tắt sau 20p</span>
+          <span class="timer-status" id="timer-status">⏳ Tắt sau 5p</span>
         </div>
       </div>
     </div>
@@ -150,7 +149,7 @@ async function loadYt(){
     await killStream();
     a.src='/api/utilities/youtube-audio/stream?url='+encodeURIComponent(url);
     a.play().catch(()=>{});
-    setTimer(1200);
+    setTimer(300);
   }catch(e){$('yt-preview').innerHTML='<div class="empty-state"><div class="icon">⚠️</div><p>Không tải được. Kiểm tra link.</p></div>';toast('Lỗi','error')}
   $('yt-btn').disabled=false;
 }
@@ -160,7 +159,7 @@ function setTimer(seconds){
   document.querySelectorAll('.timer-bar button').forEach(b=>b.classList.remove('active'));
   const btn=document.querySelector('.timer-bar button[data-t="'+seconds+'"]');
   if(btn)btn.classList.add('active');
-  const l=seconds>=3600?'1h':seconds>=1800?'30p':seconds>=1200?'20p':seconds>=300?'5p':'30s';
+  const l=seconds>=1800?'30p':seconds>=600?'10p':seconds>=300?'5p':'3p';
   $('timer-status').textContent='⏳ Tắt sau '+l;
   timerId=setTimeout(async()=>{
     await killStream();
