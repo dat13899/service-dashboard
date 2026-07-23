@@ -313,7 +313,7 @@ function listFiles(subPath) {
 }
 
 // ── HTTP server ──
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
   const u = new URL(req.url, `http://${req.headers.host}`);
   const method = req.method;
   res._req = req;
@@ -591,7 +591,7 @@ const server = http.createServer((req, res) => {
   }
 
   // Redirect
-  if (u.pathname === '/dashboard' || u.pathname === '/documents' || u.pathname === '/documents/' || u.pathname === '/utilities') { u.pathname = u.pathname.replace(/\/$/, '') + '.html'; }
+  if (u.pathname === '/dashboard' || u.pathname === '/documents' || u.pathname === '/documents/' || u.pathname === '/utilities' || u.pathname === '/random-widget') { u.pathname = u.pathname.replace(/\/$/, '') + '.html'; }
 
   // ── YouTube Audio API ──
   let _ytStream = null; // {url, child, req}
@@ -633,6 +633,40 @@ const server = http.createServer((req, res) => {
       return json(res, { ok: true });
     }
     return json(res, { ok: false, reason: 'no-active-stream' });
+  }
+
+  // GET /api/utilities/random — random discovery
+  if (u.pathname === '/api/utilities/random' && method === 'GET') {
+    const type = u.searchParams.get('type') || 'any';
+    try {
+      if (type === 'wiki' || (type === 'any' && Math.random() < 0.4)) {
+        const https = require('https');
+        const r = await new Promise((resolve, reject) => {
+          https.get('https://en.wikipedia.org/api/rest_v1/page/random/summary', { headers: { 'User-Agent': 'btdat-utilities/1.0' }, timeout: 8000 }, res => {
+            // Follow redirect
+            if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+              https.get(res.headers.location, { headers: { 'User-Agent': 'btdat-utilities/1.0' }, timeout: 8000 }, res2 => {
+                let d = ''; res2.on('data', c => d += c); res2.on('end', () => { try { resolve(JSON.parse(d)); } catch(_) { reject(); } });
+              }).on('error', reject);
+              return;
+            }
+            let d = ''; res.on('data', c => d += c); res.on('end', () => { try { resolve(JSON.parse(d)); } catch(_) { reject(); } });
+          }).on('error', reject);
+        });
+        if (r && r.title) return json(res, { type: 'wiki', title: r.title, extract: r.extract, url: r.content_urls?.desktop?.page || 'https://en.wikipedia.org/wiki/' + encodeURIComponent(r.title), thumbnail: r.thumbnail?.source || null });
+      }
+      if (type === 'fact' || (type === 'any' && Math.random() < 0.5)) {
+        const facts = JSON.parse(fs.readFileSync(path.join(__dirname, 'facts.json'), 'utf-8'));
+        const f = facts[Math.floor(Math.random() * facts.length)];
+        return json(res, { type: 'fact', text: f.text || f, source: f.source || null });
+      }
+      // youtube fallback
+      const keywords = ['beautiful scenery', 'strange things', 'unexplained', 'rare skills', 'satisfying video', 'unique hobby', 'amazing creations', 'interesting animals', 'rare technology', 'oddly satisfying', 'behind the scenes', 'time lapse'];
+      const q = keywords[Math.floor(Math.random() * keywords.length)];
+      const out = execSync(`yt-dlp --dump-json --no-warnings --default-search "ytsearch1:${q}" "${q}"`, { timeout: 10000, maxBuffer: 1024 * 512, encoding: 'utf8', windowsHide: true });
+      const v = JSON.parse(out.split('\n').filter(Boolean)[0]);
+      return json(res, { type: 'youtube', title: v.title, url: 'https://youtube.com/watch?v=' + v.id, thumbnail: v.thumbnail, channel: v.channel || v.uploader, duration: v.duration });
+    } catch (e) { return json(res, { error: 'fetch-failed' }, 500); }
   }
 
   // Static

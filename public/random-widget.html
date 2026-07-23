@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Random Widget — btdat.io.vn</title>
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1/css/bulma.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap">
+<link rel="stylesheet" href="/assets/global.css?v=2">
+<style>
+.tabs-container{margin-bottom:1.5rem}
+.tabs-container .tabs li a{color:var(--text-dim);border-bottom-color:var(--border);transition:.15s}
+.tabs-container .tabs li.is-active a{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-panel{display:none}.tab-panel.active{display:block}
+
+/* Random Discovery */
+.rand-card{background:var(--glass-bg);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:12px;padding:1.5rem;min-height:200px}
+.rand-card .tag{margin-bottom:.5rem}
+.rand-card .title{font-size:1rem;font-weight:600;margin-bottom:.5rem;line-height:1.4}
+.rand-card .extract{font-size:.85rem;color:var(--text-dim);line-height:1.6}
+.rand-card .extract img{max-width:100%;border-radius:8px;margin-bottom:.5rem}
+.rand-btn-group{display:flex;gap:.5rem;margin-top:1rem;flex-wrap:wrap}
+.rand-btn-group button{border:1px solid var(--glass-border);background:rgba(255,255,255,.05);color:var(--text);padding:.4rem .8rem;border-radius:8px;font-size:.8rem;cursor:pointer;transition:.15s}
+.rand-btn-group button:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.rand-btn-group button.primary{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600}
+.rand-btn-group button.primary:hover{background:var(--accent-hover)}
+.rand-skel .skel-line{height:.8rem;background:linear-gradient(90deg,var(--surface-2) 25%,var(--border) 50%,var(--surface-2) 75%);background-size:200%;animation:shimmer 1.5s infinite;border-radius:4px;margin-bottom:.5rem}
+.rand-skel .skel-line:nth-child(1){width:60%}.rand-skel .skel-line:nth-child(2){width:90%}.rand-skel .skel-line:nth-child(3){width:40%}
+.rand-skel .skel-line:nth-child(4){width:75%}
+.rand-source{font-size:.65rem;color:var(--text-dim);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.5px}
+
+/* Brain Dump */
+.brain-workspace{position:relative;width:100%;height:70vh;overflow:hidden;background:var(--glass-bg);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid var(--glass-border);border-radius:12px;cursor:crosshair}
+.brain-note{position:absolute;min-width:140px;max-width:260px;padding:.5rem .7rem;background:rgba(79,70,229,.1);border:1px solid var(--glass-border);border-radius:8px;cursor:grab;z-index:10;font-size:.8rem;line-height:1.5;word-wrap:break-word}
+.brain-note .brain-note-text{outline:none;min-height:1.2em;width:100%;background:transparent;border:none;color:var(--text);font-size:.8rem;font-family:inherit;resize:vertical}
+.brain-note .brain-del{position:absolute;top:-6px;right:-6px;width:16px;height:16px;border-radius:50%;background:var(--red);color:#fff;border:none;font-size:.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:.15s}
+.brain-note:hover .brain-del{opacity:1}
+.brain-bar{display:flex;gap:.5rem;padding:.5rem 0;flex-wrap:wrap}
+.brain-bar button{border:1px solid var(--glass-border);background:rgba(255,255,255,.05);color:var(--text-dim);padding:.3rem .6rem;border-radius:6px;font-size:.7rem;cursor:pointer;transition:.15s}
+.brain-bar button:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.brain-bar .status{font-size:.7rem;color:var(--text-dim);margin-left:auto;align-self:center}
+.brain-hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:.9rem;pointer-events:none;z-index:0}
+.no-notes .brain-note{display:none}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+</style>
+</head>
+<body>
+<div class="blob-container"><div class="blob"></div><div class="blob"></div><div class="blob"></div><div class="blob"></div></div>
+
+<nav class="navbar is-glass" role="navigation">
+  <div class="navbar-brand">
+    <a class="navbar-item has-text-weight-bold" href="/">btdat.io.vn <span class="has-text-grey-light" style="font-weight:400;margin-left:4px">/ random widget</span></a>
+    <a role="button" class="navbar-burger" onclick="document.querySelector('.navbar-menu').classList.toggle('is-active')"><span></span><span></span><span></span></a>
+  </div>
+  <div class="navbar-menu">
+    <div class="navbar-end">
+      <div class="navbar-item"><button class="button is-small" onclick="toggleTheme()"><span class="theme-btn-icon">☀️</span></button></div>
+      <a class="navbar-item" href="/">Home</a>
+      <a class="navbar-item" href="/dashboard">Dashboard</a>
+      <a class="navbar-item" href="/documents">Docs</a>
+      <a class="navbar-item" href="/utilities">Tiện ích</a>
+      <a class="navbar-item has-text-link" href="/random-widget">🎲 Widget</a>
+    </div>
+  </div>
+</nav>
+<div class="navbar-spacer"></div>
+
+<main class="section">
+  <div class="container">
+    <div class="tabs-container">
+      <div class="tabs is-medium">
+        <ul>
+          <li class="is-active" data-tab="random"><a onclick="switchTab('random')">🎲 Khám phá ngẫu nhiên</a></li>
+          <li data-tab="brain"><a onclick="switchTab('brain')">🧠 Brain Dump</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Tab: Random Discovery -->
+    <div class="tab-panel active" id="tab-random">
+      <div class="rand-card" id="rand-card">
+        <div class="rand-source">Bấm <strong>Khám phá</strong> để bắt đầu</div>
+        <div class="empty-state" id="rand-empty">
+          <div class="icon">🎲</div>
+          <p>Mỗi lần bấm ra 1 thứ ngẫu nhiên: Wikipedia, fact, YouTube</p>
+        </div>
+        <div id="rand-skel" class="rand-skel" style="display:none">
+          <div class="skel-line"></div><div class="skel-line"></div><div class="skel-line"></div><div class="skel-line"></div>
+        </div>
+        <div id="rand-result" style="display:none">
+          <div class="rand-source" id="r-source"></div>
+          <div class="title" id="r-title"></div>
+          <div class="extract" id="r-extract"></div>
+        </div>
+        <div class="rand-btn-group">
+          <button class="primary" onclick="discover()"><i class="fas fa-dice"></i> Khám phá</button>
+          <button onclick="discover('wiki')">Wikipedia</button>
+          <button onclick="discover('fact')">Fact</button>
+          <button onclick="discover('youtube')">YouTube</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Brain Dump -->
+    <div class="tab-panel" id="tab-brain">
+      <div class="brain-bar">
+        <span style="font-size:.8rem;color:var(--text-dim)">Click để thêm note, kéo để di chuyển</span>
+        <button onclick="brainExport('md')"><i class="fas fa-download"></i> Markdown</button>
+        <button onclick="brainExport('json')"><i class="fas fa-code"></i> JSON</button>
+        <button onclick="brainClear()" style="color:var(--red)"><i class="fas fa-trash"></i> Clear</button>
+        <span class="status" id="brain-status">0 notes</span>
+      </div>
+      <div class="brain-workspace" id="brain-ws" onclick="brainAdd(event)">
+        <div class="brain-hint" id="brain-hint">Bấm vào khoảng trống để thêm note</div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="/assets/theme.js?v=2"></script>
+<script>
+// ── Tab switch ──
+function switchTab(id){
+  document.querySelectorAll('.tabs li').forEach(l=>l.classList.toggle('is-active',l.dataset.tab===id));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active',p.id==='tab-'+id));
+}
+
+// ── Random Discovery ──
+async function discover(type){
+  const card=document.getElementById('rand-card'),empty=document.getElementById('rand-empty'),skel=document.getElementById('rand-skel'),res=document.getElementById('rand-result');
+  empty.style.display='none';res.style.display='none';skel.style.display='block';
+  try{
+    const r=await fetch('/api/utilities/random'+(type?'?type='+type:''));
+    if(!r.ok)throw Error();
+    const d=await r.json();
+    document.getElementById('r-source').textContent=d.type==='wiki'?'📖 Wikipedia':d.type==='fact'?'💡 Fact':'🎬 YouTube';
+    if(d.type==='fact'){
+      document.getElementById('r-title').textContent='';
+      document.getElementById('r-extract').innerHTML=d.text+(d.source?'<br><br><small style="color:var(--text-dim)">— '+d.source+'</small>':'');
+    }else if(d.type==='wiki'){
+      document.getElementById('r-title').innerHTML=d.title+' <small style="color:var(--text-dim);font-weight:400">— <a href="'+d.url+'" target="_blank" rel="noopener">Đọc thêm ↗</a></small>';
+      document.getElementById('r-extract').innerHTML=(d.thumbnail?'<img src="'+d.thumbnail+'" loading="lazy">':'')+d.extract;
+    }else{
+      document.getElementById('r-title').innerHTML=d.title+' <small style="color:var(--text-dim);font-weight:400">— <a href="'+d.url+'" target="_blank" rel="noopener">Xem ↗</a></small>';
+      document.getElementById('r-extract').textContent='📺 '+d.channel+(d.duration?' · '+Math.floor(d.duration/60)+'m':'');
+    }
+    res.style.display='block';
+  }catch(e){
+    empty.style.display='block';empty.innerHTML='<div class="icon">😵</div><p>Lỗi, thử lại</p>';
+  }
+  skel.style.display='none';
+}
+
+// ── Brain Dump ──
+let noteId=0;
+
+function brainAdd(e){
+  if(e.target!==document.getElementById('brain-ws')&&!e.target.closest('.brain-hint'))return;
+  const ws=document.getElementById('brain-ws');
+  const rect=ws.getBoundingClientRect();
+  const x=((e.clientX-rect.left)/rect.width*100)+'%';
+  const y=((e.clientY-rect.top)/rect.height*100)+'%';
+  const id=++noteId;
+  const div=document.createElement('div');
+  div.className='brain-note';div.id='n'+id;
+  div.style.left=x;div.style.top=y;
+  div.innerHTML='<textarea class="brain-note-text" rows="2" placeholder="Ghi gì đó..." oninput="brainSave()"></textarea><button class="brain-del" onclick="brainRemove(\'n'+id+'\')">✕</button>';
+  ws.appendChild(div);
+  div.querySelector('.brain-note-text').focus();
+  makeDraggable(div);
+  brainSave();
+}
+
+function brainRemove(id){
+  const el=document.getElementById(id);if(!el)return;
+  el.remove();brainSave();
+}
+
+function brainSave(){
+  const notes=[];
+  document.querySelectorAll('.brain-note').forEach(n=>{
+    const text=n.querySelector('.brain-note-text').value;
+    if(text.trim())notes.push({text,left:n.style.left,top:n.style.top});
+  });
+  localStorage.setItem('brain-dump',JSON.stringify(notes));
+  document.getElementById('brain-hint').style.display=notes.length?'none':'block';
+  document.getElementById('brain-status').textContent=notes.length+' notes';
+}
+
+function brainLoad(){
+  try{
+    const data=JSON.parse(localStorage.getItem('brain-dump'))||[];
+    const ws=document.getElementById('brain-ws');
+    // Remove default hint notes if any
+    data.forEach(n=>{
+      const id=++noteId;
+      const div=document.createElement('div');
+      div.className='brain-note';div.id='n'+id;
+      div.style.left=n.left;div.style.top=n.top;
+      div.innerHTML='<textarea class="brain-note-text" rows="2">'+n.text.replace(/</g,'&lt;')+'</textarea><button class="brain-del" onclick="brainRemove(\'n'+id+'\')">✕</button>';
+      ws.appendChild(div);
+      makeDraggable(div);
+    });
+    brainSave();
+  }catch(_){}
+}
+
+function brainExport(fmt){
+  const notes=JSON.parse(localStorage.getItem('brain-dump'))||[];
+  if(!notes.length)return toast('Không có note để export','info');
+  let out;
+  if(fmt==='md'){
+    out='# Brain Dump\n\n'+notes.map((n,i)=>(i+1)+'. '+n.text).join('\n');
+  }else{
+    out=JSON.stringify(notes,null,2);
+  }
+  const a=document.createElement('a');
+  a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(out);
+  a.download='brain-dump.'+(fmt==='md'?'md':'json');
+  a.click();
+}
+
+function brainClear(){
+  if(!confirm('Xoá tất cả notes?'))return;
+  document.querySelectorAll('.brain-note').forEach(n=>n.remove());
+  brainSave();
+}
+
+function makeDraggable(el){
+  let offX=0,offY=0,startX=0,startY=0,down=false;
+  el.addEventListener('mousedown',e=>{
+    if(e.target.tagName==='TEXTAREA'||e.target.tagName==='BUTTON')return;
+    e.preventDefault();down=true;
+    const r=el.getBoundingClientRect(),ws=document.getElementById('brain-ws').getBoundingClientRect();
+    offX=e.clientX-r.left;offY=e.clientY-r.top;
+    startX=parseFloat(el.style.left)||0;startY=parseFloat(el.style.top)||0;
+    const mousemove=ev=>{
+      if(!down)return;
+      const wsRect=document.getElementById('brain-ws').getBoundingClientRect();
+      let pctX=((ev.clientX-wsRect.left-offX)/wsRect.width)*100;
+      let pctY=((ev.clientY-wsRect.top-offY)/wsRect.height)*100;
+      pctX=Math.max(0,Math.min(90,pctX));pctY=Math.max(0,Math.min(90,pctY));
+      el.style.left=pctX+'%';el.style.top=pctY+'%';
+    };
+    const mouseup=()=>{down=false;document.removeEventListener('mousemove',mousemove);brainSave();};
+    document.addEventListener('mousemove',mousemove);document.addEventListener('mouseup',mouseup,{once:true});
+  });
+}
+
+brainLoad();
+</script>
+</body>
+</html>
