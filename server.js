@@ -591,7 +591,49 @@ const server = http.createServer((req, res) => {
   }
 
   // Redirect
-  if (u.pathname === '/dashboard' || u.pathname === '/documents' || u.pathname === '/documents/') { u.pathname = u.pathname.replace(/\/$/, '') + '.html'; }
+  if (u.pathname === '/dashboard' || u.pathname === '/documents' || u.pathname === '/documents/' || u.pathname === '/utilities') { u.pathname = u.pathname.replace(/\/$/, '') + '.html'; }
+
+  // ── YouTube Audio API ──
+  let _ytStream = null; // {url, child, req}
+  // GET /api/utilities/youtube-audio?url=...
+  if (u.pathname === '/api/utilities/youtube-audio' && method === 'GET') {
+    const url = u.searchParams.get('url');
+    if (!url) return json(res, { error: 'url-required' }, 400);
+    try {
+      const out = execSync(`yt-dlp --dump-json --no-warnings "${url.replace(/"/g, '\\"')}"`, { timeout: 15000, maxBuffer: 1024 * 1024, encoding: 'utf8' });
+      const info = JSON.parse(out);
+      return json(res, { title: info.title, thumbnail: info.thumbnail, duration: info.duration, webpageUrl: info.webpage_url, uploader: info.uploader });
+    } catch (e) { return json(res, { error: 'fetch-failed', detail: e.message }, 500); }
+  }
+
+  // GET /api/utilities/youtube-audio/stream?url=...
+  if (u.pathname === '/api/utilities/youtube-audio/stream' && method === 'GET') {
+    const url = u.searchParams.get('url');
+    if (!url) return json(res, { error: 'url-required' }, 400);
+    try {
+      const child = spawn('yt-dlp', ['-f', 'bestaudio', '-o', '-', '--no-warnings', url], { windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
+      if (_ytStream) { try { _ytStream.child.kill(); } catch (_) {} }
+      _ytStream = { url, child, req };
+      res.writeHead(200, { 'Content-Type': 'audio/webm', 'Cache-Control': 'no-cache', 'Access-Control-Allow-Origin': '*' });
+      child.stdout.pipe(res);
+      child.stderr.on('data', () => {});
+      child.on('error', () => { if (!res.writableEnded) { res.writeHead(500); res.end(); } });
+      req.on('close', () => { try { child.kill(); if (_ytStream && _ytStream.child === child) _ytStream = null; } catch (_) {} });
+    } catch (e) {
+      if (!res.writableEnded) { res.writeHead(500, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ error: 'stream-failed' })); }
+    }
+    return;
+  }
+
+  // POST /api/utilities/youtube-audio/stop — kill active stream
+  if (u.pathname === '/api/utilities/youtube-audio/stop' && method === 'POST') {
+    if (_ytStream) {
+      try { _ytStream.child.kill(); _ytStream.req.destroy(); } catch (_) {}
+      _ytStream = null;
+      return json(res, { ok: true });
+    }
+    return json(res, { ok: false, reason: 'no-active-stream' });
+  }
 
   // Static
   let filePath = u.pathname === '/' ? '/index.html' : u.pathname;

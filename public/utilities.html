@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tiện ích — btdat.io.vn</title>
+<meta name="description" content="btdat.io.vn — Utilities">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1/css/bulma.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap">
+<link rel="stylesheet" href="/assets/global.css?v=2">
+<style>
+.ut-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1rem}
+.ut-card{cursor:pointer;transition:transform .2s,box-shadow .2s}
+.ut-card:hover{transform:translateY(-3px)}
+.ut-card .card-header-title{font-size:.9rem}
+.ut-card .card-header-icon{color:var(--accent)}
+.ut-card .content{font-size:.8rem;color:var(--text-dim)}
+.ut-card.active{border:2px solid var(--accent)}
+.player-area{display:none;margin-top:1rem;padding:1rem;background:var(--glass-bg);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:12px}
+.player-area.show{display:block}
+.player-info{display:flex;gap:1rem;align-items:center;margin-bottom:.8rem}
+.player-info img{width:80px;height:60px;object-fit:cover;border-radius:8px;background:var(--surface-2)}
+.player-info .info{flex:1;min-width:0}
+.player-info .info .title{font-size:.9rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.player-info .info .meta{font-size:.7rem;color:var(--text-dim)}
+.timer-bar{display:flex;gap:.4rem;align-items:center;margin-top:.5rem;flex-wrap:wrap}
+.timer-bar button{border:1px solid var(--glass-border);background:rgba(255,255,255,.05);color:var(--text-dim);padding:.25rem .55rem;border-radius:6px;font-size:.7rem;cursor:pointer;transition:.15s}
+.timer-bar button:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.timer-bar button.active{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600}
+.timer-bar .timer-status{font-size:.7rem;color:var(--accent);margin-left:auto}
+audio{width:100%;margin-top:.5rem;border-radius:6px}
+.yt-input{display:flex;gap:.5rem;margin-bottom:1rem}
+.yt-input input{flex:1;padding:.5rem .8rem;border:1px solid var(--glass-border);border-radius:8px;background:var(--glass-bg);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:var(--text);font-size:.85rem;outline:none}
+.yt-input input:focus{border-color:var(--accent)}
+.yt-input button{padding:.5rem 1rem;border:none;border-radius:8px;background:var(--accent);color:#fff;font-weight:600;cursor:pointer;transition:.15s}
+.yt-input button:hover{background:var(--accent-hover)}
+.yt-input button:disabled{opacity:.5;cursor:not-allowed}
+.skeleton-load{display:flex;gap:.8rem;align-items:center;padding:.5rem}
+.skeleton-load .skel{background:linear-gradient(90deg,var(--surface-2) 25%,var(--border) 50%,var(--surface-2) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px}
+.skeleton-load .skel-img{width:80px;height:60px}
+.skeleton-load .skel-txt{height:.8rem;flex:1}
+.skeleton-load .skel-txt2{height:.6rem;width:60%}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--text-dim)}
+.empty-state .icon{font-size:2.5rem;margin-bottom:.5rem}
+.ut-list-title{margin-bottom:1.5rem}
+</style>
+</head>
+<body>
+<div class="blob-container"><div class="blob"></div><div class="blob"></div><div class="blob"></div><div class="blob"></div></div>
+
+<nav class="navbar is-glass" role="navigation" aria-label="Main navigation">
+  <div class="navbar-brand">
+    <a class="navbar-item has-text-weight-bold" href="/">btdat.io.vn <span class="has-text-grey-light" style="font-weight:400;margin-left:4px">/ tiện ích</span></a>
+    <a role="button" class="navbar-burger" onclick="document.querySelector('.navbar-menu').classList.toggle('is-active')" aria-label="Menu"><span></span><span></span><span></span></a>
+  </div>
+  <div class="navbar-menu">
+    <div class="navbar-end">
+      <div class="navbar-item"><button class="button is-small" onclick="toggleTheme()" aria-label="Toggle theme"><span class="theme-btn-icon">☀️</span></button></div>
+      <a class="navbar-item" href="/">Home</a>
+      <a class="navbar-item" href="/dashboard">Dashboard</a>
+      <a class="navbar-item" href="/documents">Docs</a>
+      <a class="navbar-item has-text-link" href="/utilities">Tiện ích</a>
+    </div>
+  </div>
+</nav>
+
+<div class="navbar-spacer"></div>
+
+<main class="section">
+  <div class="container">
+    <h1 class="title is-4 ut-list-title reveal">🧰 Tiện ích</h1>
+
+    <div class="ut-grid reveal sd-1" id="ut-grid">
+      <div class="card glass-card ut-card active" data-ut="youtube" onclick="selectUt('youtube')">
+        <div class="card-header">
+          <div class="card-header-icon">🎵</div>
+          <div class="card-header-title">YouTube Audio Player</div>
+        </div>
+        <div class="card-content">
+          <div class="content">Dán link YouTube → phát âm thanh. Timer 20p mặc định, tắt hẳn stream khi hết giờ.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="player-area show" id="player-area">
+      <div class="yt-input">
+        <input id="yt-url" placeholder="Dán link YouTube vào đây..." onkeydown="if(event.key==='Enter')loadYt()">
+        <button id="yt-btn" onclick="loadYt()"><i class="fas fa-play"></i> Play</button>
+      </div>
+      <div id="yt-preview">
+        <div class="empty-state"><div class="icon">🎵</div><p>Dán link YouTube, bấm Play</p></div>
+      </div>
+      <div id="yt-player" style="display:none">
+        <div class="player-info">
+          <img id="yt-thumb" alt="">
+          <div class="info">
+            <div class="title" id="yt-title"></div>
+            <div class="meta" id="yt-meta"></div>
+          </div>
+        </div>
+        <audio id="yt-audio" controls autoplay></audio>
+        <div class="timer-bar">
+          <span class="has-text-grey-light" style="font-size:.7rem">⏱ Tắt sau:</span>
+          <button onclick="setTimer(30)" data-t="30">30s</button>
+          <button onclick="setTimer(300)" data-t="300">5p</button>
+          <button onclick="setTimer(1200)" data-t="1200" class="active">20p</button>
+          <button onclick="setTimer(1800)" data-t="1800">30p</button>
+          <button onclick="setTimer(3600)" data-t="3600">1h</button>
+          <span class="timer-status" id="timer-status">⏳ Tắt sau 20p</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="/assets/theme.js?v=2"></script>
+<script>
+const $=id=>document.getElementById(id);
+let timerId=null;
+
+function selectUt(id){document.querySelectorAll('.ut-card').forEach(c=>c.classList.toggle('active',c.dataset.ut===id))}
+
+async function killStream(){
+  try{await fetch('/api/utilities/youtube-audio/stop',{method:'POST'})}catch(_){}
+  const a=$('yt-audio');a.pause();a.src='';a.load();
+}
+
+async function loadYt(){
+  const url=$('yt-url').value.trim();
+  if(!url)return toast('Dán link YouTube','error');
+  $('yt-preview').innerHTML='<div class="skeleton-load"><div class="skel skel-img"></div><div style="flex:1"><div class="skel skel-txt"></div><div class="skel skel-txt2" style="margin-top:6px"></div></div></div>';
+  $('yt-btn').disabled=true;
+  try{
+    const r=await fetch('/api/utilities/youtube-audio?url='+encodeURIComponent(url));
+    if(!r.ok)throw new Error('fetch-failed');
+    const d=await r.json();
+    $('yt-thumb').src=d.thumbnail;$('yt-title').textContent=d.title;
+    const m=Math.floor(d.duration/60),s=d.duration%60;
+    $('yt-meta').textContent=d.uploader+' · '+m+':'+(s<10?'0':'')+s;
+    $('yt-preview').style.display='none';
+    $('yt-player').style.display='block';
+    const a=$('yt-audio');
+    await killStream();
+    a.src='/api/utilities/youtube-audio/stream?url='+encodeURIComponent(url);
+    a.play().catch(()=>{});
+    setTimer(1200);
+  }catch(e){$('yt-preview').innerHTML='<div class="empty-state"><div class="icon">⚠️</div><p>Không tải được. Kiểm tra link.</p></div>';toast('Lỗi','error')}
+  $('yt-btn').disabled=false;
+}
+
+function setTimer(seconds){
+  if(timerId)clearTimeout(timerId);
+  document.querySelectorAll('.timer-bar button').forEach(b=>b.classList.remove('active'));
+  const btn=document.querySelector('.timer-bar button[data-t="'+seconds+'"]');
+  if(btn)btn.classList.add('active');
+  const l=seconds>=3600?'1h':seconds>=1800?'30p':seconds>=1200?'20p':seconds>=300?'5p':'30s';
+  $('timer-status').textContent='⏳ Tắt sau '+l;
+  timerId=setTimeout(async()=>{
+    await killStream();
+    $('timer-status').textContent='⏹ Đã tắt';
+    timerId=null;
+    document.querySelectorAll('.timer-bar button').forEach(b=>b.classList.remove('active'));
+    toast('⏹ Audio đã tắt hoàn toàn','info');
+  },seconds*1000);
+}
+
+selectUt('youtube');
+</script>
+</body>
+</html>
