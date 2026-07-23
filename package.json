@@ -1,0 +1,10 @@
+{
+  "name": "service-dashboard",
+  "version": "3.0.0",
+  "private": true,
+  "description": "btdat.io.vn — Home lab dashboard with document manager",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  }
+}
