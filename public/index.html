@@ -4,17 +4,25 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>BT Dat — Personal Home Lab</title>
-<meta name="description" content="Home lab, Minecraft servers, AI tools, self-hosted services.">
+<meta name="description" content="Home lab, Minecraft servers, AI tools, self-hosted services. Dashboard + documents with Cloudflare Tunnel.">
+<meta property="og:title" content="BT Dat — Home Lab">
+<meta property="og:description" content="Minecraft, AI, RAG, DevOps không cần ops.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://btdat.io.vn">
 <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
 <link rel="apple-touch-icon" href="/assets/favicon.svg">
 <link rel="manifest" href="/assets/manifest.json">
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1/css/bulma.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap">
 <link rel="stylesheet" href="/assets/global.css">
 <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token":"b65b6686cd0947dfbdee6dc55a1b4416"}'></script>
 <style>
+body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif}
 .hero-section{position:relative;padding:4rem 1.5rem 3rem;overflow:hidden}
 .hero-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none}
 .hero-bg .mesh{position:absolute;width:400px;height:400px;border-radius:50%;filter:blur(100px);opacity:.15}
@@ -38,14 +46,18 @@
 .footer{border-top:1px solid var(--border)}
 .footer-links a{font-size:1.15rem;margin:0 .5rem;color:var(--text-dim);transition:.15s}
 .footer-links a:hover{color:var(--accent)}
+.svc-inline-actions{display:flex;gap:.3rem;margin-top:.5rem}
+.svc-inline-actions button{background:none;border:1px solid var(--border);border-radius:5px;color:var(--text-dim);padding:.2rem .5rem;font-size:.7rem;cursor:pointer}
+.svc-inline-actions button:hover{border-color:var(--accent);color:var(--accent)}
 </style>
 </head>
 <body>
+<a href="#main" class="skip-link">Skip to content</a>
 
-<nav class="navbar" role="navigation">
+<nav class="navbar" role="navigation" aria-label="Main navigation">
   <div class="navbar-brand">
     <a class="navbar-item has-text-weight-bold" href="/">btdat.io.vn</a>
-    <a role="button" class="navbar-burger" onclick="document.querySelector('.navbar-menu').classList.toggle('is-active')"><span></span><span></span><span></span></a>
+    <a role="button" class="navbar-burger" onclick="document.querySelector('.navbar-menu').classList.toggle('is-active')" aria-label="Menu"><span></span><span></span><span></span></a>
   </div>
   <div class="navbar-menu">
     <div class="navbar-end">
@@ -58,6 +70,7 @@
   </div>
 </nav>
 
+<main id="main">
 <section class="hero-section">
   <div class="hero-bg"><div class="mesh"></div><div class="mesh"></div></div>
   <div class="container has-text-centered hero-content" style="max-width:650px">
@@ -77,7 +90,7 @@
 
 <section class="section" id="services">
   <div class="container">
-    <div class="status-bar" id="status-bar">
+    <div class="status-bar" id="status-bar" role="status" aria-live="polite">
       <div class="stat"><span class="sc-dot running"></span><span class="num" id="stat-running">0</span> running</div>
       <div class="stat"><span class="sc-dot stopped"></span><span class="num" id="stat-stopped">0</span> stopped</div>
       <div class="stat">🟢 <span id="stat-uptime">—</span> uptime</div>
@@ -95,14 +108,14 @@
   <div class="container has-text-centered">
     <h2 class="title is-4" style="margin-bottom:1rem"><span style="margin-right:8px">🛠</span> Tech Stack</h2>
     <div class="tech-cloud">
-      <a class="badge" href="https://www.cloudflare.com" target="_blank">Cloudflare DNS · CDN · Tunnel</a>
-      <a class="badge" href="https://nodejs.org" target="_blank">Node.js 24</a>
-      <a class="badge" href="https://nginx.org" target="_blank">Nginx</a>
-      <a class="badge" href="https://bulma.io" target="_blank">Bulma + Vanilla JS</a>
-      <a class="badge" href="https://www.mongodb.com" target="_blank">MongoDB</a>
-      <a class="badge" href="https://www.docker.com" target="_blank">Docker</a>
-      <a class="badge" href="https://github.com/features/actions" target="_blank">GitHub Actions</a>
-      <a class="badge" href="https://www.librecad.org" target="_blank">LibreOffice (docx→PDF)</a>
+      <a class="badge" href="https://www.cloudflare.com" target="_blank" rel="noopener">Cloudflare DNS · CDN · Tunnel</a>
+      <a class="badge" href="https://nodejs.org" target="_blank" rel="noopener">Node.js 24</a>
+      <a class="badge" href="https://nginx.org" target="_blank" rel="noopener">Nginx</a>
+      <a class="badge" href="https://bulma.io" target="_blank" rel="noopener">Bulma + Vanilla JS</a>
+      <a class="badge" href="https://www.mongodb.com" target="_blank" rel="noopener">MongoDB</a>
+      <a class="badge" href="https://www.docker.com" target="_blank" rel="noopener">Docker</a>
+      <a class="badge" href="https://github.com/features/actions" target="_blank" rel="noopener">GitHub Actions</a>
+      <a class="badge" href="https://www.librecad.org" target="_blank" rel="noopener">LibreOffice (docx→PDF)</a>
       <a class="badge" href="#">RAG Pipeline</a>
     </div>
   </div>
@@ -113,12 +126,13 @@
     <h2 class="title is-4"><span style="margin-right:8px">📫</span> Contact</h2>
     <div class="card card-hover">
       <div class="card-content has-text-centered footer-links">
-        <a href="https://github.com/btdat"><i class="fab fa-github"></i></a>
-        <a href="mailto:datel1389@gmail.com"><i class="fas fa-envelope"></i></a>
+        <a href="https://github.com/btdat" aria-label="GitHub"><i class="fab fa-github"></i></a>
+        <a href="mailto:datel1389@gmail.com" aria-label="Email"><i class="fas fa-envelope"></i></a>
       </div>
     </div>
   </div>
 </section>
+</main>
 
 <footer class="footer" style="padding:1.5rem;text-align:center">
   <div class="content has-text-grey-light is-size-7">
@@ -127,10 +141,9 @@
   </div>
 </footer>
 
-<button class="theme-btn button" data-bound="1"><span class="theme-btn-icon">☀️</span></button>
+<button class="theme-btn button" data-bound="1" aria-label="Toggle theme"><span class="theme-btn-icon">☀️</span></button>
 
-<!-- Keyboard shortcuts help -->
-<div class="kb-overlay" id="kb-overlay" onclick="if(event.target===this)this.classList.toggle('show')">
+<div class="kb-overlay" id="kb-overlay" onclick="if(event.target===this)this.classList.toggle('show')" role="dialog" aria-label="Keyboard shortcuts">
   <div class="kb-panel">
     <h3>⌨ Keyboard Shortcuts</h3>
     <div class="kb-row"><span>Show help</span><kbd>?</kbd></div>
@@ -168,20 +181,33 @@ document.addEventListener('keydown',e=>{if(e.key==='?'&&!(e.target.tagName==='IN
   tick();
 })();
 
+async function actLand(id,a){
+  if(a==='stop'||a==='restart'){
+    showConfirm(`⚠️ ${a==='stop'?'Stop':'Restart'} service <strong>${esc(id)}</strong>?`,async ()=>{
+      const r=await fetch(`/api/services/${id}/${a}`,{method:'POST'});
+      if((await r.json()).error)return toast('❌ Failed','error');
+      toast(a==='stop'?'⏹ Stopped':'↻ Restarted','info');loadSvcs();
+    });return;
+  }
+  const r=await fetch(`/api/services/${id}/${a}`,{method:'POST'});
+  if((await r.json()).error)return toast('❌ Failed','error');
+  toast('▶ Started','success');
+  setTimeout(loadSvcs,500);
+}
+
 function fmt(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;return(h?h+'h ':'')+(m?m+'m ':'')+sec+'s'}
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
 const $=id=>document.getElementById(id);
 
-(async function(){
+(async function loadSvcs(){
   try{
     const r=await fetch('/api/services');const svcs=await r.json();
     const grid=document.getElementById('services-grid');
     if(!svcs||!svcs.length){grid.innerHTML='<div class="card card-hover"><div class="card-content has-text-centered has-text-grey-light"><small>Chưa có service</small></div></div>';return}
-    let run=0,stop=0,minUp=Infinity,maxUp=0;
+    let run=0,stop=0;
     grid.innerHTML=svcs.map(s=>{
-      if(s.status==='running'){run++;if(s.uptime>0){maxUp=Math.max(maxUp,s.uptime);minUp=Math.min(minUp,s.uptime)}}
-      else stop++;
-      return `<div class="card card-hover"><div class="card-content"><div class="level"><div class="level-left"><div class="level-item"><span class="sc-dot ${s.status}"></span><strong>${esc(s.name||s.id)}</strong></div></div><div class="level-right"><span class="tag is-info is-light">${s.port?':'+s.port:'—'}</span></div></div><p class="is-size-7 has-text-grey-light" style="margin-top:.5rem">${esc(s.description||'')}</p><p class="is-size-7 has-text-grey" style="margin-top:.3rem;font-family:monospace">${s.status==='running'?'🟢 Running':s.status==='error'?'🔴 Error':'⚪ Stopped'} ${s.uptime>0?'⏱ '+fmt(s.uptime):''}</p></div></div>`;
+      if(s.status==='running')run++;else stop++;
+      return `<div class="card card-hover"><div class="card-content"><div class="level"><div class="level-left"><div class="level-item"><span class="sc-dot ${s.status}"></span><strong>${esc(s.name||s.id)}</strong></div></div><div class="level-right"><span class="tag is-info is-light">${s.port?':'+s.port:'—'}</span></div></div><p class="is-size-7 has-text-grey-light" style="margin-top:.5rem">${esc(s.description||'')}</p><p class="is-size-7 has-text-grey" style="margin-top:.3rem;font-family:monospace">${s.status==='running'?'🟢 Running':s.status==='error'?'🔴 Error':'⚪ Stopped'} ${s.uptime>0?'⏱ '+fmt(s.uptime):''}</p><div class="svc-inline-actions"><button onclick="actLand('${s.id}','start')" ${s.status==='running'?'disabled':''}>▶ Start</button><button onclick="actLand('${s.id}','stop')" ${s.status!=='running'?'disabled':''}>■ Stop</button><button onclick="actLand('${s.id}','restart')" ${s.status!=='running'?'disabled':''}>↻ Restart</button></div></div></div>`;
     }).join('');
     $('stat-running').textContent=run;
     $('stat-stopped').textContent=stop;
@@ -193,6 +219,9 @@ const $=id=>document.getElementById(id);
     $('footer-status').textContent='⛔ check connection';
   }
 })();
+
+// ── SW register ──
+if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{})}
 </script>
 </body>
 </html>

@@ -67,3 +67,27 @@
 .kb-overlay .kb-panel .kb-row{display:flex;justify-content:space-between;padding:.3rem 0;font-size:.8rem;border-bottom:1px solid var(--border)}
 .kb-overlay .kb-panel .kb-row:last-child{border-bottom:none}
 .kb-overlay .kb-panel .kb-row kbd{background:var(--surface-2);border:1px solid var(--border);border-radius:3px;padding:1px 6px;font-size:.75rem;font-family:monospace}
+
+/* ── View Transitions ── */
+@view-transition{navigation:auto}
+::view-transition-old(root){animation:0.3s ease fadeOut}
+::view-transition-new(root){animation:0.3s ease fadeIn}
+@keyframes fadeOut{to{opacity:0}}
+@keyframes fadeIn{from{opacity:0}}
+
+/* ── Drag-and-drop zone ── */
+.drop-zone{border:2px dashed var(--border);border-radius:12px;padding:1.5rem;text-align:center;margin:.5rem;transition:.15s;cursor:pointer}
+.drop-zone.dragover{border-color:var(--accent);background:var(--surface-2)}
+
+/* ── Skip-to-content (a11y) ── */
+.skip-link{position:absolute;top:-100%;left:0;z-index:99999;background:var(--accent);color:#fff;padding:.5rem 1rem;border-radius:0 0 6px;font-size:.85rem;font-weight:600}
+.skip-link:focus{top:0}
+
+/* ── Reduced motion ── */
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important}}
+
+/* ── Responsive splitter ── */
+.splitter{cursor:col-resize;width:4px;background:var(--border);flex-shrink:0;position:relative;transition:background .15s}
+.splitter:hover{background:var(--accent)}
+.splitter::after{content:'';position:absolute;inset:-4px}
+

@@ -384,6 +384,53 @@ const server = http.createServer((req, res) => {
   // ── Documents API ──
   if (!fs.existsSync(DOCS_DIR)) fs.mkdirSync(DOCS_DIR, { recursive: true });
 
+  // GET /api/documents/search?q= — full-text search within .md files
+  if (u.pathname === '/api/documents/search' && method === 'GET') {
+    const q = (u.searchParams.get('q') || '').toLowerCase().trim();
+    if (!q) return json(res, []);
+    try {
+      const files = fs.readdirSync(DOCS_DIR).filter(f => f.endsWith('.md') || f.endsWith('.docx'));
+      const results = [];
+      for (const f of files) {
+        const filePath = path.join(DOCS_DIR, f);
+        if (!isSafePath(DOCS_DIR, filePath)) continue;
+        const ext = path.extname(f).toLowerCase();
+        const id = f.replace(/\.(md|docx)$/, '');
+        if (ext === '.docx') { if (id.toLowerCase().includes(q)) results.push({ id, file: f, match: id, ext: 'docx' }); continue; }
+        const content = fs.readFileSync(filePath, 'utf-8');
+        const idx = content.toLowerCase().indexOf(q);
+        if (idx === -1) continue;
+        const start = Math.max(0, idx - 40);
+        const end = Math.min(content.length, idx + q.length + 40);
+        results.push({ id, file: f, match: (start > 0 ? '…' : '') + content.slice(start, end).replace(/\n/g, ' ') + (end < content.length ? '…' : ''), ext: 'md' });
+        if (results.length >= 50) break;
+      }
+      return json(res, results);
+    } catch(e) { return json(res, { error: e.message }, 500); }
+  }
+
+  // POST /api/documents/:id/export-pdf — convert markdown→PDF
+  const mExpPdf = u.pathname.match(/^\/api\/documents\/([^\/]+)\/export-pdf$/);
+  if (mExpPdf && method === 'POST') {
+    const baseName = mExpPdf[1];
+    const mdPath = path.join(DOCS_DIR, baseName + '.md');
+    if (!isSafePath(DOCS_DIR, mdPath)) return json(res, { error: 'invalid' }, 400);
+    if (!fs.existsSync(mdPath)) return json(res, { error: 'not-found' }, 404);
+    const tmpHtml = path.join(DOCS_DIR, baseName + '-export.html');
+    const pdfPath = path.join(DOCS_DIR, baseName + '-export.pdf');
+    try {
+      const content = fs.readFileSync(mdPath, 'utf-8');
+      const plain = content.replace(/^---[\s\S]*?---\n/, '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      fs.writeFileSync(tmpHtml, '<html><body style="font-family:sans-serif;max-width:700px;margin:2rem auto;line-height:1.8"><pre>'+plain+'</pre></body></html>');
+      execSync('"'+SOFFICE+'" --headless --convert-to pdf --outdir "'+DOCS_DIR+'" "'+tmpHtml+'"', { timeout: 30000, windowsHide: true });
+      const buf = fs.readFileSync(pdfPath);
+      res.writeHead(200, { 'Content-Type': 'application/pdf', 'Content-Length': buf.length, 'Content-Disposition': 'attachment; filename="'+baseName+'.pdf"' });
+      res.end(buf);
+      try { fs.unlinkSync(tmpHtml); fs.unlinkSync(pdfPath); } catch(_) {}
+    } catch(e) { return json(res, { error: 'conversion-failed' }, 500); }
+    return;
+  }
+
   // GET /api/documents — list
   if (u.pathname === '/api/documents' && method === 'GET') {
     try {

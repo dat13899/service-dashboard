@@ -4,15 +4,22 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Dashboard — btdat.io.vn</title>
+<meta name="description" content="Service dashboard — quản lý server, logs, health checks.">
+<meta property="og:title" content="Dashboard — btdat.io.vn">
+<meta property="og:type" content="website">
 <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
 <link rel="manifest" href="/assets/manifest.json">
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1/css/bulma.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap">
 <link rel="stylesheet" href="/assets/global.css">
 <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token":"b65b6686cd0947dfbdee6dc55a1b4416"}'></script>
 <style>
+body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif}
 .sc-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;flex-shrink:0}
 .sc-dot.running{background:var(--green,#22c55e);box-shadow:0 0 6px var(--green,#22c55e)}
 .sc-dot.stopped{background:var(--text-dim,#6b7280)}
@@ -34,13 +41,18 @@
 .health-row{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
 .log-toolbar{display:flex;gap:.3rem;margin-bottom:.3rem;align-items:center;flex-wrap:wrap}
 .log-toolbar .log-status{font-size:.7rem;color:var(--text-dim)}
+.dash-layout{display:flex;gap:1rem;min-height:0;height:calc(100vh - 52px)}
+.dash-services{flex:1;min-width:0;overflow-y:auto;padding:.5rem}
+.dash-logs{width:380px;min-width:280px;flex-shrink:0;overflow-y:auto;padding:.5rem;border-left:1px solid var(--border)}
+@media(max-width:960px){.dash-layout{flex-direction:column}.dash-logs{width:auto;border-left:none;border-top:1px solid var(--border)}}
 </style>
 </head>
 <body>
-<nav class="navbar" role="navigation">
+<a href="#dash-main" class="skip-link">Skip to content</a>
+<nav class="navbar" role="navigation" aria-label="Main navigation">
   <div class="navbar-brand">
     <a class="navbar-item has-text-weight-bold" href="/">btdat.io.vn <span class="has-text-grey-light" style="font-weight:400;margin-left:4px">/ dashboard</span></a>
-    <a role="button" class="navbar-burger" onclick="document.querySelector('.navbar-menu').classList.toggle('is-active')"><span></span><span></span><span></span></a>
+    <a role="button" class="navbar-burger" onclick="document.querySelector('.navbar-menu').classList.toggle('is-active')" aria-label="Menu"><span></span><span></span><span></span></a>
   </div>
   <div class="navbar-menu">
     <div class="navbar-end">
@@ -52,32 +64,33 @@
   </div>
 </nav>
 
-<section class="section" style="padding:1rem 1.5rem">
-  <div class="columns">
-    <div class="column">
-      <h2 class="title is-5" style="margin-bottom:.75rem">📦 Services</h2>
-      <div id="svc-list">
-        <div class="card"><div class="card-content skeleton skel-d1" style="height:80px"></div></div>
-        <div class="card"><div class="card-content skeleton skel-d2" style="height:80px"></div></div>
-      </div>
-      <button class="button is-fullwidth is-dashed mt-2" onclick="openAddModal()" style="border-style:dashed">＋ Thêm service</button>
+<main id="dash-main">
+<div class="dash-layout">
+  <div class="dash-services" id="dash-services">
+    <div class="level" style="margin-bottom:.5rem">
+      <div class="level-left"><h2 class="title is-5">📦 Services</h2></div>
+      <div class="level-right"><button class="button is-small" onclick="toggleLayout()" title="Toggle layout">⊞</button></div>
     </div>
-    <div class="column is-one-third">
-      <h2 class="title is-5" style="margin-bottom:.75rem">📋 Logs</h2>
-      <div class="log-toolbar">
-        <div class="select" style="flex:1">
-          <select id="log-select"></select>
-        </div>
-        <button class="button is-small" onclick="clearLogs()" title="Clear">🧹</button>
-        <button class="button is-small" onclick="toggleAutoScroll()" id="auto-scroll-btn" title="Auto-scroll">⬇</button>
-        <span class="log-status" id="log-status"></span>
-      </div>
-      <div id="log-box"><span class="has-text-grey-light">Chọn service để xem log</span></div>
+    <div id="svc-list">
+      <div class="card"><div class="card-content skeleton skel-d1" style="height:80px"></div></div>
+      <div class="card"><div class="card-content skeleton skel-d2" style="height:80px"></div></div>
     </div>
+    <button class="button is-fullwidth is-dashed mt-2" onclick="openAddModal()" style="border-style:dashed">＋ Thêm service</button>
   </div>
-</section>
+  <div class="dash-logs" id="dash-logs">
+    <h2 class="title is-5" style="margin-bottom:.5rem">📋 Logs</h2>
+    <div class="log-toolbar">
+      <div class="select" style="flex:1"><select id="log-select"></select></div>
+      <button class="button is-small" onclick="clearLogs()" title="Clear">🧹</button>
+      <button class="button is-small" onclick="toggleAutoScroll()" id="auto-scroll-btn" title="Auto-scroll">⬇</button>
+      <span class="log-status" id="log-status"></span>
+    </div>
+    <div id="log-box"><span class="has-text-grey-light">Chọn service để xem log</span></div>
+  </div>
+</div>
+</main>
 
-<button class="theme-btn button" data-bound="1"><span class="theme-btn-icon">☀️</span></button>
+<button class="theme-btn button" data-bound="1" aria-label="Toggle theme"><span class="theme-btn-icon">☀️</span></button>
 
 <!-- Add service modal -->
 <div class="modal" id="add-modal">
@@ -111,21 +124,20 @@
   </div>
 </div>
 
-<!-- Keyboard help -->
-<div class="kb-overlay" id="kb-overlay" onclick="if(event.target===this)this.classList.toggle('show')">
+<div class="kb-overlay" id="kb-overlay" onclick="if(event.target===this)this.classList.toggle('show')" role="dialog" aria-label="Keyboard shortcuts">
   <div class="kb-panel">
     <h3>⌨ Keyboard Shortcuts</h3>
     <div class="kb-row"><span>Show help</span><kbd>?</kbd></div>
-    <div class="kb-row"><span>Go to Dashboard</span><kbd>g</kbd> then <kbd>d</kbd></div>
-    <div class="kb-row"><span>Go to Documents</span><kbd>g</kbd> then <kbd>o</kbd></div>
-    <div class="kb-row"><span>Go Home</span><kbd>g</kbd> then <kbd>h</kbd></div>
+    <div class="kb-row"><span>Dashboard</span><kbd>g</kbd> then <kbd>d</kbd></div>
+    <div class="kb-row"><span>Documents</span><kbd>g</kbd> then <kbd>o</kbd></div>
+    <div class="kb-row"><span>Home</span><kbd>g</kbd> then <kbd>h</kbd></div>
   </div>
 </div>
 
 <script src="/assets/theme.js"></script>
 <script>
 const $=id=>document.getElementById(id);
-let confirmCb=null,autoScroll=true,logBuffer=[],logSvcId=null;
+let confirmCb=null,autoScroll=true,logSvcId=null,layoutCol=0;
 
 function toast(msg,type,undoCb){
   const c=document.getElementById('toast-container')||(t=>{t.id='toast-container';document.body.appendChild(t);return t})(document.createElement('div'));
@@ -136,23 +148,17 @@ function toast(msg,type,undoCb){
 }
 document.addEventListener('keydown',e=>{if(e.key==='?'&&!(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')){e.preventDefault();const o=document.getElementById('kb-overlay');o&&o.classList.toggle('show')}});
 
-// ── SSE Log stream ──
+// ── SSE ──
 let logEventSource=null;
 function connectSSE(filterId){
   if(logEventSource)logEventSource.close();
-  if(filterId&&filterId!=='__all__')logSvcId=filterId;else logSvcId=null;
+  logSvcId=filterId||null;
   const url=logSvcId?`/api/logs/stream?serviceId=${logSvcId}`:'/api/logs/stream';
   logEventSource=new EventSource(url);
   logEventSource.onmessage=function(e){
-    try{
-      const d=JSON.parse(e.data);
-      if(logSvcId&&d.serviceId!==logSvcId)return;
-      appendLog(d.line,false);
-    }catch(_){}
+    try{const d=JSON.parse(e.data);if(logSvcId&&d.serviceId!==logSvcId)return;appendLog(d.line,false)}catch(_){}
   };
-  logEventSource.onerror=function(){/* reconnect automatically */};
 }
-
 function appendLog(line,prepend){
   const box=$('log-box');
   const cls=line.startsWith('[E]')||line.startsWith('[ERROR]')?'error':line.includes('warn')?'warn':'';
@@ -161,29 +167,25 @@ function appendLog(line,prepend){
   if(prepend)box.prepend(el);else box.appendChild(el);
   if(autoScroll)box.scrollTop=box.scrollHeight;
 }
-
 function toggleAutoScroll(){autoScroll=!autoScroll;$('auto-scroll-btn').style.opacity=autoScroll?'1':'.4'}
 function clearLogs(){$('log-box').innerHTML='';$('log-status').textContent=''}
-function updateLogStatus(){const c=$('log-box').children.length;$('log-status').textContent=c+' lines'}
 
 // ── Health ping ──
 async function pingHealth(id,port,el){
-  if(!port)return;
+  if(!port){el.className='health-dot offline';return}
   try{
     const r=await fetch(`/api/services/${id}/health`,{signal:AbortSignal.timeout(4000)});
-    const d=await r.json();
-    el.className='health-dot '+(d.ok?'online':'offline')+(d.ok?' pulse':'');
+    const d=await r.json();el.className='health-dot '+(d.ok?'online':'offline')+(d.ok?' pulse':'');
   }catch(e){el.className='health-dot offline'}
 }
 
-// ── Load services ──
-async function loadSvcs(){
-  try{
-    const r=await fetch('/api/services');render(await r.json());
-    const s=$('log-select');if(s.value&&!logSvcId)selLog(s.value);
-  }catch(e){}
-}
+// ── Layout toggle ──
+function toggleLayout(){layoutCol=(layoutCol+1)%3;const d=$('dash-logs');d.style.width=layoutCol===1?'480px':layoutCol===2?'100%':'380px'}
 
+// ── Load ──
+async function loadSvcs(){
+  try{const r=await fetch('/api/services');render(await r.json());const s=$('log-select');if(s.value&&!logSvcId)selLog(s.value)}catch(e){}
+}
 function render(svcs){
   const list=$('svc-list');
   if(!svcs||!svcs.length){list.innerHTML='<div class="card card-hover"><div class="card-content has-text-grey-light"><small>Chưa có service</small></div></div>';return}
@@ -203,54 +205,46 @@ function render(svcs){
         <p class="is-size-7 has-text-grey" style="margin-top:.25rem;font-family:monospace">${s.pid?'PID '+s.pid+' ':''}${up?'⏱ '+up+' ':''}${s.status==='running'?'🟢 Running':s.status==='error'?'🔴 Error':'⚪ Stopped'}</p>
       </div>
       <div class="card-expanded-body" id="exp-${s.id}">
-        <div class="health-row">
-          <span>Status:</span>
-          <span class="tag ${s.status==='running'?'is-success':s.status==='error'?'is-danger':'is-light'}">${s.status}</span>
-          ${s.port?`<span>Port:</span><code>${s.port}</code>`:''}
-          ${s.pid?`<span>PID:</span><code>${s.pid}</code>`:''}
-        </div>
-        ${s.uptime>0?`<p style="margin-top:4px">⏱ Uptime: <strong>${fmt(s.uptime)}</strong> (${Math.round(s.uptime/86400*10)/10} days)</p>`:''}
+        <div class="health-row"><span>Status:</span><span class="tag ${s.status==='running'?'is-success':s.status==='error'?'is-danger':'is-light'}">${s.status}</span>${s.port?`<span>Port:</span><code>${s.port}</code>`:''}${s.pid?`<span>PID:</span><code>${s.pid}</code>`:''}</div>
+        ${s.uptime>0?`<p style="margin-top:4px">⏱ Uptime: <strong>${fmt(s.uptime)}</strong></p>`:''}
+        ${s.port?`<p style="margin-top:4px"><a href="/proxy/${s.port}/" target="_blank" rel="noopener">🔗 Open service →</a></p>`:''}
       </div>
       <div class="card-footer" style="font-size:.75rem">
         <button class="card-footer-item button is-small" onclick="act('${s.id}','start')" ${s.status==='running'?'disabled':''}>▶ Start</button>
         <button class="card-footer-item button is-small" onclick="act('${s.id}','stop')" ${s.status!=='running'?'disabled':''}>■ Stop</button>
         <button class="card-footer-item button is-small" onclick="act('${s.id}','restart')" ${s.status!=='running'?'disabled':''}>↻ Restart</button>
         <button class="card-footer-item button is-small" onclick="selLog('${s.id}')">📋 Logs</button>
+        <button class="card-footer-item button is-small" onclick="deleteSvc('${s.id}')">🗑</button>
       </div>
     </div>`;
   }).join('');
   $('running-count').innerHTML='<span class="sc-dot running" style="margin:0"></span> '+run;
   $('stopped-count').innerHTML='<span class="sc-dot stopped" style="margin:0"></span> '+stop;
-  // Health pings
-  for(const s of svcs){
-    if(s.port){setTimeout(()=>pingHealth(s.id,s.port,document.getElementById('health-'+s.id)),i=>i*300)(svcs.indexOf(s))}
-  }
+  for(const s of svcs){if(s.port){setTimeout(()=>pingHealth(s.id,s.port,document.getElementById('health-'+s.id)),svcs.indexOf(s)*300)}}
 }
-
-let expandTimer=null;
 function toggleExpand(id){
   const card=document.querySelector(`[data-svc-id="${id}"]`);
-  if(!card)return;
-  clearTimeout(expandTimer);
-  card.classList.toggle('expanded');
+  if(card)card.classList.toggle('expanded');
 }
-
+async function deleteSvc(id){
+  showConfirm(`🗑 Delete service <strong>${esc(id)}</strong>?`,async ()=>{
+    const r=await fetch('/api/services/'+id,{method:'DELETE'});
+    if((await r.json()).error)return toast('❌ Delete failed','error');
+    toast('🗑 Deleted','info');loadSvcs();
+  });
+}
 async function act(id,a){
   if(a==='stop'||a==='restart'){
     showConfirm(`⚠️ ${a==='stop'?'Stop':'Restart'} service <strong>${esc(id)}</strong>?`,async ()=>{
       const r=await fetch(`/api/services/${id}/${a}`,{method:'POST'});const d=await r.json();
       if(d.error)return toast('❌ '+d.error,'error');
-      toast(a==='stop'?'⏹ Stopped':'↻ Restarted','info');
-      loadSvcs();
-    });
-    return;
+      toast(a==='stop'?'⏹ Stopped':'↻ Restarted','info');loadSvcs();
+    });return;
   }
   const r=await fetch(`/api/services/${id}/${a}`,{method:'POST'});const d=await r.json();
   if(d.error)return toast('❌ '+d.error,'error');
-  toast('▶ Started','success');
-  loadSvcs();
+  toast('▶ Started','success');loadSvcs();
 }
-
 function openAddModal(){$('add-modal').classList.add('is-active')}
 function closeAddModal(){$('add-modal').classList.remove('is-active')}
 async function addService(){
@@ -258,31 +252,19 @@ async function addService(){
   const body={name,command:$('add-cmd').value.trim(),dir:$('add-wd').value.trim(),port:parseInt($('add-port').value)||0,description:$('add-desc').value.trim()};
   try{const r=await fetch('/api/services',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const d=await r.json();if(d.error)return toast('❌ '+d.error,'error');toast('➕ Added','success');closeAddModal();loadSvcs()}catch(e){toast('❌ Failed','error')}
 }
-
 function showConfirm(msg,onConfirm){
-  $('confirm-msg').innerHTML=msg;
-  const btn=$('confirm-btn');
-  confirmCb=onConfirm;
-  btn.onclick=()=>{closeConfirm();if(confirmCb)confirmCb()};
+  $('confirm-msg').innerHTML=msg;$('confirm-btn').onclick=()=>{closeConfirm();if(onConfirm)onConfirm()};
   $('confirm-modal').classList.add('is-active');
 }
 function closeConfirm(){$('confirm-modal').classList.remove('is-active');confirmCb=null}
-
-function selLog(id){
-  $('log-select').value=id;
-  connectSSE(id);
-  // Fetch historical
-  fetchLog(id);
-}
+function selLog(id){$('log-select').value=id;connectSSE(id);fetchLog(id)}
 async function fetchLog(id){
   try{
     const r=await fetch(`/api/services/${id}/logs?lines=100`);const d=await r.json();
-    const box=$('log-box');box.innerHTML='';
-    for(const l of (d.logs||[]))appendLog(l.line||'',false);
-    updateLogStatus();
+    $('log-box').innerHTML='';
+    for(const l of(d.logs||[]))appendLog(l.line||'',false);
   }catch(e){}
 }
-
 (async function(){
   try{
     const r=await fetch('/api/services');const svcs=await r.json();
@@ -292,11 +274,10 @@ async function fetchLog(id){
     if(svcs.length)selLog(svcs[0].id);
   }catch(e){}
 })();
-setInterval(loadSvcs,5000);
-loadSvcs();
-
+setInterval(loadSvcs,5000);loadSvcs();
 function fmt(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;return(h?h+'h ':'')+(m?m+'m ':'')+sec+'s'}
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{})}
 </script>
 </body>
 </html>
