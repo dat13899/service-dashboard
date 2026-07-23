@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard — btdat.io.vn</title>
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="manifest" href="/assets/manifest.json">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1/css/bulma.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="/assets/global.css">
+<script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token":"b65b6686cd0947dfbdee6dc55a1b4416"}'></script>
+<style>
+.sc-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}
+.sc-dot.running{background:var(--green,#22c55e);box-shadow:0 0 6px var(--green,#22c55e)}
+.sc-dot.stopped{background:var(--text-dim,#6b7280)}
+.sc-dot.error{background:var(--red,#ef4444);box-shadow:0 0 6px var(--red,#ef4444)}
+
+#log-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--bulma-radius);padding:.75rem;font-family:monospace;font-size:.75rem;min-height:350px;max-height:60vh;overflow-y:auto;white-space:pre-wrap;color:var(--text-light);line-height:1.5}
+#log-box .log-line{padding:1px 0}
+#log-box .log-line.error{color:var(--red)}
+#log-box .log-line.warn{color:var(--accent)}
+
+.modal-card{background:var(--surface);color:var(--text)}
+.modal-card-head,.modal-card-foot{background:var(--surface);border-color:var(--border)}
+.modal-card-title{color:var(--text-strong)}
+.modal-card-foot{border-top:1px solid var(--border)}
+
+.uptime-bar{height:4px;background:var(--border);border-radius:2px;margin-top:4px;overflow:hidden}
+.uptime-bar .fill{height:100%;background:var(--green);border-radius:2px;transition:width 1s}
+</style>
+</head>
+<body>
+<nav class="navbar" role="navigation">
+  <div class="navbar-brand">
+    <a class="navbar-item has-text-weight-bold" href="/">btdat.io.vn <span class="has-text-grey-light" style="font-weight:400;margin-left:4px">/ dashboard</span></a>
+    <a role="button" class="navbar-burger" onclick="document.querySelector('.navbar-menu').classList.toggle('is-active')"><span></span><span></span><span></span></a>
+  </div>
+  <div class="navbar-menu">
+    <div class="navbar-end">
+      <div class="navbar-item"><span id="running-count" class="tag is-success is-light"><span class="sc-dot running" style="margin:0"></span> 0</span></div>
+      <div class="navbar-item"><span id="stopped-count" class="tag"><span class="sc-dot stopped" style="margin:0"></span> 0</span></div>
+      <div class="navbar-item"><a class="button is-small is-outlined" href="/documents">📄 Docs</a></div>
+      <div class="navbar-item"><a class="button is-small is-outlined is-link" href="/">← Home</a></div>
+    </div>
+  </div>
+</nav>
+
+<section class="section" style="padding:1rem 1.5rem">
+  <div class="columns">
+    <div class="column">
+      <h2 class="title is-5" style="margin-bottom:.75rem">📦 Services</h2>
+      <div id="svc-list">
+        <div class="card"><div class="card-content skeleton" style="height:80px"></div></div>
+        <div class="card"><div class="card-content skeleton" style="height:80px"></div></div>
+      </div>
+      <button class="button is-fullwidth is-dashed mt-2" onclick="openAddModal()" style="border-style:dashed">＋ Thêm service</button>
+    </div>
+    <div class="column is-one-third">
+      <h2 class="title is-5" style="margin-bottom:.75rem">📋 Logs</h2>
+      <div class="select is-fullwidth mb-2">
+        <select id="log-select"></select>
+      </div>
+      <div id="log-box"><span class="has-text-grey-light">Chọn service để xem log</span></div>
+    </div>
+  </div>
+</section>
+
+<button class="theme-btn button" data-bound="1"><span class="theme-btn-icon">☀️</span></button>
+
+<!-- Add service modal -->
+<div class="modal" id="add-modal">
+  <div class="modal-background" onclick="closeAddModal()"></div>
+  <div class="modal-card">
+    <header class="modal-card-head"><p class="modal-card-title is-5">＋ Thêm service</p></header>
+    <section class="modal-card-body">
+      <div class="field"><label class="label">Name</label><div class="control"><input class="input" id="add-name" placeholder="my-service"></div></div>
+      <div class="field"><label class="label">Command</label><div class="control"><input class="input" id="add-cmd" placeholder="node server.js"></div></div>
+      <div class="field"><label class="label">Work dir</label><div class="control"><input class="input" id="add-wd" placeholder="/home/project"></div></div>
+      <div class="field"><label class="label">Port</label><div class="control"><input class="input" id="add-port" placeholder="3000" type="number"></div></div>
+      <div class="field"><label class="label">Description</label><div class="control"><input class="input" id="add-desc" placeholder="Optional"></div></div>
+    </section>
+    <footer class="modal-card-foot">
+      <button class="button" onclick="closeAddModal()">Cancel</button>
+      <button class="button is-link" onclick="addService()">➕ Add</button>
+    </footer>
+  </div>
+</div>
+
+<!-- Confirm modal -->
+<div class="modal" id="confirm-modal">
+  <div class="modal-background" onclick="closeConfirm()"></div>
+  <div class="modal-card">
+    <header class="modal-card-head"><p class="modal-card-title is-5">⚠️ Confirm</p></header>
+    <section class="modal-card-body">
+      <p id="confirm-msg">Are you sure?</p>
+    </section>
+    <footer class="modal-card-foot">
+      <button class="button" onclick="closeConfirm()">Cancel</button>
+      <button class="button is-danger" id="confirm-btn" onclick="">Confirm</button>
+    </footer>
+  </div>
+</div>
+
+<script src="/assets/theme.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+let confirmCb=null;
+
+async function loadSvcs(){
+  try{
+    const r=await fetch('/api/services');render(await r.json());
+    const s=$('log-select');if(s.value)fetchLog(s.value);
+  }catch(e){}
+}
+
+function render(svcs){
+  const list=$('svc-list');
+  if(!svcs||!svcs.length){list.innerHTML='<div class="card card-hover"><div class="card-content has-text-grey-light"><small>Chưa có service</small></div></div>';return}
+  let run=0,stop=0;
+  list.innerHTML=svcs.map(s=>{
+    if(s.status==='running')run++;else stop++;
+    const up=s.uptime>0?fmt(s.uptime):'',lnk=s.port>0?` href="/proxy/${s.port}/" target="_blank"`:'';
+    const upPct=s.uptime>0?Math.min(100,Math.round(s.uptime/86400*100)):0;
+    return `<div class="card card-hover">
+      <div class="card-content" style="padding:.75rem">
+        <div class="level is-mobile">
+          <div class="level-left"><div class="level-item"><span class="sc-dot ${s.status}"></span><strong>${esc(s.name||s.id)}</strong></div></div>
+          <div class="level-right">${s.port>0?`<a class="tag is-info is-light"${lnk}>:${s.port} 🔗</a>`:'<span class="tag">—</span>'}</div>
+        </div>
+        ${s.uptime>0?`<div class="uptime-bar"><div class="fill" style="width:${upPct}%"></div></div>`:''}
+        <p class="is-size-7 has-text-grey-light" style="margin-top:.25rem">${esc(s.description||'—')}</p>
+        <p class="is-size-7 has-text-grey" style="margin-top:.25rem;font-family:monospace">${s.pid?'PID '+s.pid+' ':''}${up?'⏱ '+up+' ':''}${s.status==='running'?'🟢 Running':s.status==='error'?'🔴 Error':'⚪ Stopped'}</p>
+      </div>
+      <div class="card-footer" style="font-size:.75rem">
+        <button class="card-footer-item button is-small" onclick="act('${s.id}','start')" ${s.status==='running'?'disabled':''}>▶ Start</button>
+        <button class="card-footer-item button is-small" onclick="act('${s.id}','stop')" ${s.status!=='running'?'disabled':''}>■ Stop</button>
+        <button class="card-footer-item button is-small" onclick="act('${s.id}','restart')" ${s.status!=='running'?'disabled':''}>↻ Restart</button>
+        <button class="card-footer-item button is-small" onclick="selLog('${s.id}')">📋 Logs</button>
+      </div>
+    </div>`;
+  }).join('');
+  $('running-count').innerHTML='<span class="sc-dot running" style="margin:0"></span> '+run;
+  $('stopped-count').innerHTML='<span class="sc-dot stopped" style="margin:0"></span> '+stop;
+}
+
+async function act(id,a){
+  if(a==='stop'||a==='restart'){
+    showConfirm(`⚠️ ${a==='stop'?'Stop':'Restart'} service <strong>${esc(id)}</strong>?`,async ()=>{
+      const r=await fetch(`/api/services/${id}/${a}`,{method:'POST'});const d=await r.json();
+      if(d.error)return toast('❌ '+d.error,'error');
+      toast(a==='stop'?'⏹ Stopped':'↻ Restarted','info');
+      loadSvcs();
+    });
+    return;
+  }
+  const r=await fetch(`/api/services/${id}/${a}`,{method:'POST'});const d=await r.json();
+  if(d.error)return toast('❌ '+d.error,'error');
+  toast('▶ Started','success');
+  loadSvcs();
+}
+
+function openAddModal(){$('add-modal').classList.add('is-active')}
+function closeAddModal(){$('add-modal').classList.remove('is-active')}
+async function addService(){
+  const name=$('add-name').value.trim();if(!name)return;
+  const body={name,command:$('add-cmd').value.trim(),workdir:$('add-wd').value.trim(),port:parseInt($('add-port').value)||0,description:$('add-desc').value.trim()};
+  try{const r=await fetch('/api/services',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const d=await r.json();if(d.error)return toast('❌ '+d.error,'error');toast('➕ Added','success');closeAddModal();loadSvcs()}catch(e){toast('❌ Failed','error')}
+}
+
+function showConfirm(msg,onConfirm){
+  $('confirm-msg').innerHTML=msg;
+  const btn=$('confirm-btn');
+  confirmCb=onConfirm;
+  btn.onclick=()=>{closeConfirm();if(confirmCb)confirmCb()};
+  $('confirm-modal').classList.add('is-active');
+}
+function closeConfirm(){$('confirm-modal').classList.remove('is-active');confirmCb=null}
+
+function selLog(id){$('log-select').value=id;fetchLog(id)}
+async function fetchLog(id){
+  try{
+    const r=await fetch(`/api/services/${id}/logs?lines=100`);const d=await r.json();
+    const lines=(d.logs||[]).map(l=>{
+      const cls=l.level?.toLowerCase()==='error'?'error':l.level?.toLowerCase()==='warn'?'warn':'';
+      return `<div class="log-line${cls?' '+cls:''}">${esc(l.line||'')}</div>`;
+    }).join('')||'<span class="has-text-grey-light">(no logs)</span>';
+    $('log-box').innerHTML=lines;
+    $('log-box').scrollTop=$('log-box').scrollHeight;
+  }catch(e){$('log-box').textContent='Lỗi tải logs'}
+}
+(async function(){
+  const r=await fetch('/api/services');const svcs=await r.json();
+  const sel=$('log-select');sel.innerHTML=svcs.map(s=>`<option value="${s.id}">${esc(s.name||s.id)}</option>`).join('');
+  sel.onchange=()=>fetchLog(sel.value);if(svcs.length)fetchLog(svcs[0].id);
+})();
+setInterval(loadSvcs,5000);
+loadSvcs();
+
+function fmt(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;return(h?h+'h ':'')+(m?m+'m ':'')+sec+'s'}
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+</script>
+</body>
+</html>

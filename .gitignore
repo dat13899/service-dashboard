@@ -1,0 +1,13 @@
+node_modules/
+.env
+*.log
+.DS_Store
+cron-output/
+.pdf-cache/
+__pycache__/
+*.pyc
+rag_chroma/
+news_*.json
+text_*.json
+weather_raw.json
+*.bat

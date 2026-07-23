@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<title>Documents — btdat.io.vn</title>
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="manifest" href="/assets/manifest.json">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1/css/bulma.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="/assets/global.css">
+<script src="https://cdn.jsdelivr.net/npm/marked@5/marked.min.js"></script>
+<script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token":"b65b6686cd0947dfbdee6dc55a1b4416"}'></script>
+<style>
+:root{--sidebar-w:280px}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,'Segoe UI',sans-serif;display:flex;flex-direction:column;overflow:hidden;font-size:15px;margin:0}
+h1,h2,h3{color:var(--text-strong)}
+a{color:var(--accent)}a:hover{color:var(--accent-hover)}
+.top-bar{display:flex;align-items:center;gap:.5rem;padding:.5rem .8rem;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--surface)}
+.top-bar .brand{font-weight:700;font-size:.95rem;color:var(--text-strong);text-decoration:none}
+.top-bar .brand small{font-weight:400;color:var(--text-dim)}
+.top-bar .spacer{flex:1}
+.top-bar .btn{background:var(--accent);color:#fff;border:none;padding:.3rem .7rem;border-radius:6px;font-size:.8rem;cursor:pointer;font-weight:600}
+.top-bar .btn:hover{opacity:.9}
+.layout{display:grid;grid-template-columns:var(--sidebar-w) 1fr;min-height:0;height:calc(100vh - 52px)}
+.sidebar{width:auto;border-right:1px solid var(--border);display:flex;flex-direction:column;background:var(--surface);min-height:0;height:100%}
+.sidebar .search-wrap{padding:.5rem;border-bottom:1px solid var(--border)}
+.sidebar .search-wrap input{width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:.35rem .6rem;font-size:.75rem;outline:none}
+.sidebar .search-wrap input:focus{border-color:var(--accent)}
+/* Tag filter chips */
+.tag-filter{display:flex;flex-wrap:wrap;gap:4px;padding:.35rem .5rem;border-bottom:1px solid var(--border)}
+.tag-chip{padding:.15rem .5rem;border-radius:999px;font-size:.65rem;border:1px solid var(--border);background:none;color:var(--text-dim);cursor:pointer;transition:.1s;white-space:nowrap}
+.tag-chip.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tag-chip:hover:not(.active){border-color:var(--accent);color:var(--accent)}
+
+.doc-list{list-style:none;padding:0;margin:0;flex:1;overflow-y:auto}
+.doc-item{padding:.5rem .7rem;border-bottom:1px solid var(--border);cursor:pointer;transition:.1s}
+.doc-item:hover,.doc-item.active{background:var(--accent);color:#fff}
+.doc-item:hover .d-title,.doc-item.active .d-title{color:#fff}
+.doc-item:hover .d-meta,.doc-item.active .d-meta{color:rgba(255,255,255,.7)}
+.doc-item.active{border-left:3px solid var(--accent)}
+.doc-item .d-title{font-size:.8rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-strong)}
+.doc-item .d-meta{font-size:.6rem;color:var(--text-dim);margin-top:2px;display:flex;gap:.4rem}
+.doc-item .d-badge{font-size:.55rem;background:var(--accent);color:#fff;padding:0 .4rem;border-radius:3px;line-height:1.4}
+.sidebar-footer{padding:.4rem .7rem;border-top:1px solid var(--border);font-size:.65rem;color:var(--text-dim);flex-shrink:0;display:flex;justify-content:space-between}
+
+.reader{display:flex;flex-direction:column;min-height:0;height:100%;overflow:hidden;background:var(--bg)}
+.reader .empty{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;color:var(--text-dim);text-align:center;padding:2rem}
+.reader .empty .icon{font-size:3rem;margin-bottom:.5rem}
+.reader-header{display:flex;align-items:center;gap:.4rem;padding:.4rem .8rem;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--surface);flex-wrap:wrap}
+.reader-header .title{font-size:.9rem;font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-strong)}
+.reader-header .meta{font-size:.65rem;color:var(--text-dim)}
+.reader-header .actions{display:flex;gap:.3rem}
+.reader-header .actions button{background:none;border:1px solid var(--border);border-radius:5px;color:var(--text-dim);padding:.25rem .55rem;font-size:.75rem;cursor:pointer;transition:.15s}
+.reader-header .actions button:hover{background:var(--surface-2);color:var(--text);border-color:var(--accent)}
+.reader-header .actions button.danger:hover{border-color:var(--red);color:var(--red)}
+.reader-content{flex:1 1 0;min-height:0;overflow-y:auto;padding:0;background:var(--bg)}
+.reader-content .article{width:100%;line-height:1.8;font-size:.95rem;padding:2rem 1.5rem;box-sizing:border-box;max-width:900px;margin:0 auto}
+.reader-content .article img{max-width:100%;height:auto}
+.reader-content .article table{max-width:100%}
+/* PDF embed */
+.reader-content .pdf-wrap{display:flex;flex-direction:column;height:100%}
+.reader-content .pdf-wrap embed{flex:1;border:none;background:var(--page)}
+.reader-content .pdf-bar{display:flex;align-items:center;gap:.5rem;padding:.3rem .8rem;font-size:.75rem;color:var(--text-dim);border-bottom:1px solid var(--border);background:var(--surface)}
+.reader-content .pdf-spinner{display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:.5rem;color:var(--text-dim);font-size:.85rem}
+
+.editor-overlay{position:fixed;inset:0;z-index:500;background:var(--bg);display:none;flex-direction:column}
+.editor-overlay.show{display:flex}
+.editor-overlay .editor-toolbar{display:flex;align-items:center;gap:.5rem;padding:.5rem .8rem;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--surface)}
+.editor-overlay .editor-toolbar .title{font-size:.9rem;font-weight:600;flex:1;color:var(--text-strong)}
+.editor-overlay .editor-body{flex:1;display:flex;overflow:hidden}
+.editor-overlay .editor-body textarea{width:50%;height:100%;padding:1rem;font-family:monospace;font-size:.85rem;line-height:1.7;background:var(--bg);color:var(--text);border:none;border-right:1px solid var(--border);resize:horizontal;outline:none;min-width:30%}
+.editor-overlay .editor-body .preview-pane{width:50%;overflow-y:auto;padding:2rem 1.5rem;background:var(--bg)}
+.editor-overlay .editor-body .preview-pane .article{width:100%;line-height:1.8;font-size:.9rem}
+
+@media(max-width:720px){
+  :root{--sidebar-w:100%}
+  .reader{position:fixed;inset:52px 0 0;z-index:100;background:var(--bg);display:none;flex-direction:column;min-height:0}
+  .reader.show{display:flex}
+  .sidebar.hide{display:none}
+  .editor-overlay .editor-body{flex-direction:column}
+  .editor-overlay .editor-body textarea{width:100%;height:50%;border-right:none;border-bottom:1px solid var(--border);resize:none}
+  .editor-overlay .editor-body .preview-pane{width:100%;height:50%}
+}
+@media print{
+  .top-bar,.sidebar,.reader-header,.theme-btn,.toast-container{display:none!important}
+  .layout{display:block!important;overflow:visible!important}
+  .reader{display:block!important;overflow:visible!important}
+  .reader-content{overflow:visible!important;padding:0!important}
+}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <a class="brand" href="/">btdat.io.vn <small>/ documents</small></a>
+  <div class="spacer"></div>
+  <button class="btn" onclick="openNew()"><i class="fas fa-plus"></i>&ensp;New</button>
+  <button class="btn" style="background:var(--green)" onclick="openUpload()"><i class="fas fa-upload"></i>&ensp;Upload</button>
+  <input type="file" id="upload-input" accept=".docx" style="display:none" onchange="uploadFile(this)">
+</div>
+
+<div class="layout">
+  <div class="sidebar" id="sidebar">
+    <div class="search-wrap">
+      <input id="search-input" placeholder="🔍 Search..." oninput="filterList()">
+    </div>
+    <div class="tag-filter" id="tag-filter"></div>
+    <ul class="doc-list" id="doc-list"></ul>
+    <div class="sidebar-footer"><span id="doc-count">0</span><span id="doc-count-detail" class="has-text-grey"></span></div>
+  </div>
+
+  <div class="reader" id="reader">
+    <div class="empty" id="empty-state">
+      <div class="icon">📄</div>
+      <p>Chọn tài liệu để đọc</p>
+    </div>
+
+    <div id="doc-view" style="display:none;flex-direction:column;flex:1;min-height:0;overflow:hidden">
+      <div class="reader-header">
+        <button id="back-btn" style="display:none;background:none;border:1px solid var(--border);border-radius:5px;color:var(--text-dim);padding:.2rem .5rem;font-size:.8rem;cursor:pointer" onclick="showList()"><i class="fas fa-arrow-left"></i></button>
+        <span class="title" id="doc-title"></span>
+        <span class="meta" id="doc-meta"></span>
+        <div class="actions">
+          <button onclick="onPrint()" title="Print"><i class="fas fa-print"></i></button>
+          <button onclick="onDownload()" title="Download"><i class="fas fa-download"></i></button>
+          <button id="btn-edit" onclick="openEditor()" title="Edit"><i class="fas fa-pen"></i></button>
+          <button class="danger" onclick="onDelete()" title="Delete"><i class="fas fa-trash"></i></button>
+        </div>
+      </div>
+      <div class="reader-content" id="reader-content">
+        <div class="article" id="article"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button class="theme-btn button" data-bound="1"><span class="theme-btn-icon">☀️</span></button>
+
+<!-- Editor Overlay -->
+<div class="editor-overlay" id="editor-overlay">
+  <div class="editor-toolbar">
+    <span class="title" id="editor-title"></span>
+    <input id="editor-tags" placeholder="tags" style="background:var(--surface-2);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:.25rem .5rem;font-size:.75rem;width:120px;outline:none" onchange="onSaveMeta()">
+    <button style="background:var(--accent);color:#fff;border:none;border-radius:5px;padding:.3rem .7rem;font-size:.8rem;cursor:pointer;font-weight:600" onclick="saveAndClose()"><i class="fas fa-check"></i>&ensp;Save</button>
+    <button style="background:none;border:1px solid var(--border);border-radius:5px;color:var(--text-dim);padding:.3rem .7rem;font-size:.8rem;cursor:pointer" onclick="closeEditor()"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="editor-body">
+    <textarea id="editor" placeholder="Write markdown here..."></textarea>
+    <div class="preview-pane"><div class="article" id="live-preview"></div></div>
+  </div>
+</div>
+
+<!-- New doc modal -->
+<div class="modal" id="new-modal">
+  <div class="modal-background" onclick="closeNew()"></div>
+  <div class="modal-card">
+    <header class="modal-card-head"><p class="modal-card-title is-5"><i class="fas fa-file-lines"></i>&ensp;New document</p></header>
+    <section class="modal-card-body">
+      <div class="field"><label class="label">Title</label><div class="control"><input class="input" id="new-title" placeholder="Document title..."></div></div>
+      <div class="field"><label class="label">Tags</label><div class="control"><input class="input" id="new-tags" placeholder="tag1, tag2"></div></div>
+      <div class="field">
+        <label class="label">Template</label>
+        <div class="select is-fullwidth"><select id="new-template"><option value="">Blank</option><option value="article">📝 Article</option><option value="report">📊 Report</option><option value="note">📋 Note</option></select></div>
+      </div>
+      <div class="field"><label class="label">Content (markdown)</label><div class="control"><textarea class="textarea" id="new-content" style="min-height:160px;font-family:monospace;font-size:.85rem" placeholder="# Title&#10;&#10;Write content here..."></textarea></div></div>
+    </section>
+    <footer class="modal-card-foot">
+      <button class="button" onclick="closeNew()">Cancel</button>
+      <button class="button is-link" onclick="createDoc()"><i class="fas fa-check"></i>&ensp;Create</button>
+    </footer>
+  </div>
+</div>
+
+<script src="/assets/theme.js"></script>
+<script>
+const API='/api/documents';
+let docs=[],curId=null,currentExt='md';
+const $=id=>document.getElementById(id);
+
+// ── List ──
+async function loadList(){
+  try{
+    const r=await fetch(API);docs=await r.json();renderList();renderTagFilter();
+    $('doc-count').textContent=docs.length;
+    if(curId&&docs.find(d=>d.id===curId))loadDoc(curId);
+    else{$('empty-state').style.display='flex';$('doc-view').style.display='none'}
+  }catch(e){$('doc-list').innerHTML='<li class="doc-item" style="cursor:default;color:var(--red)">Error loading</li>'}
+}
+
+let activeTag=null;
+function renderTagFilter(){
+  const el=$('tag-filter');
+  const tags=[...new Set(docs.flatMap(d=>(d.tags||'').split(',').map(t=>t.trim()).filter(Boolean)))].sort();
+  el.innerHTML='<button class="tag-chip'+(activeTag===null?' active':'')+'" onclick="setTag(null)">All</button>'+
+    tags.map(t=>`<button class="tag-chip${activeTag===t?' active':''}" onclick="setTag('${esc(t)}')">${esc(t)}</button>`).join('');
+}
+function setTag(t){activeTag=t;renderList()}
+
+function renderList(){
+  const ul=$('doc-list'),q=$('search-input').value.toLowerCase();
+  let f=docs;
+  if(q)f=f.filter(d=>d.title.toLowerCase().includes(q)||(d.tags||'').toLowerCase().includes(q));
+  if(activeTag)f=f.filter(d=>(d.tags||'').split(',').map(t=>t.trim()).includes(activeTag));
+  $('doc-count-detail').textContent=f.length<docs.length?`(${f.length} shown)`:'';
+  if(!f.length){ul.innerHTML=`<li class="doc-item" style="cursor:default;text-align:center;color:var(--text-dim);padding:1rem"><small>${q?'No matches':'No documents'}</small></li>`;return}
+  ul.innerHTML=f.map(d=>`<li class="doc-item${d.id===curId?' active':''}" onclick="loadDoc('${d.id}')">
+    <div class="d-title">${esc(d.title)}${d.ext==='docx'?' <span class="d-badge">DOCX</span>':''}</div>
+    <div class="d-meta"><span>${d.created?d.created.slice(0,10):''}${d.tags?' · '+esc(d.tags):''}</span></div>
+  </li>`).join('');
+}
+function filterList(){renderList()}
+
+// ── Load doc ──
+async function loadDoc(id){
+  if(closeEditor())return;
+  try{
+    const r=await fetch(API+'/'+id);const d=await r.json();
+    if(d.error)return;curId=id;currentExt=d.ext||'md';setHash(id);
+    $('empty-state').style.display='none';$('doc-view').style.display='flex';
+    const m=docs.find(x=>x.id===id);
+    $('doc-title').textContent=m?m.title:id;
+    $('doc-meta').textContent=m?'📅 '+(m.created?m.created.slice(0,10):'')+(m.tags?' · 🏷 '+m.tags:''):'';
+    $('btn-edit').style.display=currentExt==='md'?'':'none';
+    if(currentExt==='docx'){
+      $('reader-content').innerHTML=`<div class="pdf-wrap">
+        <div class="pdf-bar"><span class="spinner"></span> Converting to PDF... <span id="pdf-status"></span></div>
+        <embed id="pdf-embed" src="/api/documents/${curId}/pdf" type="application/pdf" style="flex:1;border:none;background:var(--page)">
+      </div>`;
+      // Remove spinner once loaded
+      $('pdf-embed').addEventListener('load',()=>{
+        const bar=document.querySelector('.pdf-bar');
+        if(bar)bar.innerHTML='<span>📄 PDF ready</span>';
+      });
+    } else {
+      $('reader-content').innerHTML=`<div class="article" id="article"></div>`;
+      renderArticle(d.content||'');
+    }
+    renderList();
+    if(window.innerWidth<=720){$('sidebar').classList.add('hide');$('reader').classList.add('show');$('back-btn').style.display=''}
+  }catch(e){toast('❌ Load failed','error')}
+}
+function showList(){$('sidebar').classList.remove('hide');$('reader').classList.remove('show');$('back-btn').style.display='none'}
+function renderArticle(md){try{$('article').innerHTML=marked.parse(md);$('article').querySelectorAll('a').forEach(a=>{if(a.href)a.target='_blank'})}catch(e){$('article').textContent=md}}
+
+function onPrint(){window.print()}
+function onDownload(){const m=docs.find(x=>x.id===curId);if(m)window.open(API+'/'+curId+'?dl=1','_blank')}
+
+// ── Editor ──
+function openEditor(){
+  if(currentExt!=='md')return;
+  $('editor-overlay').classList.add('show');
+  $('editor-title').textContent=$('doc-title').textContent;
+  $('editor-tags').value=docs.find(x=>x.id===curId)?.tags||'';
+  fetch(API+'/'+curId).then(r=>r.json()).then(d=>{$('editor').value=d.content||'';updatePreview();$('editor').focus()});
+}
+function closeEditor(){$('editor-overlay').classList.remove('show');return false}
+async function saveAndClose(){
+  const c=$('editor').value,t=$('editor-tags').value;
+  await fetch(API+'/'+curId,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:c,tags:t})});
+  const m=docs.find(x=>x.id===curId);if(m)m.tags=t;
+  $('reader-content').innerHTML=`<div class="article" id="article"></div>`;
+  renderArticle(c);
+  $('doc-meta').textContent=m?'📅 '+(m.created?m.created.slice(0,10):'')+(t?' · 🏷 '+t:''):'';
+  closeEditor();loadList();toast('💾 Saved','success');
+}
+function updatePreview(){try{$('live-preview').innerHTML=marked.parse($('editor').value||'')}catch(e){}}
+$('editor').addEventListener('input',updatePreview);
+
+// ── URL hash routing ──
+function setHash(id){history.replaceState(null,'','#'+encodeURIComponent(id))}
+function clearHash(){history.replaceState(null,'',' ')}
+window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(h&&h!==curId&&docs.find(d=>d.id===h))loadDoc(h)});
+(function(){const h=location.hash.slice(1);if(h){setTimeout(async()=>{await loadList();if(docs.find(d=>d.id===h))loadDoc(h)},100)}})();
+
+// ── Delete ──
+async function onDelete(){
+  if(!confirm('Delete this document?'))return;
+  await fetch(API+'/'+curId,{method:'DELETE'});
+  curId=null;clearHash();$('doc-view').style.display='none';$('empty-state').style.display='flex';
+  closeEditor();loadList();toast('🗑 Deleted','info');
+}
+
+// ── Create ──
+const TEMPLATES={
+  article:'# Title\n\n## Introduction\n\nWrite introduction here.\n\n## Main Content\n\nWrite your content here.\n\n## Conclusion\n\nSummarize key points.',
+  report:'# Report: [Title]\n\n**Date:** \n**Author:** \n\n## Executive Summary\n\nBrief overview.\n\n## Findings\n\n1. Finding one\n2. Finding two\n3. Finding three\n\n## Recommendations\n\n- Action item 1\n- Action item 2',
+  note:'# [Title]\n\n- Key point 1\n- Key point 2\n- Key point 3\n\n## Action Items\n\n- [ ] Task 1\n- [ ] Task 2'
+};
+function openNew(){
+  $('new-modal').classList.add('is-active');
+  $('new-title').value='';$('new-tags').value='';$('new-content').value='';
+  $('new-template').value='';
+  setTimeout(()=>$('new-title').focus(),100);
+}
+$('new-template').addEventListener('change',()=>{
+  const v=$('new-template').value;
+  if(v&&TEMPLATES[v])$('new-content').value=TEMPLATES[v];
+});
+function closeNew(){$('new-modal').classList.remove('is-active')}
+async function createDoc(){
+  const t=$('new-title').value.trim();if(!t)return;
+  $('new-modal').classList.remove('is-active');
+  const r=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:t,tags:$('new-tags').value.trim(),content:$('new-content').value})});
+  const d=await r.json();
+  if(d.ok){await loadList();loadDoc(d.id);toast('📄 Created','success')}
+}
+
+// ── Upload .docx ──
+function openUpload(){$('upload-input').click()}
+async function uploadFile(input){
+  const f=input.files[0];if(!f)return;
+  const title=prompt('File name:',f.name.replace(/\.docx$/i,''));
+  if(!title){input.value='';return}
+  const reader=new FileReader();
+  reader.onload=async function(e){
+    const data=e.target.result.split(',')[1];
+    const r=await fetch(API+'/upload',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title,data})});
+    const d=await r.json();
+    if(d.ok){await loadList();loadDoc(d.id);toast('📤 Uploaded','success')}
+    input.value='';
+  };
+  reader.readAsDataURL(f);
+}
+
+// ── Save Meta ──
+async function onSaveMeta(){const t=$('editor-tags').value,c=$('editor').value;await fetch(API+'/'+curId,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:c,tags:t})});loadList()}
+
+// ── Keyboard ──
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){closeNew();if($('editor-overlay').classList.contains('show'))closeEditor()}
+  if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();if($('editor-overlay').classList.contains('show'))saveAndClose()}
+});
+
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+loadList();
+</script>
+</body>
+</html>
