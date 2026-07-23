@@ -4,11 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Dashboard — btdat.io.vn</title>
-<meta name="description" content="Service dashboard — quản lý server, logs, resource monitor, port scanner, file browser.">
-<meta property="og:title" content="Dashboard — btdat.io.vn">
+<meta name="description" content="btdat.io.vn — Service Dashboard">
 <meta property="og:type" content="website">
 <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
-<link rel="manifest" href="/assets/manifest.json">
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -428,7 +426,6 @@ setInterval(loadSvcs,5000);loadSvcs();
 setInterval(loadResources,15000);
 function fmt(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;return(h?h+'h ':'')+(m?m+'m ':'')+sec+'s'}
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
-if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{})}
 </script>
 </body>
 </html>

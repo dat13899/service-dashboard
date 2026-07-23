@@ -3,13 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="color-scheme" content="dark light">
-<title>Documents — btdat.io.vn</title>
-<meta name="description" content="Document manager — markdown editor, PDF viewer, file upload.">
+<title>btdat.io.vn — Documents</title>
+<meta name="description" content="btdat.io.vn — Document Manager">
 <meta property="og:title" content="Documents — btdat.io.vn">
 <meta property="og:type" content="website">
 <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
-<link rel="manifest" href="/assets/manifest.json">
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -437,7 +435,6 @@ function closeConfirm(){$('confirm-modal').classList.remove('is-active')}
 
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
 loadList();
-if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{})}
 </script>
 </body>
 </html>
