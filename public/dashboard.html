@@ -17,66 +17,122 @@
 <link rel="stylesheet" href="/assets/global.css?v=2">
 <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token":"b65b6686cd0947dfbdee6dc55a1b4416"}'></script>
 <style>
+/* ── Status dots ── */
 .sc-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;flex-shrink:0}
 .sc-dot.running{background:var(--green,#22c55e);box-shadow:0 0 6px var(--green,#22c55e)}
 .sc-dot.stopped{background:var(--text-dim,#6b7280)}
 .sc-dot.error{background:var(--red,#ef4444);box-shadow:0 0 6px var(--red,#ef4444)}
-#log-box{background:var(--glass-bg);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid var(--glass-border);border-radius:var(--bulma-radius);padding:.75rem;font-family:monospace;font-size:.75rem;min-height:200px;max-height:60vh;overflow-y:auto;white-space:pre-wrap;color:var(--text-light);line-height:1.5}
-#log-box .log-line{padding:1px 0}
+
+/* ── Stats bar ── */
+.dash-stats{display:flex;gap:.6rem;margin-bottom:.8rem;flex-wrap:wrap}
+.dash-stat{background:var(--glass-bg);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:12px;padding:.5rem 1rem;flex:1;min-width:100px;text-align:center;box-shadow:0 4px 16px var(--glass-shadow);transition:.2s}
+.dash-stat:hover{transform:translateY(-2px);box-shadow:0 8px 24px var(--glass-shadow)}
+.dash-stat .stat-num{font-size:1.25rem;font-weight:700;line-height:1.3}
+.dash-stat .stat-label{font-size:.65rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px}
+.dash-stat.stat-green .stat-num{color:var(--green)}
+.dash-stat.stat-gray .stat-num{color:var(--text-dim)}
+.dash-stat.stat-red .stat-num{color:var(--red)}
+.dash-stat.stat-blue .stat-num{color:var(--accent)}
+
+/* ── Service cards ── */
+.svc-card{background:var(--glass-bg);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:12px;padding:0;margin-bottom:.5rem;box-shadow:0 4px 16px var(--glass-shadow);transition:.2s;overflow:hidden}
+.svc-card:hover{border-color:var(--accent);box-shadow:0 6px 24px var(--glass-shadow)}
+.svc-card .svc-top{padding:.65rem .75rem;cursor:pointer;display:flex;align-items:center;gap:.5rem}
+.svc-card .svc-top:hover{background:var(--surface-2)}
+.svc-card .svc-dot{flex-shrink:0}
+.svc-card .svc-name{flex:1;font-size:.85rem;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.svc-card .svc-port{font-size:.65rem;padding:.15rem .5rem;border-radius:6px;background:var(--surface-2);border:1px solid var(--glass-border);color:var(--text-dim);flex-shrink:0;text-decoration:none}
+.svc-card .svc-port:hover{border-color:var(--accent);color:var(--accent)}
+.svc-card .svc-meta{font-size:.7rem;color:var(--text-dim);display:flex;gap:.3rem;align-items:center;flex-shrink:0}
+.svc-card .svc-actions{display:flex;gap:2px;padding:.35rem .75rem;border-top:1px solid var(--glass-border);flex-wrap:wrap}
+.svc-card .svc-actions button{background:none;border:none;color:var(--text-dim);font-size:.7rem;padding:.2rem .5rem;border-radius:6px;cursor:pointer;transition:.15s;display:flex;align-items:center;gap:3px}
+.svc-card .svc-actions button:hover{background:var(--surface-2);color:var(--text)}
+.svc-card .svc-actions button:disabled{opacity:.3;cursor:not-allowed}
+.svc-card .svc-actions .act-start:hover{color:var(--green)}
+.svc-card .svc-actions .act-stop:hover{color:var(--red)}
+.svc-card .svc-actions .act-restart:hover{color:var(--accent)}
+.svc-card .svc-actions .act-logs{color:var(--accent)}
+.svc-card .svc-actions .act-del:hover{color:var(--red)}
+.svc-card .svc-bar{height:3px;background:var(--border);overflow:hidden}
+.svc-card .svc-bar .fill{height:100%;background:var(--green);transition:width 1s}
+.svc-card .svc-desc{padding:0 .75rem .35rem;font-size:.7rem;color:var(--text-dim);line-height:1.4}
+.svc-card .svc-details{display:none;padding:.4rem .75rem .6rem;border-top:1px solid var(--glass-border);font-size:.7rem;gap:.5rem;flex-wrap:wrap}
+.svc-card.expanded .svc-details{display:flex}
+.svc-card .svc-details span{color:var(--text-dim)}
+.svc-card .svc-details strong{color:var(--text)}
+.svc-card .svc-chart{height:18px;background:var(--surface-2);border-radius:3px;overflow:hidden;display:flex;gap:1px;padding:1px;margin:.3rem .75rem .5rem}
+.svc-card .svc-chart .seg{flex:1;border-radius:1px;transition:background .5s}
+.svc-card .svc-chart .seg.running{background:var(--green)}
+.svc-card .svc-chart .seg.stopped{background:var(--border)}
+.svc-card .svc-chart .seg.error{background:var(--red)}
+.svc-card .auto-restart-badge{font-size:.6rem;padding:.1rem .4rem;border-radius:4px;background:rgba(245,158,11,.15);color:var(--amber);flex-shrink:0}
+
+/* ── Log panel ── */
+.log-panel{background:var(--glass-bg);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:12px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 4px 16px var(--glass-shadow)}
+.log-header{display:flex;align-items:center;gap:.4rem;padding:.5rem .75rem;border-bottom:1px solid var(--glass-border);flex-shrink:0}
+.log-header .log-title{font-size:.8rem;font-weight:600;flex-shrink:0}
+.log-header select{flex:1;background:var(--surface-2);border:1px solid var(--glass-border);border-radius:6px;color:var(--text);font-size:.7rem;padding:.2rem .4rem;outline:none;max-width:180px}
+.log-header .log-actions{display:flex;gap:3px}
+.log-header .log-actions button{background:none;border:1px solid transparent;border-radius:5px;color:var(--text-dim);padding:.2rem .45rem;font-size:.7rem;cursor:pointer;transition:.15s;line-height:1}
+.log-header .log-actions button:hover{border-color:var(--glass-border);background:var(--surface-2)}
+.log-header .log-status{font-size:.65rem;color:var(--text-dim);margin-left:auto}
+#log-box{flex:1;padding:.5rem .75rem;font-family:monospace;font-size:.7rem;min-height:180px;max-height:calc(60vh - 100px);overflow-y:auto;white-space:pre-wrap;color:var(--text);line-height:1.6;background:transparent}
+#log-box .log-line{padding:1px 0;transition:background .15s}
+#log-box .log-line:hover{background:var(--surface-2);border-radius:2px}
 #log-box .log-line.error{color:var(--red)}
 #log-box .log-line.warn{color:var(--accent)}
+
+/* ── Modals ── */
 .modal-card{background:var(--glass-bg);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border:1px solid var(--glass-border);color:var(--text)}
 .modal-card-head,.modal-card-foot{background:var(--glass-bg);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-color:var(--glass-border)}
 .modal-card-title{color:var(--text-strong)}
 .modal-card-foot{border-top:1px solid var(--glass-border)}
-.uptime-bar{height:4px;background:var(--border);border-radius:2px;margin-top:4px;overflow:hidden}
-.uptime-bar .fill{height:100%;background:var(--green);border-radius:2px;transition:width 1s}
-.card-expandable .card-content{cursor:pointer}
-.card-expandable .card-content:hover{opacity:.9}
-.card-expanded-body{display:none;padding:.5rem .75rem;border-top:1px solid var(--glass-border);font-size:.75rem}
-.card-expandable.expanded .card-expanded-body{display:block}
-.health-row{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
-.log-toolbar{display:flex;gap:.3rem;margin-bottom:.3rem;align-items:center;flex-wrap:wrap}
-.log-toolbar .log-status{font-size:.7rem;color:var(--text-dim)}
-.dash-layout{display:flex;gap:1rem;min-height:0;height:calc(100vh - 52px)}
-.dash-services{flex:1;min-width:0;overflow-y:auto;padding:.5rem}
-.dash-logs{width:clamp(280px,30vw,480px);flex-shrink:0;overflow-y:auto;padding:.5rem;border-left:1px solid var(--glass-border)}
-@media(max-width:960px){.dash-layout{flex-direction:column}.dash-logs{width:auto;border-left:none;border-top:1px solid var(--glass-border)}}
+
+/* ── Layout ── */
+.dash-layout{display:flex;gap:1rem;min-height:0;height:calc(100vh - 100px)}
+.dash-services{flex:1;min-width:0;overflow-y:auto;padding:0}
+.dash-logs{width:clamp(280px,30vw,480px);flex-shrink:0;overflow-y:auto;padding:0}
+@media(max-width:960px){.dash-layout{flex-direction:column;height:auto}.dash-logs{width:auto}}
+
+/* ── Alerts ── */
 .alert-badge{position:fixed;top:1rem;right:1rem;z-index:9999;background:var(--red);color:#fff;border-radius:999px;padding:.25rem .6rem;font-size:.7rem;font-weight:700;cursor:pointer;display:none;animation:pulse-alert 1s infinite}
 @keyframes pulse-alert{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
-.alert-dropdown{display:none;position:fixed;top:3rem;right:1rem;z-index:9999;background:var(--glass-bg);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border:1px solid var(--glass-border);border-radius:var(--bulma-radius);padding:.5rem;max-width:300px;max-height:200px;overflow-y:auto;box-shadow:0 4px 20px var(--glass-shadow);font-size:.75rem}
+.alert-dropdown{display:none;position:fixed;top:3rem;right:1rem;z-index:9999;background:var(--glass-bg);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border:1px solid var(--glass-border);border-radius:12px;padding:.5rem;max-width:300px;max-height:200px;overflow-y:auto;box-shadow:0 4px 20px var(--glass-shadow);font-size:.75rem}
 .alert-dropdown.show{display:block}
 .alert-dropdown .alert-entry{padding:.3rem .5rem;border-bottom:1px solid var(--glass-border);cursor:pointer}
 .alert-dropdown .alert-entry:hover{background:var(--surface-2)}
 .alert-dropdown .alert-entry:last-child{border-bottom:none}
+
+/* ── Resource table ── */
 .resource-table{width:100%;font-size:.7rem;border-collapse:collapse}
 .resource-table th,.resource-table td{text-align:left;padding:.2rem .4rem;border-bottom:1px solid var(--glass-border)}
 .resource-table th{color:var(--text-dim);font-weight:600}
 .resource-bar{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:2px;min-width:40px}
 .resource-bar .fill{height:100%;background:var(--accent);border-radius:2px}
 .mem-bar{width:60px}
-.chart-bar{height:20px;background:var(--surface-2);border-radius:3px;overflow:hidden;display:flex;gap:1px;padding:1px}
-.chart-bar .seg{flex:1;border-radius:1px;transition:background .5s}
-.chart-bar .seg.running{background:var(--green)}.chart-bar .seg.stopped{background:var(--border)}.chart-bar .seg.error{background:var(--red)}
+
+/* ── Tabs ── */
 .tab-bar{display:flex;gap:.3rem;margin-bottom:.5rem;flex-wrap:wrap}
-.tab-bar button{background:none;border:1px solid var(--glass-border);border-radius:6px;padding:.2rem .7rem;font-size:.75rem;cursor:pointer;color:var(--text-dim);transition:.15s}
-.tab-bar button.active{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600}
+.tab-bar button{background:none;border:1px solid var(--glass-border);border-radius:8px;padding:.25rem .75rem;font-size:.75rem;cursor:pointer;color:var(--text-dim);transition:.15s;font-weight:500}
+.tab-bar button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 .tab-bar button:hover:not(.active){border-color:var(--accent);color:var(--accent)}
 .panel{display:none}
 .panel.active{display:block}
-.svc-search{margin-bottom:.3rem;width:100%;box-sizing:border-box;padding:.3rem .5rem;border:1px solid var(--glass-border);border-radius:6px;background:var(--glass-bg);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:var(--text);font-size:.75rem}
-.files-entry{padding:.2rem .5rem;font-size:.75rem;display:flex;gap:.5rem;align-items:center;cursor:pointer;border-radius:3px}
+.svc-search{margin-bottom:.4rem;width:100%;box-sizing:border-box;padding:.35rem .6rem;border:1px solid var(--glass-border);border-radius:8px;background:var(--glass-bg);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:var(--text);font-size:.75rem;outline:none;transition:border-color .15s}
+.svc-search:focus{border-color:var(--accent)}
+.tab-desc{font-size:.7rem;color:var(--text-dim);margin-bottom:.5rem}
+.files-entry{padding:.25rem .5rem;font-size:.75rem;display:flex;gap:.5rem;align-items:center;cursor:pointer;border-radius:6px;transition:background .15s}
 .files-entry:hover{background:var(--surface-2)}
 .files-entry .icon{width:1.2rem;text-align:center}
+
+/* ── Base utility classes ── */
 .mt-1{margin-top:.25rem}
 .mt-2{margin-top:4px}
 .ml-1{margin-left:6px}
 .m-0{margin:0}
 .flex-1{flex:1}
-.tab-desc{font-size:.75rem;margin-bottom:.3rem}
 .col-header{margin-bottom:.3rem;flex-wrap:wrap;gap:.4rem}
 @media(max-width:768px){.col-header{display:flex!important;flex-direction:row!important;justify-content:flex-start!important;flex-wrap:wrap}}
-.dashed-btn{border-style:dashed;flex:1}
 </style>
 </head>
 <body>
@@ -90,14 +146,14 @@
 <div class="navbar-spacer"></div>
 
 <main id="dash-main">
-<div class="level col-header">
-  <div class="level-left">
-    <h2 class="title is-5">📦 Services</h2>
-    <span style="margin-left:.5rem" id="running-count" class="tag is-success is-light"><span class="sc-dot running m-0"></span> 0</span>
-    <span id="stopped-count" class="tag"><span class="sc-dot stopped m-0"></span> 0</span>
-  </div>
-  <div class="level-right"><button class="button is-small" onclick="toggleLayout()" title="Toggle layout">⊞</button></div>
+<!-- Stats bar -->
+<div class="dash-stats">
+  <div class="dash-stat stat-green"><div class="stat-num" id="stat-running">0</div><div class="stat-label">Running</div></div>
+  <div class="dash-stat stat-gray"><div class="stat-num" id="stat-stopped">0</div><div class="stat-label">Stopped</div></div>
+  <div class="dash-stat stat-red"><div class="stat-num" id="stat-error">0</div><div class="stat-label">Errors</div></div>
+  <div class="dash-stat stat-blue"><div class="stat-num" id="stat-total">0</div><div class="stat-label">Total</div></div>
 </div>
+
 <div class="dash-layout">
   <div class="dash-services" id="dash-services">
     <div class="tab-bar">
@@ -106,19 +162,25 @@
       <button onclick="switchTab('ports')" data-tab="ports">🔌 Ports</button>
       <button onclick="switchTab('files')" data-tab="files">📁 Files</button>
     </div>
+
+    <!-- Skeleton loading -->
+    <div id="svc-skel" style="display:none">
+      <div class="svc-card"><div class="svc-top"><div class="svc-name" style="height:1rem;width:60%;background:var(--border);border-radius:4px"></div></div></div>
+      <div class="svc-card"><div class="svc-top"><div class="svc-name" style="height:1rem;width:50%;background:var(--border);border-radius:4px"></div></div></div>
+      <div class="svc-card"><div class="svc-top"><div class="svc-name" style="height:1rem;width:70%;background:var(--border);border-radius:4px"></div></div></div>
+    </div>
+
     <div id="tab-svc" class="panel active">
       <input class="svc-search" id="svc-search" placeholder="🔍 Filter services..." oninput="filterSvcs()">
-      <div id="svc-list">
-        <div class="card glass-card"><div class="card-content skeleton skel-d1" style="height:80px"></div></div>
-      </div>
+      <div id="svc-list"></div>
       <div style="display:flex;gap:.3rem;margin-top:.3rem">
         <button class="button is-small" onclick="bulkStart()">▶ Start All</button>
         <button class="button is-small" onclick="bulkStop()">■ Stop All</button>
-        <button class="button is-small is-dashed flex-1" onclick="openAddModal()">＋ Thêm service</button>
+        <button class="button is-small flex-1" style="border-style:dashed" onclick="openAddModal()">＋ Thêm service</button>
       </div>
     </div>
     <div id="tab-res" class="panel">
-      <div class="tab-desc">Click service row to see uptime chart (72h)</div>
+      <div class="tab-desc">Processes sorted by memory usage</div>
       <div id="res-list"><span class="has-text-grey-light">Loading...</span></div>
     </div>
     <div id="tab-ports" class="panel">
@@ -134,15 +196,21 @@
       <div id="files-list"><span class="has-text-grey-light">Loading...</span></div>
     </div>
   </div>
+
+  <!-- Log panel -->
   <div class="dash-logs" id="dash-logs">
-    <h2 class="title is-5" style="margin-bottom:.5rem">📋 Logs</h2>
-    <div class="log-toolbar">
-      <div class="select" style="flex:1"><select id="log-select"></select></div>
-      <button class="button is-small" onclick="clearLogs()" title="Clear">🧹</button>
-      <button class="button is-small" onclick="toggleAutoScroll()" id="auto-scroll-btn" title="Auto-scroll">⬇</button>
-      <span class="log-status" id="log-status"></span>
+    <div class="log-panel">
+      <div class="log-header">
+        <span class="log-title">📋 Logs</span>
+        <select id="log-select"></select>
+        <div class="log-actions">
+          <button onclick="clearLogs()" title="Clear">🧹</button>
+          <button onclick="toggleAutoScroll()" id="auto-scroll-btn" title="Auto-scroll">⬇</button>
+        </div>
+        <span class="log-status" id="log-status"></span>
+      </div>
+      <div id="log-box"><span class="has-text-grey-light">Chọn service để xem log</span></div>
     </div>
-    <div id="log-box"><span class="has-text-grey-light">Chọn service để xem log</span></div>
   </div>
 </div>
 </main>
@@ -202,7 +270,7 @@ function clearCacheAndSW(){
   setTimeout(()=>location.reload(),500);
 }
 const $=id=>document.getElementById(id);
-let confirmCb=null,autoScroll=true,logSvcId=null,layoutCol=0,sseRetries=0,alertBuffer=[],filesStack=[''];
+let confirmCb=null,autoScroll=true,logSvcId=null,sseRetries=0,alertBuffer=[],filesStack=[''];
 
 
 function showConfirm(msg,onConfirm){
@@ -262,8 +330,7 @@ async function pingHealth(id,port,el){
   }catch(e){el.className='health-dot offline'}
 }
 
-function toggleLayout(){layoutCol=(layoutCol+1)%3;const d=$('dash-logs');d.style.width=layoutCol===1?'clamp(280px,40vw,600px)':layoutCol===2?'100%':'clamp(280px,30vw,480px)'}
-
+// ── Tab switching ──
 function switchTab(name){
   document.querySelectorAll('.tab-bar button').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));
   document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id==='tab-'+name));
@@ -275,9 +342,8 @@ function switchTab(name){
 // ── Search filter ──
 function filterSvcs(){
   const q=$('svc-search').value.toLowerCase();
-  document.querySelectorAll('.card-expandable').forEach(c=>{
-    const txt=c.textContent.toLowerCase();
-    c.style.display=txt.includes(q)?'':'none';
+  document.querySelectorAll('.svc-card').forEach(c=>{
+    c.style.display=c.textContent.toLowerCase().includes(q)?'':'none';
   });
 }
 
@@ -294,47 +360,54 @@ async function bulkStop(){
 
 // ── Load services ──
 async function loadSvcs(){
-  try{const r=await fetch('/api/services');render(await r.json());const s=$('log-select');if(s.value&&!logSvcId)selLog(s.value)}catch(e){}
+  $('svc-skel').style.display='block';
+  $('svc-list').innerHTML='';
+  try{const r=await fetch('/api/services');render(await r.json());$('svc-skel').style.display='none';const s=$('log-select');if(s.value&&!logSvcId)selLog(s.value)}catch(e){$('svc-skel').style.display='none'}
 }
 function render(svcs){
   const list=$('svc-list');
-  if(!svcs||!svcs.length){list.innerHTML='<div class="card glass-card"><div class="card-content has-text-grey-light text-center"><small>Chưa có service nào. Bấm + để thêm.</small></div></div>';return}
-  let run=0,stop=0;
+  if(!svcs||!svcs.length){list.innerHTML='<div class="svc-card"><div class="svc-top" style="justify-content:center;padding:2rem"><span class="has-text-grey-light"><small>Chưa có service nào. Bấm + để thêm.</small></span></div></div>';return}
+  let run=0,stop=0,err=0;
   list.innerHTML=svcs.map((s,i)=>{
-    if(s.status==='running')run++;else stop++;
+    if(s.status==='running')run++;else if(s.status==='error')err++;else stop++;
     const up=s.uptime>0?fmt(s.uptime):'',lnk=s.port>0?` href="/proxy/${s.port}/" target="_blank"`:'';
     const upPct=s.uptime>0?Math.min(100,Math.round(s.uptime/86400*100)):0;
-    const arlbl=s.autoRestart?` <span class="tag is-warning is-light" title="Auto-restart every ${fmt(s.autoRestart)}">↻ ${fmt(s.autoRestart)}</span>`:'';
-    return `<div class="card glass-card card-hover card-expandable" data-svc-id="${s.id}">
-      <div class="card-content" style="padding:.75rem" onclick="toggleExpand('${s.id}')">
-        <div class="level is-mobile">
-          <div class="level-left"><div class="level-item"><span class="sc-dot ${s.status}"></span><strong>${esc(s.name||s.id)}</strong><span id="health-${s.id}" class="health-dot offline ml-1"></span>${arlbl}</div></div>
-          <div class="level-right">${s.port>0?`<a class="tag is-info is-light"${lnk}>:${s.port} 🔗</a>`:'<span class="tag">—</span>'}</div>
-        </div>
-        ${s.uptime>0?`<div class="uptime-bar"><div class="fill" style="width:${upPct}%"></div></div>`:''}
-        <p class="is-size-7 has-text-grey-light mt-1">${esc(s.description||'—')}</p>
-        <p class="is-size-7 has-text-grey mt-1" style="font-family:monospace">${s.pid?'PID '+s.pid+' ':''}${up?'⏱ '+up+' ':''}${s.status==='running'?'🟢 Running':s.status==='error'?'🔴 Error':'⚪ Stopped'}</p>
+    const arlbl=s.autoRestart?`<span class="auto-restart-badge" title="Auto-restart every ${fmt(s.autoRestart)}">↻ ${fmt(s.autoRestart)}</span>`:'';
+    const desc=s.description?`<div class="svc-desc">${esc(s.description)}</div>`:'';
+    const meta=s.pid||up?`<div class="svc-meta">${s.pid?'PID '+s.pid+' ':''}${up?'⏱ '+up:''}</div>`:'';
+    return `<div class="svc-card${s.status==='error'?' svc-error':''}" data-svc-id="${s.id}">
+      <div class="svc-top" onclick="toggleExpand('${s.id}')">
+        <span class="sc-dot ${s.status} svc-dot"></span>
+        <span class="svc-name">${esc(s.name||s.id)}</span>
+        ${arlbl}
+        ${s.port>0?`<a class="svc-port"${lnk}>:${s.port}</a>`:''}
+        ${meta}
       </div>
-      <div class="card-expanded-body" id="exp-${s.id}">
-        <div class="health-row"><span>Status:</span><span class="tag ${s.status==='running'?'is-success':s.status==='error'?'is-danger':'is-light'}">${s.status}</span>${s.port?`<span>Port:</span><code>${s.port}</code>`:''}${s.pid?`<span>PID:</span><code>${s.pid}</code>`:''}</div>
-        ${s.uptime>0?`<p class="mt-2">⏱ Uptime: <strong>${fmt(s.uptime)}</strong></p>`:''}
-        ${s.port?`<p class="mt-2"><a href="/proxy/${s.port}/" target="_blank" rel="noopener">🔗 Open service →</a></p>`:''}
-        <div id="chart-${s.id}" class="chart-bar" style="margin-top:4px"><span class="has-text-grey-light is-size-7">${s.status==='running'?'Uptime chart':''}</span></div>
-        <button class="button is-small is-fullwidth mt-2" style="font-size:.65rem" onclick="editSvc('${s.id}')">⚙️ Configure</button>
+      ${desc}
+      ${s.uptime>0?`<div class="svc-bar"><div class="fill" style="width:${upPct}%"></div></div>`:''}
+      <div class="svc-actions">
+        <button class="act-start" onclick="act('${s.id}','start')" ${s.status==='running'?'disabled':''}>▶ Start</button>
+        <button class="act-stop" onclick="act('${s.id}','stop')" ${s.status!=='running'?'disabled':''}>■ Stop</button>
+        <button class="act-restart" onclick="act('${s.id}','restart')" ${s.status!=='running'?'disabled':''}>↻ Restart</button>
+        <button class="act-logs" onclick="selLog('${s.id}')">📋 Logs</button>
+        <button class="act-del" onclick="deleteSvc('${s.id}')" style="margin-left:auto">🗑</button>
       </div>
-      <div class="card-footer" style="font-size:.75rem">
-        <button class="card-footer-item button is-small" onclick="act('${s.id}','start')" ${s.status==='running'?'disabled':''}>▶ Start</button>
-        <button class="card-footer-item button is-small" onclick="act('${s.id}','stop')" ${s.status!=='running'?'disabled':''}>■ Stop</button>
-        <button class="card-footer-item button is-small" onclick="act('${s.id}','restart')" ${s.status!=='running'?'disabled':''}>↻ Restart</button>
-        <button class="card-footer-item button is-small" onclick="selLog('${s.id}')">📋 Logs</button>
-        <button class="card-footer-item button is-small" onclick="deleteSvc('${s.id}')">🗑</button>
+      <div class="svc-details" id="exp-${s.id}">
+        <span>Status: <strong>${s.status}</strong></span>
+        ${s.port?`<span>Port: <strong>${s.port}</strong></span>`:''}
+        ${s.pid?`<span>PID: <strong>${s.pid}</strong></span>`:''}
+        ${s.uptime>0?`<span>Uptime: <strong>${fmt(s.uptime)}</strong></span>`:''}
+        ${s.port?`<span><a href="/proxy/${s.port}/" target="_blank" rel="noopener">🔗 Open</a></span>`:''}
+        <span style="margin-left:auto"><button class="button is-small" style="font-size:.65rem;padding:.1rem .5rem" onclick="editSvc('${s.id}')">⚙️</button></span>
       </div>
+      <div class="svc-chart" id="chart-${s.id}"><span class="has-text-grey-light is-size-7" style="padding:0 .3rem">${s.status==='running'?'':''}</span></div>
     </div>`;
   }).join('');
-  $('running-count').innerHTML='<span class="sc-dot running m-0"></span> '+run;
-  $('stopped-count').innerHTML='<span class="sc-dot stopped m-0"></span> '+stop;
-  svcs.forEach(s=>{if(s.port)setTimeout(()=>pingHealth(s.id,s.port,$('health-'+s.id)),svcs.indexOf(s)*300)});
-  // Load timeline charts
+  $('stat-running').textContent=run;
+  $('stat-stopped').textContent=stop;
+  $('stat-error').textContent=err;
+  $('stat-total').textContent=svcs.length;
+  svcs.forEach(s=>{if(s.port)setTimeout(()=>pingHealth(s.id,s.port,null),svcs.indexOf(s)*300)});
   setTimeout(()=>svcs.forEach(s=>loadChart(s.id)),500);
 }
 async function loadChart(id){
