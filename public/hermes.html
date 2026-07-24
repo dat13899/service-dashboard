@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>✦ Hermes — Cosmic Dreamscape v8 · Config Panel + Scene Transitions</title>
+<title>✦ Hermes — Cosmic Dreamscape v9 · Prism Rave + Gestures + Cycling</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌀</text></svg>">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -82,6 +82,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05060f;font-family:
 #mode-badge.constellation-mode{color:rgba(100,220,255,.2);letter-spacing:10px}
 #mode-badge.nebula-mode{color:rgba(80,200,180,.2);letter-spacing:10px}
 #mode-badge.word-mode{color:rgba(180,220,80,.2);letter-spacing:10px}
+#mode-badge.prism-mode{color:rgba(255,50,200,.25);letter-spacing:10px}
 
 /* gravity indicator */
 #gravity-indicator{position:fixed;pointer-events:none;z-index:4;border-radius:50%;
@@ -109,6 +110,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05060f;font-family:
 #mode-panel.open .mode-btn:nth-child(4){transition-delay:.08s}
 #mode-panel.open .mode-btn:nth-child(5){transition-delay:.10s}
 #mode-panel.open .mode-btn:nth-child(6){transition-delay:.12s}
+#mode-panel.open .mode-btn:nth-child(7){transition-delay:.14s}
 .mode-btn:hover{border-color:rgba(120,180,255,.25);color:rgba(200,220,255,.7);background:rgba(5,6,15,.7)}
 .mode-btn.active{background:rgba(91,192,255,.12);border-color:rgba(91,192,255,.3);color:#5bc0ff}
 .mode-btn .mode-icon{font-size:16px;width:20px;text-align:center}
@@ -206,7 +208,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05060f;font-family:
 </head>
 <body>
 <div id="splash"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="rgba(91,192,255,.4)" stroke-width="2" stroke-dasharray="80 30"/><circle cx="50" cy="50" r="20" fill="none" stroke="rgba(255,107,203,.4)" stroke-width="2" stroke-dasharray="40 20"/></svg></div>
-<div id="hint">✦ click explode · hold drag gravity · T tunnel · P paint · C constellation · N nebula · W word · S snapshot · G settings · 1-6 palette · ? help ✦</div>
+<div id="hint">✦ click explode · hold drag gravity · T tunnel · P paint · C constellation · N nebula · R rave · W word · Tab/→ cycle · S snapshot · G settings · 1-6 palette · ? help ✦</div>
 <div id="title">✦ hermes — cosmic dreamscape v8 ✦</div>
 <div id="mode-badge">◆ cosmic drift ◆</div>
 <div id="palette-indicator"></div>
@@ -222,6 +224,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05060f;font-family:
   <button class="mode-btn" data-mode="constellation"><span class="mode-icon">✦</span><span class="mode-label">Constellation</span><span class="mode-check">✓</span></button>
   <button class="mode-btn" data-mode="nebula"><span class="mode-icon">🌊</span><span class="mode-label">Nebula Flow</span><span class="mode-check">✓</span></button>
   <button class="mode-btn" data-mode="word"><span class="mode-icon">✎</span><span class="mode-label">Word Form</span><span class="mode-check">✓</span></button>
+  <button class="mode-btn" data-mode="prism"><span class="mode-icon">🔮</span><span class="mode-label">Prism Rave</span><span class="mode-check">✓</span></button>
 </div>
 
 <!-- Paint Controls -->
@@ -289,7 +292,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05060f;font-family:
 <canvas id="bloom"></canvas>
 
 <div id="help-overlay">
-  <h2>⌘ hermes — controls v8</h2>
+  <h2>⌘ hermes — controls v9</h2>
   <div class="help-row">
     <div class="help-col">
       <div class="help-desc"><span class="help-key">1-6</span> switch palette</div>
@@ -298,12 +301,14 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05060f;font-family:
       <div class="help-desc"><span class="help-key">click</span> burst at cursor</div>
       <div class="help-desc"><span class="help-key">hold drag</span> gravity well</div>
       <div class="help-desc"><span class="help-key">☰</span> scene mode panel</div>
+      <div class="help-desc"><span class="help-key">Tab/→←</span> cycle modes</div>
     </div>
     <div class="help-col">
       <div class="help-desc"><span class="help-key">T</span> hyperspace tunnel</div>
       <div class="help-desc"><span class="help-key">P</span> particle paint</div>
       <div class="help-desc"><span class="help-key">C</span> constellation mode</div>
       <div class="help-desc"><span class="help-key">N</span> nebula flow mode</div>
+      <div class="help-desc"><span class="help-key">R</span> prism rave mode</div>
       <div class="help-desc"><span class="help-key">W</span> word form mode</div>
       <div class="help-desc"><span class="help-key">S</span> snapshot (PNG)</div>
       <div class="help-desc"><span class="help-key">G</span> settings panel</div>
@@ -311,6 +316,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05060f;font-family:
       <div class="help-desc"><span class="help-key">M</span> toggle audio</div>
       <div class="help-desc"><span class="help-key">F</span> audio-reactive</div>
       <div class="help-desc"><span class="help-key">? /</span> this help</div>
+      <div class="help-desc" style="margin-top:6px;font-size:10px;color:rgba(200,220,255,.2)">📱 pinch → settings | ⠀2-finger swipe → cycle</div>
     </div>
   </div>
   <div id="help-close">press ? or click to close</div>
@@ -327,7 +333,7 @@ function resize(){
   W=c.width=tc.width=bc.width=transc.width=innerWidth;
   H=c.height=tc.height=bc.height=transc.height=innerHeight;
 }
-resize();addEventListener('resize',resize);
+resize();addEventListener('resize',()=>{resize();initPrismGeometry();});
 
 const PI2=Math.PI*2;
 const rand=(min,max)=>Math.random()*(max-min)+min;
@@ -367,6 +373,7 @@ const SCENE_MODES=[
   {id:'constellation', label:'Constellation', icon:'✦', desc:'Star web & connection focus',  badge:'◇ C O N S T E L L A T I O N ◇', badgeCls:'constellation-mode', nebulaMul:.4, webMul:2.5, starParallax:1.5, tunnelDefault:false, paintMode:false, wordMode:false},
   {id:'nebula',   label:'Nebula Flow',      icon:'🌊', desc:'Emphasized nebula clouds',       badge:'◇ N E B U L A  F L O W ◇',   badgeCls:'nebula-mode', nebulaMul:2.2, webMul:.3,   starParallax:.7,  tunnelDefault:false, paintMode:false, wordMode:false},
   {id:'word',     label:'Word Form',        icon:'✎', desc:'Type text → particle letters',   badge:'◇ W O R D  F O R M ◇',        badgeCls:'word-mode',  nebulaMul:.3,  webMul:0,    starParallax:.4,  tunnelDefault:false, paintMode:false, wordMode:true},
+  {id:'prism',    label:'Prism Rave',       icon:'🔮', desc:'Kaleidoscope geometric rave',    badge:'◇ P R I S M  R A V E ◇',       badgeCls:'prism-mode', nebulaMul:.2,  webMul:0,    starParallax:.3,  tunnelDefault:false, paintMode:false, wordMode:false},
 ];
 let currentMode='cosmic';
 let paintMode=false;
@@ -697,7 +704,8 @@ for(let i=0;i<NEBULA_CNT;i++){
 }
 
 // ─── Particles ──────────────────────────────────────────────────────
-const MAX_PARTICLES=350;
+const MAX_PARTICLES_BASE=350;
+function getEffMaxParticles(){return Math.round(150+cfgDensity*80);}
 const particles=[];
 let mouse={x:W/2,y:H/2,active:false};
 let clickBoom=false,boomTimer=0;
@@ -766,7 +774,7 @@ addEventListener('touchend',()=>{
 function doExplosion(x,y,count){
   clickBoom=true;boomTimer=1.2;
   for(let i=0;i<count;i++){
-    if(particles.length>=MAX_PARTICLES)break;
+    if(particles.length>=getEffMaxParticles())break;
     const ang=rand(0,PI2),spd=rand(120,400);
     particles.push(createParticle(x,y,Math.cos(ang)*spd,Math.sin(ang)*spd,true));
   }
@@ -799,7 +807,7 @@ for(let i=0;i<40;i++){
 
 // ─── Paint Spawn ─────────────────────────────────────────────────────
 function spawnPaintParticle(x,y){
-  if(particles.length>=MAX_PARTICLES)return;
+  if(particles.length>=getEffMaxParticles())return;
   const p=createParticle(x,y,rand(-5,5),rand(-5,5),false);
   p.hue=paintHue;
   p.sat=rand(60,100);
@@ -1045,6 +1053,7 @@ function setSceneMode(modeId){
     currentMode=modeId;
     paintMode=scene.paintMode;
     wordMode=scene.wordMode;
+    prismMode=scene.id==='prism';
     tunnelMode=scene.tunnelDefault;
     tunnelTargetTransition=scene.tunnelDefault?1:0;
 
@@ -1057,7 +1066,7 @@ function setSceneMode(modeId){
     const badge=document.getElementById('mode-badge');
     badge.textContent=scene.badge;
     badge.className='show '+scene.badgeCls;
-    if(scene.tunnelDefault)badge.classList.add('show');
+    if(scene.tunnelDefault||scene.id==='prism')badge.classList.add('show');
     else if(!scene.paintMode&&!scene.wordMode&&modeId!=='constellation'&&modeId!=='nebula')badge.classList.add('show');
 
     // Update panel buttons
@@ -1161,6 +1170,11 @@ addEventListener('keydown',e=>{
     setSceneMode(currentMode==='nebula'?'cosmic':'nebula');
     return;
   }
+  if(k==='r'||k==='R'){
+    e.preventDefault();
+    setSceneMode(currentMode==='prism'?'cosmic':'prism');
+    return;
+  }
   if(k==='t'||k==='T'){
     e.preventDefault();
     const scene=SCENE_MODES.find(m=>m.id===currentMode);
@@ -1232,10 +1246,7 @@ cfgNebulaSlider.addEventListener('input',()=>{
   cfgNebulaVal.textContent=cfgNebulaSpeed;
 });
 
-cfgDensitySlider.addEventListener('input',()=>{
-  cfgDensity=parseFloat(cfgDensitySlider.value);
-  cfgDensityVal.textContent=cfgDensity;
-});
+// Density slider is wired below with particle spawning
 
 function toggleCfg(el,prop){
   el.classList.toggle('on');
@@ -1247,6 +1258,72 @@ function toggleCfg(el,prop){
 cfgReactive.addEventListener('click',()=>toggleCfg(cfgReactive,'reactive'));
 cfgTrails.addEventListener('click',()=>toggleCfg(cfgTrails,'trails'));
 cfgHud.addEventListener('click',()=>toggleCfg(cfgHud,'hud'));
+
+// ─── Keyboard Mode Cycling (Tab / Arrow Keys) ──────────────────────
+addEventListener('keydown',e=>{
+  const k=e.key;
+  // Skip if typing in word input
+  if(wordModalActive)return;
+  if(k==='Tab'||k==='ArrowRight'||k==='ArrowLeft'){
+    e.preventDefault();
+    const idx=SCENE_MODES.findIndex(m=>m.id===currentMode);
+    if(k==='Tab'||k==='ArrowRight'){
+      const next=(idx+1)%SCENE_MODES.length;
+      setSceneMode(SCENE_MODES[next].id);
+    }else{
+      const prev=(idx-1+SCENE_MODES.length)%SCENE_MODES.length;
+      setSceneMode(SCENE_MODES[prev].id);
+    }
+  }
+});
+
+// ─── Mobile Dual-Touch Gestures ────────────────────────────────────
+let touchPinchDist=0;
+let touchModeCycle=false;
+addEventListener('touchstart',e=>{
+  if(e.touches.length===2&&!wordModalActive){
+    const t1=e.touches[0],t2=e.touches[1];
+    touchPinchDist=Math.hypot(t1.clientX-t2.clientX,t1.clientY-t2.clientY);
+    touchModeCycle=true;
+    e.preventDefault();
+  }
+},{passive:false});
+
+addEventListener('touchmove',e=>{
+  if(e.touches.length===2&&touchModeCycle){
+    e.preventDefault();
+    const t1=e.touches[0],t2=e.touches[1];
+    const dist=Math.hypot(t1.clientX-t2.clientX,t1.clientY-t2.clientY);
+    const delta=touchPinchDist-dist;
+
+    // Pinch in → open config, Pinch out → close config
+    if(Math.abs(delta)>80){
+      toggleConfigPanel(delta>0);
+      touchModeCycle=false;
+    }
+
+    // Two-finger horizontal swipe → cycle modes
+    const avgX=(t1.clientX+t2.clientX)/2;
+    const avgY=(t1.clientY+t2.clientY)/2;
+  }
+},{passive:false});
+
+addEventListener('touchend',e=>{
+  touchModeCycle=false;
+});
+
+// ─── Density slider wiring ─────────────────────────────────────────
+cfgDensitySlider.addEventListener('input',()=>{
+  cfgDensity=parseFloat(cfgDensitySlider.value);
+  cfgDensityVal.textContent=cfgDensity;
+  // Density affects how many particles can exist
+  const newMax=getEffMaxParticles();
+  // Gradually adjust to prevent sudden pop
+  while(particles.length<newMax&&particles.length<getEffMaxParticles()*1.5&&Math.random()<.3){
+    const ang=rand(0,PI2),spd=rand(10,40);
+    particles.push(createParticle(rand(0,W),rand(0,H),Math.cos(ang)*spd,Math.sin(ang)*spd));
+  }
+});
 
 // ─── Scene Transition Effect ────────────────────────────────────────
 function drawSceneTransition(time){
@@ -1642,7 +1719,7 @@ function drawParticles(dt){
       a.lig=Math.min(95,a.lig+8);
       a.merged=true;
       b.life=0;b.merged=true;
-      if(aliveCt<MAX_PARTICLES-5){
+      if(aliveCt<getEffMaxParticles()-5){
         const pPal=PALETTES[paletteIdx];
         for(let k=0;k<3;k++){
           const ang=rand(0,PI2),spd=rand(40,120);
@@ -1678,7 +1755,129 @@ function drawParticles(dt){
   particles.length>0&&(document.getElementById('particlesC').textContent=particles.length);
 }
 
-// ─── Fade trail canvas ─────────────────────────────────────────────
+// ─── Prism Rave — Kaleidoscope Geometry ──────────────────────────────
+let prismMode=false;
+let prismGeometry=[];
+const PRISM_SIDES=8;
+let prismHue=0;
+let prismPulse=0;
+let prismRotation=0;
+let prismWavePhase=0;
+
+function initPrismGeometry(){
+  prismGeometry=[];
+  // Generate concentric layers of polygon rings
+  const layers=6;
+  const baseR=Math.min(W,H)*.08;
+  for(let l=0;l<layers;l++){
+    const segments=PRISM_SIDES-l%2+2;
+    const radius=baseR*(l+1)*1.1;
+    const points=[];
+    for(let i=0;i<segments;i++){
+      const a=(PI2/segments)*i-Math.PI/2;
+      points.push({x:Math.cos(a)*radius,y:Math.sin(a)*radius});
+    }
+    prismGeometry.push({segments,radius,points,phase:rand(0,PI2),hueOff:l*40,lineWidth:1+l*.4});
+  }
+}
+initPrismGeometry();
+
+function drawPrismRave(time){
+  if(currentMode!=='prism')return;
+  ctx.save();
+  const cx=W/2,cy=H/2;
+  const ar=audioLevel*2;
+  const p=Math.sin(time*.001)*.5+.5;
+  prismHue=(time*.03)%360;
+  prismPulse=Math.sin(time*.002)*.3+1;
+  prismRotation+=.002*(cfgTunnelSpeed/5);
+  prismWavePhase+=.02;
+
+  // ── Draw mirrored kaleidoscope sectors ──
+  const sectors=PRISM_SIDES;
+  for(let s=0;s<sectors;s++){
+    const sectorAngle=(PI2/sectors)*s+prismRotation;
+    ctx.save();
+    ctx.translate(cx,cy);
+    ctx.rotate(sectorAngle);
+
+    // ── Draw concentric polygon rings ──
+    for(const layer of prismGeometry){
+      const pulseR=layer.radius*prismPulse*(1+ar*.15);
+      const hue=(prismHue+layer.hueOff+time*.01)%360;
+      const sat=70+Math.sin(time*.001+layer.phase)*20;
+      const lig=50+Math.sin(time*.0015+layer.phase+prismWavePhase)*20;
+      const alpha=.15+Math.sin(time*.001+layer.phase)*.1+ar*.1;
+
+      ctx.globalAlpha=clamp(alpha,.05,.4);
+      ctx.strokeStyle=`hsla(${hue},${sat}%,${lig}%,${ctx.globalAlpha})`;
+      ctx.lineWidth=layer.lineWidth;
+      ctx.shadowColor=`hsla(${hue},${sat}%,${lig}%,.3)`;
+      ctx.shadowBlur=8+audioLevel*20;
+
+      ctx.beginPath();
+      for(let i=0;i<layer.points.length;i++){
+        const px=layer.points[i].x*pulseR;
+        const py=layer.points[i].y*pulseR;
+        if(i===0)ctx.moveTo(px,py);
+        else ctx.lineTo(px,py);
+      }
+      ctx.closePath();
+      ctx.stroke();
+
+      // Fill with subtle gradient
+      const fillAlpha=.02+Math.sin(time*.0005+layer.phase)*.01+ar*.03;
+      ctx.fillStyle=`hsla(${hue},${sat}%,${lig+10}%,${clamp(fillAlpha,0,.06)})`;
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+  ctx.shadowBlur=0;
+  ctx.globalAlpha=1;
+
+  // ── Central glowing mandala dot ──
+  const mHue=(prismHue+180)%360;
+  const mg=ctx.createRadialGradient(cx,cy,0,cx,cy,60+ar*40);
+  mg.addColorStop(0,`hsla(${mHue},100%,80%,${.3+ar*.2})`);
+  mg.addColorStop(.5,`hsla(${mHue},100%,60%,${.1+ar*.1})`);
+  mg.addColorStop(1,'hsla(0,0%,0%,0)');
+  ctx.fillStyle=mg;ctx.beginPath();ctx.arc(cx,cy,60+ar*40,0,PI2);ctx.fill();
+
+  // ── Rotating laser lines ──
+  for(let i=0;i<8;i++){
+    const a=(PI2/8)*i+prismRotation*3+Math.sin(time*.0005+i)*.3;
+    const len=Math.min(W,H)*.5*(.6+Math.sin(time*.0025+i*.8)*.4+ar*.15);
+    ctx.globalAlpha=.08+Math.sin(time*.0015+i*1.2)*.04+ar*.06;
+    const lhue=(prismHue+i*45)%360;
+    ctx.strokeStyle=`hsla(${lhue},100%,70%,${ctx.globalAlpha})`;
+    ctx.lineWidth=1.5;
+    ctx.shadowColor=`hsla(${lhue},100%,70%,.2)`;
+    ctx.shadowBlur=12;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(a)*len,cy+Math.sin(a)*len);ctx.stroke();
+  }
+  ctx.shadowBlur=0;
+  ctx.globalAlpha=1;
+
+  // ── Prism particles (tiny colored dots swirling outward) ──
+  prismPulse+=.02;
+  const count=60+Math.floor(audioLevel*40);
+  for(let i=0;i<count;i++){
+    const t=i/count;
+    const a=PI2*t+prismPulse*3+time*.0005;
+    const dist=80+Math.sin(time*.001+i*.3)*40+t*Math.min(W,H)*.35;
+    const px=cx+Math.cos(a)*dist;
+    const py=cy+Math.sin(a)*dist;
+    const phue=(prismHue+Math.floor(t*360))%360;
+    const palpha=.15+Math.sin(time*.002+i*.7)*.1+ar*.08;
+    ctx.globalAlpha=clamp(palpha,0,.4);
+    ctx.fillStyle=`hsla(${phue},100%,70%,${ctx.globalAlpha})`;
+    ctx.beginPath();ctx.arc(px,py,1.5+ar*2+Math.sin(time*.003+i*.5),0,PI2);ctx.fill();
+  }
+  ctx.globalAlpha=1;
+  ctx.restore();
+}
+
+// ─── Trail canvas fade ─────────────────────────────────────────────
 function fadeTrailCanvas(){
   if(!showTrails){tctx.clearRect(0,0,W,H);return}
   const p=PALETTES[paletteIdx];
@@ -1720,6 +1919,7 @@ function loop(time){
   drawNebulas(time);
   drawStars(time);
   drawShooters(dt);
+  drawPrismRave(time);
   drawParticles(dt);
 
   // Word particles drawn on top
