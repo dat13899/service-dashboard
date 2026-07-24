@@ -635,6 +635,27 @@ const server = http.createServer(async (req, res) => {
     return json(res, { ok: false, reason: 'no-active-stream' });
   }
 
+  // ── YouTube fallback pool (used when yt-dlp fails) ──
+  const YT_FALLBACK = [
+    { id: 'dQw4w9WgXcQ', title: 'Rick Astley — Never Gonna Give You Up', channel: 'Rick Astley', duration: 212 },
+    { id: 'jNQXAC9IVRw', title: 'Me at the zoo', channel: 'jawed', duration: 19 },
+    { id: 'kJQP7kiw5Fk', title: 'Luis Fonsi — Despacito ft. Daddy Yankee', channel: 'Luis Fonsi', duration: 282 },
+    { id: '9bZkp7q19f0', title: 'PSY — GANGNAM STYLE', channel: 'officialpsy', duration: 253 },
+    { id: 'RgKAFK5djSk', title: 'Wiz Khalifa — See You Again ft. Charlie Puth', channel: 'Wiz Khalifa', duration: 237 },
+    { id: 'OPf0YbXqDm0', title: 'Mark Ronson — Uptown Funk ft. Bruno Mars', channel: 'Mark Ronson', duration: 271 },
+    { id: '60ItHLz5WEA', title: 'Fisher — Losing It', channel: 'Fisher', duration: 211 },
+    { id: 'hT_nvWreIhg', title: 'OneRepublic — Counting Stars', channel: 'OneRepublic', duration: 274 },
+    { id: 'fRh_vgS2dFE', title: 'The Chainsmokers — Closer ft. Halsey', channel: 'Chainsmokers', duration: 275 },
+    { id: 'lp-EO5I60KA', title: 'Eminem — Lose Yourself', channel: 'EminemMusic', duration: 327 },
+    { id: 'fJ9rUzIMcZQ', title: 'Queen — Bohemian Rhapsody', channel: 'Queen Official', duration: 355 },
+    { id: 'hTWKbfoikeg', title: 'Nirvana — Smells Like Teen Spirit', channel: 'Nirvana', duration: 301 },
+    { id: 'V1bFr2SWP1I', title: 'O-Zone — Dragostea Din Tei', channel: 'O-Zone', duration: 215 },
+    { id: 'YQHsXMglC9A', title: 'Adele — Hello', channel: 'Adele', duration: 355 },
+    { id: 'CevxZvSJLk8', title: 'Katy Perry — Roar', channel: 'KatyPerry', duration: 270 },
+    { id: 'JGwWNGJdvx8', title: 'Ed Sheeran — Shape of You', channel: 'Ed Sheeran', duration: 264 },
+  ];
+  let YT_CACHE = [];
+
   // GET /api/utilities/random — random discovery
   if (u.pathname === '/api/utilities/random' && method === 'GET') {
     const type = u.searchParams.get('type') || 'any';
@@ -660,12 +681,26 @@ const server = http.createServer(async (req, res) => {
         const f = facts[Math.floor(Math.random() * facts.length)];
         return json(res, { type: 'fact', text: f.text || f, source: f.source || null });
       }
-      // youtube fallback
-      const keywords = ['beautiful scenery', 'strange things', 'unexplained', 'rare skills', 'satisfying video', 'unique hobby', 'amazing creations', 'interesting animals', 'rare technology', 'oddly satisfying', 'behind the scenes', 'time lapse'];
-      const q = keywords[Math.floor(Math.random() * keywords.length)];
-      const out = execSync(`yt-dlp --dump-json --no-warnings --default-search "ytsearch1:${q}" "${q}"`, { timeout: 10000, maxBuffer: 1024 * 512, encoding: 'utf8', windowsHide: true });
-      const v = JSON.parse(out.split('\n').filter(Boolean)[0]);
-      return json(res, { type: 'youtube', title: v.title, url: 'https://youtube.com/watch?v=' + v.id, thumbnail: v.thumbnail, channel: v.channel || v.uploader, duration: v.duration });
+      // youtube — try live fetch first, fall back to cache or pool
+      let video = null;
+      try {
+        const keywords = ['beautiful scenery', 'strange things', 'unexplained', 'rare skills', 'satisfying video', 'unique hobby', 'amazing creations', 'interesting animals', 'rare technology', 'oddly satisfying', 'behind the scenes', 'time lapse', 'satisfying compilation', 'oddly satisfying video', 'interesting facts', 'rare talent show', 'unique skills'];
+        const q = keywords[Math.floor(Math.random() * keywords.length)];
+        const out = execSync(`yt-dlp --dump-json --no-warnings --default-search "ytsearch" "${q}"`, { timeout: 15000, maxBuffer: 1024 * 512, encoding: 'utf8', windowsHide: true });
+        const v = JSON.parse(out.split('\n').filter(Boolean)[0]);
+        if (v && v.id) {
+          video = { type: 'youtube', title: v.title, url: 'https://youtube.com/watch?v=' + v.id, thumbnail: v.thumbnail, channel: v.channel || v.uploader || '', duration: v.duration || 0 };
+          YT_CACHE.push(video);
+          if (YT_CACHE.length > 50) YT_CACHE.shift();
+        }
+      } catch (_) { /* yt-dlp failed, fall through */ }
+      if (!video) {
+        // pick from cache first, then fallback pool
+        const pool = YT_CACHE.length > 0 ? YT_CACHE : YT_FALLBACK;
+        const f = pool[Math.floor(Math.random() * pool.length)];
+        video = { type: 'youtube', title: f.title, url: 'https://youtube.com/watch?v=' + f.id, thumbnail: 'https://i.ytimg.com/vi/' + f.id + '/mqdefault.jpg', channel: f.channel || '', duration: f.duration || 0 };
+      }
+      return json(res, video);
     } catch (e) { return json(res, { error: 'fetch-failed' }, 500); }
   }
 
