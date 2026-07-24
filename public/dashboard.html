@@ -76,14 +76,7 @@
 <div class="blob-container"><div class="blob"></div><div class="blob"></div><div class="blob"></div><div class="blob"></div></div>
 
 <div id="nav-target" data-active="dashboard"></div>
-<script>
-fetch('/navbar.html').then(r=>r.text()).then(t=>{
-  const el=document.getElementById('nav-target'),a=el.dataset.active,bc=el.dataset.bc?' <span class="has-text-grey-light" style="font-weight:400;margin-left:4px">'+el.dataset.bc+'</span>':'';
-  const i=localStorage.getItem('btdat-theme')==='light'?'🌙':'☀️';
-  el.outerHTML=t.replace(/{BREADCRUMB}/g,bc).replace(/{THEME_ICON}/g,i).replace(/{HOME}/g,a==='home'?' has-text-link':'').replace(/{DASH}/g,a==='dashboard'?' has-text-link':'').replace(/{DOCS}/g,a==='docs'?' has-text-link':'').replace(/{UTIL}/g,a==='utilities'?' has-text-link':'').replace(/{WIDGET}/g,a==='widget'?' has-text-link':'');
-  const n=document.querySelector('.navbar.is-glass');if(n){const o=()=>n.classList.toggle('scrolled',window.scrollY>20);window.addEventListener('scroll',o,{passive:true});o()}
-});
-</script>
+<script>initNavbar()</script>
 <div class="navbar-spacer"></div>
 
 <main id="dash-main">

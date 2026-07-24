@@ -62,3 +62,15 @@ function toast(msg,type='success',duration=3000){
   const mo=new MutationObserver(()=>initReveal());
   mo.observe(document.body,{childList:true,subtree:true});
 })();
+
+// ── Shared navbar ──
+function initNavbar(){
+  const el=document.getElementById('nav-target');
+  if(!el)return;
+  const a=el.dataset.active,bc=el.dataset.bc?' <span class="has-text-grey-light" style="font-weight:400;margin-left:4px">'+el.dataset.bc+'</span>':'';
+  const i=localStorage.getItem('btdat-theme')==='light'?'🌙':'☀️';
+  fetch('/navbar.html').then(r=>r.text()).then(t=>{
+    el.outerHTML=t.replace(/{BREADCRUMB}/g,bc).replace(/{THEME_ICON}/g,i).replace(/{HOME}/g,a==='home'?' has-text-link':'').replace(/{DASH}/g,a==='dashboard'?' has-text-link':'').replace(/{DOCS}/g,a==='docs'?' has-text-link':'').replace(/{UTIL}/g,a==='utilities'?' has-text-link':'').replace(/{WIDGET}/g,a==='widget'?' has-text-link':'');
+    const n=document.querySelector('.navbar.is-glass');if(n){const o=()=>n.classList.toggle('scrolled',window.scrollY>20);window.addEventListener('scroll',o,{passive:true});o()}
+  });
+}
