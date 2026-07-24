@@ -1,8 +1,8 @@
 {
-  "iteration": 9,
+  "iteration": 10,
   "phase": "build",
-  "vision": "Cosmic Dreamscape v9 — Prism Rave 7th scene mode with kaleidoscope polygon geometry, color-cycling mirrored sectors, central mandala glow, rotating laser lines, and swirling prism particles + Tab/Arrow key cycling between all 7 scene modes + mobile dual-touch gestures (pinch to open/close config panel) + density slider actually controls MAX_PARTICLES dynamically (150–950 particles) via getEffMaxParticles() function + R key shortcut for Prism Rave + updated help overlay with mobile gesture hints.",
-  "goal": "Thêm scene Prism Rave (kaleidoscope geometry), Tab/arrow key cycling, mobile pinch gestures, và wiring density slider vào particle system.",
+  "vision": "Cosmic Dreamscape v10 — Aurora Borealis 8th scene mode + Circular Audio Visualizer ring. Aurora: 6-layer flowing curtain waves with additive blended sinusoidal bands in green/cyan/blue/violet spectrum, audio-reactive glow multiplier, configurable speed slider. Visualizer: 64-bar radial EQ ring around screen center, draws audio frequency data as hue-rotating bars, central glow pulse tied to audio level. A key toggles Aurora mode. Config panel has Aurora speed slider + Viz toggle switch. Tab/Arrow cycling includes all 8 modes.",
+  "goal": "Thêm scene Aurora Borealis (8th mode) + Circular Audio Visualizer ring radial quanh màn hình.",
   "built": [
     "v1: 600 stars parallax, 8 nebulas, 60 particles, trails, connections, click explosion",
     "v2: 6 color palettes, Web Audio ambient (4 drone layers + chimes), shooting stars, keyboard controls, palette UI, constellation wander",
@@ -12,15 +12,17 @@
     "v6: Scene Mode system — 5 modes (Cosmic/Hyperspace/Paint/Constellation/Nebula) with slide-in panel, Particle Paint mode with brush size & hue range sliders, clear button, paint particles spawn on drag with glow boost + thicker trails, Constellation mode (2.5x web, 3x particle connections, wider connection range), Nebula Flow mode (2.2x nebula alpha/size), per-scene multipliers, mode-specific badge colors, keyboard shortcuts P/C/N, paint hue influences bloom canvas color, fixed lerp() bug, fixed tunnel rotation typo",
     "v7: Particle Word Form mode (6th scene — type text, particles assemble into glowing letter shapes from 800px offscreen canvas, auto-disperse after 8s, green-accented badge), interactive gradient strip color picker for paint brush (drag across full rainbow spectrum, highlights hue indicator), snapshot export (S key saves 3-canvas composite as downloadable PNG with filename hermes-{mode}-{timestamp}.png, toast notification), word input modal with Enter submit / Escape dismiss, 3 buttons wide mode panel (136px)",
     "v8: Config panel with real-time sliders (tunnel speed, bloom intensity, nebula drift speed) + 3 toggle switches (audio reactive, trails, HUD), spiral swirl scene transition animation (swirl-closes then opens-to-reveal) when switching scene modes, G key toggles settings panel, settings button (⚙) in mode panel area, trail toggle clears trail canvas instantly, tunnel/nebula speed dynamically adjustable, bloom intensity multiplier follows config slider",
-    "v9: Prism Rave scene mode (7th mode, R key) — 8-sector kaleidoscope with 6 concentric polygon layers, hue-cycling, audio-reactive glow and rotation, central mandala dot, 8 rotating laser lines, swirling prism particles. Tab / Arrow key cycling through all 7 scene modes. Mobile dual-touch: pinch to open/close config panel. Density slider actually wires into getEffMaxParticles() — dynamically adjusts spawn cap 150–950 particles across explosions, paint, and natural spawn. Resize handler reinitializes prism geometry."
+    "v9: Prism Rave scene mode (7th mode, R key) — 8-sector kaleidoscope with 6 concentric polygon layers, hue-cycling, audio-reactive glow and rotation, central mandala dot, 8 rotating laser lines, swirling prism particles. Tab / Arrow key cycling through all 7 scene modes. Mobile dual-touch: pinch to open/close config panel. Density slider actually wires into getEffMaxParticles() — dynamically adjusts spawn cap 150–950 particles across explosions, paint, and natural spawn. Resize handler reinitializes prism geometry.",
+    "v10: Aurora Borealis scene mode (8th mode, A key) — 6 flowing aurora curtain bands with sinusoidal wave superposition, additive green/cyan/blue/violet hsla blending, audio-reactive glow multiplier, configurable speed slider (cfgAuroraSpeed). Circular Audio Visualizer ring: 64 radially-spaced frequency bars rotating around center, hue cycles per bar, audioLevel drives height/alpha, central glow pulse. Viz toggle in config panel. Tab/Arrow cycling extended to 8 modes. Resize reinit includes aurora bands."
   ],
   "todo": [
     "Thêm video recording / GIF export mode với WebGL capture",
     "Thêm shader-based background (WebGL fragment shaders thay vì CPU noise)",
     "Thêm mid-air particle text that follows mouse on a path",
     "Thêm audio visualizer bars that wrap around the kaleidoscope",
-    "Thêm SVG overlay hiển thị dạng waveform dưới dạng circular ring",
-    "Export preset scenes as data URL bookmarks (shareable)"
+    "Export preset scenes as data URL bookmarks (shareable)",
+    "Thêm 3D perspective tilt parallax dựa trên con trỏ chuột",
+    "Thêm Stargate wormhole scene mode (9th mode, warp-ring geometry)"
   ],
   "critic": "",
   "score": null,
