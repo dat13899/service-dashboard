@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Random Widget — btdat.io.vn</title>
+<title>🎲 Widget — btdat.io.vn</title>
 <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
@@ -13,10 +13,27 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap">
 <link rel="stylesheet" href="/assets/global.css?v=2">
 <style>
-.tabs-container{margin-bottom:1.5rem}
-.tabs-container .tabs li a{color:var(--text-dim);border-bottom-color:var(--border);transition:.15s}
-.tabs-container .tabs li.is-active a{color:var(--accent);border-bottom-color:var(--accent)}
-.tab-panel{display:none}.tab-panel.active{display:block}
+/* ── Grid view ── */
+.widget-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1.5rem}
+@media(max-width:768px){.widget-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.widget-grid{grid-template-columns:1fr}}
+.widget-card{background:var(--glass-bg);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:16px;padding:1.5rem .8rem;cursor:pointer;transition:transform .2s,box-shadow .2s;text-align:center}
+.widget-card:hover{transform:translateY(-6px) scale(1.02);box-shadow:0 16px 48px var(--glass-shadow)}
+.widget-card:active{transform:scale(.97)}
+.widget-card .card-icon{font-size:2.5rem;margin-bottom:.4rem;line-height:1.2}
+.widget-card .card-title{font-size:.95rem;font-weight:600;margin-bottom:.2rem;color:var(--text-strong)}
+.widget-card .card-desc{font-size:.75rem;color:var(--text-dim);line-height:1.4}
+.widget-card .card-badge{display:inline-block;font-size:.55rem;padding:.12rem .5rem;border-radius:10px;color:#fff;margin-top:.4rem;font-weight:500;letter-spacing:.3px}
+.grid-title{text-align:center;margin-bottom:.5rem}
+.grid-title h1{font-size:1.3rem;font-weight:700}
+.grid-title p{font-size:.85rem;color:var(--text-dim)}
+
+/* ── Detail view ── */
+.detail-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.back-btn{background:none;border:1px solid var(--glass-border);color:var(--text-dim);padding:.4rem .8rem;border-radius:8px;cursor:pointer;font-size:.8rem;transition:.15s;display:flex;align-items:center;gap:.3rem}
+.back-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.detail-title{font-size:1.1rem;font-weight:600}
+.widget-panel{display:none}
 
 /* Random Discovery (existing) */
 .rand-card{background:var(--glass-bg);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:12px;padding:1.5rem;min-height:200px}
@@ -46,7 +63,6 @@
 .brain-bar .status{font-size:.7rem;color:var(--text-dim);margin-left:auto;align-self:center}
 .brain-hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:.9rem;pointer-events:none;z-index:0}
 .no-notes .brain-note{display:none}
-@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
 /* ── Color Palette ── */
 .palette-grid{display:flex;gap:8px;flex-wrap:wrap;margin:.5rem 0 1rem}
@@ -55,12 +71,16 @@
 .palette-hex{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.55);color:#fff;padding:3px 10px;border-radius:6px;font-size:.75rem;font-family:monospace;backdrop-filter:blur(4px);letter-spacing:.5px}
 .palette-label{font-size:.7rem;color:var(--text-dim);margin-bottom:.3rem}
 
-/* ── Food Picker ── */
+/* ── Widget card base ── */
 .wid-card{background:var(--glass-bg);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:12px;padding:2rem;min-height:200px;text-align:center}
 .wid-emoji{font-size:4rem;margin-bottom:.5rem;line-height:1.2}
 .wid-name{font-size:1.3rem;font-weight:600;margin-bottom:.4rem}
-.wid-cat{display:inline-block;background:var(--accent);color:#fff;padding:.2rem .8rem;border-radius:20px;font-size:.7rem;font-weight:500}
+.wid-cat{display:inline-block;color:#fff;padding:.2rem .8rem;border-radius:20px;font-size:.7rem;font-weight:500}
 .wid-desc{color:var(--text-dim);font-size:.85rem;margin-top:.6rem;line-height:1.5}
+.wid-btn{border:1px solid var(--glass-border);background:rgba(255,255,255,.05);color:var(--text);padding:.4rem .8rem;border-radius:8px;font-size:.8rem;cursor:pointer;transition:.15s}
+.wid-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.wid-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600}
+.wid-btn.primary:hover{background:var(--accent-hover)}
 
 /* ── Mini Games ── */
 .games-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem}
@@ -71,16 +91,17 @@
 @keyframes diceShake{0%{transform:rotate(0) scale(1)}25%{transform:rotate(90deg) scale(1.3)}50%{transform:rotate(180deg) scale(.9)}75%{transform:rotate(270deg) scale(1.2)}100%{transform:rotate(360deg) scale(1)}}
 .coin-flip{animation:coinFlip .4s ease}
 @keyframes coinFlip{0%{transform:rotateY(0)}50%{transform:rotateY(720deg)}100%{transform:rotateY(0)}}
-.game-box button,.wid-btn{border:1px solid var(--glass-border);background:rgba(255,255,255,.05);color:var(--text);padding:.4rem .8rem;border-radius:8px;font-size:.8rem;cursor:pointer;transition:.15s}
-.game-box button:hover,.wid-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
-.game-box .primary,.wid-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600}
-.game-box .primary:hover,.wid-btn.primary:hover{background:var(--accent-hover)}
+.game-box button{border:1px solid var(--glass-border);background:rgba(255,255,255,.05);color:var(--text);padding:.4rem .8rem;border-radius:8px;font-size:.8rem;cursor:pointer;transition:.15s}
+.game-box button:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.game-box .primary{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600}
+.game-box .primary:hover{background:var(--accent-hover)}
 .game-range{display:flex;gap:.5rem;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:.5rem}
 .game-range label{font-size:.8rem;color:var(--text-dim)}
 .game-range input{width:70px;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:.3rem;color:var(--text);text-align:center;font-size:.85rem}
 .game-range .num-result{font-size:2.5rem;font-weight:700;margin-top:.5rem;color:var(--accent)}
+.num-result{font-size:2.5rem;font-weight:700;margin-top:.5rem;color:var(--accent);text-align:center}
 
-/* ── Password Generator ── */
+/* ── Password ── */
 .pw-card{background:var(--glass-bg);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:12px;padding:1.5rem}
 .pw-display{font-family:monospace;font-size:1.2rem;padding:.8rem;background:var(--surface-2);border-radius:8px;border:1px solid var(--border);text-align:center;word-break:break-all;min-height:3.2rem;display:flex;align-items:center;justify-content:center;user-select:all}
 .pw-options{display:flex;gap:1rem;flex-wrap:wrap;margin-top:1rem}
@@ -94,6 +115,7 @@
 .pw-strength-bar{height:6px;background:var(--surface-2);border-radius:3px;overflow:hidden}
 .pw-strength-bar div{height:100%;border-radius:3px;transition:width .3s,background .3s;width:0}
 .pw-strength-label{font-size:.65rem;color:var(--text-dim);margin-top:.2rem}
+.pw-btns{display:flex;gap:.5rem;margin-top:.8rem}
 
 /* ── Activities ── */
 .act-card{text-align:center;padding:2rem}
@@ -102,17 +124,19 @@
 .act-cat{display:inline-block;padding:.2rem .8rem;border-radius:20px;font-size:.7rem;color:#fff;font-weight:500}
 .act-cat.sang-tao{background:#818cf8}.act-cat.thu-gian{background:#22c55e}.act-cat.hoc-tap{background:#f59e0b}.act-cat.van-dong{background:#ef4444}.act-cat.xa-hoi{background:#06b6d4}
 
-/* ── Gradient Generator ── */
+/* ── Gradient ── */
 .grad-preview{height:200px;border-radius:12px;border:1px solid var(--glass-border);margin-bottom:.8rem;transition:background .3s}
 .grad-code{background:var(--surface-2);padding:.8rem;border-radius:8px;font-family:monospace;font-size:.8rem;border:1px solid var(--border);word-break:break-all;user-select:all}
 .grad-options{display:flex;gap:1rem;flex-wrap:wrap;margin-top:.8rem;align-items:center}
 .grad-options select{background:var(--surface-2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:.35rem .6rem;font-size:.85rem;cursor:pointer}
-.grad-options select:focus{outline:none;border-color:var(--accent)}
 
-/* ── Empty state ── */
+/* ── Shared ── */
 .empty-state{padding:2rem 1rem;text-align:center;color:var(--text-dim)}
 .empty-state .icon{font-size:3rem;margin-bottom:.5rem}
 .empty-state p{font-size:.9rem}
+#grid-view,#detail-view{display:none}
+#grid-view.active,#detail-view.active{display:block}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 </style>
 </head>
 <body>
@@ -120,7 +144,7 @@
 
 <nav class="navbar is-glass" role="navigation">
   <div class="navbar-brand">
-    <a class="navbar-item has-text-weight-bold" href="/">btdat.io.vn <span class="has-text-grey-light" style="font-weight:400;margin-left:4px">/ random widget</span></a>
+    <a class="navbar-item has-text-weight-bold" href="/">btdat.io.vn <span class="has-text-grey-light" style="font-weight:400;margin-left:4px">/ widget</span></a>
     <a role="button" class="navbar-burger" onclick="document.querySelector('.navbar-menu').classList.toggle('is-active')"><span></span><span></span><span></span></a>
   </div>
   <div class="navbar-menu">
@@ -138,169 +162,173 @@
 
 <main class="section">
   <div class="container">
-    <div class="tabs-container">
-      <div class="tabs is-small">
-        <ul>
-          <li class="is-active" data-tab="random"><a onclick="switchTab('random')">🎲 Khám phá</a></li>
-          <li data-tab="colors"><a onclick="switchTab('colors')">🎨 Màu sắc</a></li>
-          <li data-tab="food"><a onclick="switchTab('food')">🍜 Đồ ăn</a></li>
-          <li data-tab="games"><a onclick="switchTab('games')">🎲 Mini Game</a></li>
-          <li data-tab="password"><a onclick="switchTab('password')">🔐 Mật khẩu</a></li>
-          <li data-tab="activities"><a onclick="switchTab('activities')">💭 Hoạt động</a></li>
-          <li data-tab="gradient"><a onclick="switchTab('gradient')">🌈 Gradient</a></li>
-          <li data-tab="brain"><a onclick="switchTab('brain')">🧠 Brain Dump</a></li>
-        </ul>
+
+    <!-- ── Grid view ── -->
+    <div id="grid-view">
+      <div class="grid-title">
+        <h1>🎲 Widget</h1>
+        <p>Chọn widget để sử dụng</p>
       </div>
+      <div class="widget-grid" id="widget-grid"></div>
     </div>
 
-    <!-- Tab: Random Discovery -->
-    <div class="tab-panel active" id="tab-random">
-      <div class="rand-card" id="rand-card">
-        <div class="rand-source">Bấm <strong>Khám phá</strong> để bắt đầu</div>
-        <div class="empty-state" id="rand-empty">
-          <div class="icon">🎲</div>
-          <p>Mỗi lần bấm ra 1 thứ ngẫu nhiên: Wikipedia, fact, YouTube</p>
-        </div>
-        <div id="rand-skel" class="rand-skel" style="display:none">
-          <div class="skel-line"></div><div class="skel-line"></div><div class="skel-line"></div><div class="skel-line"></div>
-        </div>
-        <div id="rand-result" style="display:none">
-          <div class="rand-source" id="r-source"></div>
-          <div class="title" id="r-title"></div>
-          <div class="extract" id="r-extract"></div>
-        </div>
-        <div class="rand-btn-group">
-          <button class="primary" onclick="discover()"><i class="fas fa-dice"></i> Khám phá</button>
-          <button onclick="discover('wiki')">Wikipedia</button>
-          <button onclick="discover('fact')">Fact</button>
-          <button onclick="discover('youtube')">YouTube</button>
-        </div>
+    <!-- ── Detail view ── -->
+    <div id="detail-view">
+      <div class="detail-header">
+        <button class="back-btn" onclick="closeWidget()"><i class="fas fa-arrow-left"></i> Widgets</button>
+        <span class="detail-title" id="detail-title"></span>
       </div>
-    </div>
 
-    <!-- Tab: Color Palette -->
-    <div class="tab-panel" id="tab-colors">
-      <div class="wid-card" style="cursor:default">
-        <div style="text-align:left;margin-bottom:.5rem">
-          <span class="wid-cat" style="background:var(--accent)">HSL Golden Ratio</span>
-        </div>
-        <div class="palette-label">Click vào màu để copy mã hex</div>
-        <div class="palette-grid" id="palette-grid"></div>
-        <button class="wid-btn primary" onclick="genPalette()"><i class="fas fa-dice"></i> Random màu</button>
-        <button class="wid-btn" onclick="copyPalette()"><i class="fas fa-copy"></i> Copy tất cả</button>
-      </div>
-    </div>
-
-    <!-- Tab: Food Picker -->
-    <div class="tab-panel" id="tab-food">
-      <div class="wid-card" id="food-card">
-        <div class="empty-state" id="food-empty">
-          <div class="icon">🍜</div>
-          <p>Bấm để tìm món ăn ngẫu nhiên</p>
-        </div>
-        <div id="food-result" class="wid-card" style="display:none;border:none;padding:0;min-height:auto;box-shadow:none">
-          <div class="wid-emoji" id="food-emoji"></div>
-          <div class="wid-name" id="food-name"></div>
-          <div class="wid-cat" id="food-cat"></div>
-          <div class="wid-desc" id="food-desc"></div>
-        </div>
-        <button class="wid-btn primary" onclick="pickFood()" style="margin-top:1rem"><i class="fas fa-utensils"></i> Ăn gì?</button>
-      </div>
-    </div>
-
-    <!-- Tab: Mini Games -->
-    <div class="tab-panel" id="tab-games">
-      <div class="games-grid">
-        <div class="game-box">
-          <h3>🎲 Xúc xắc</h3>
-          <div class="game-result" id="dice-result">⚀</div>
-          <button class="primary" onclick="rollDice()">Lắc!</button>
-        </div>
-        <div class="game-box">
-          <h3>🪙 Tung đồng xu</h3>
-          <div class="game-result" id="coin-result">👑</div>
-          <button class="primary" onclick="flipCoin()">Tung!</button>
-        </div>
-        <div class="game-box">
-          <h3>🔢 Số ngẫu nhiên</h3>
-          <div class="game-range">
-            <label>Từ</label>
-            <input type="number" id="num-min" value="1" min="-9999" max="9999">
-            <label>đến</label>
-            <input type="number" id="num-max" value="100" min="-9999" max="9999">
+      <!-- Random Discovery -->
+      <div class="widget-panel" id="panel-random">
+        <div class="rand-card" id="rand-card">
+          <div class="rand-source">Bấm <strong>Khám phá</strong> để bắt đầu</div>
+          <div class="empty-state" id="rand-empty">
+            <div class="icon">🎲</div>
+            <p>Mỗi lần bấm ra 1 thứ ngẫu nhiên: Wikipedia, fact, YouTube</p>
           </div>
-          <div class="num-result" id="num-result">50</div>
-          <button class="primary" onclick="randNum()">Lấy số!</button>
+          <div id="rand-skel" class="rand-skel" style="display:none">
+            <div class="skel-line"></div><div class="skel-line"></div><div class="skel-line"></div><div class="skel-line"></div>
+          </div>
+          <div id="rand-result" style="display:none">
+            <div class="rand-source" id="r-source"></div>
+            <div class="title" id="r-title"></div>
+            <div class="extract" id="r-extract"></div>
+          </div>
+          <div class="rand-btn-group">
+            <button class="primary" onclick="discover()"><i class="fas fa-dice"></i> Khám phá</button>
+            <button onclick="discover('wiki')">Wikipedia</button>
+            <button onclick="discover('fact')">Fact</button>
+            <button onclick="discover('youtube')">YouTube</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Color Palette -->
+      <div class="widget-panel" id="panel-colors">
+        <div class="wid-card" style="cursor:default">
+          <div style="text-align:left;margin-bottom:.5rem">
+            <span class="wid-cat" style="background:#a855f7">HSL Golden Ratio</span>
+          </div>
+          <div class="palette-label">Click vào màu để copy mã hex</div>
+          <div class="palette-grid" id="palette-grid"></div>
+          <button class="wid-btn primary" onclick="genPalette()"><i class="fas fa-dice"></i> Random màu</button>
+          <button class="wid-btn" onclick="copyPalette()"><i class="fas fa-copy"></i> Copy tất cả</button>
+        </div>
+      </div>
+
+      <!-- Food Picker -->
+      <div class="widget-panel" id="panel-food">
+        <div class="wid-card" id="food-card">
+          <div class="empty-state" id="food-empty">
+            <div class="icon">🍜</div>
+            <p>Bấm để tìm món ăn ngẫu nhiên</p>
+          </div>
+          <div id="food-result" class="wid-card" style="display:none;border:none;padding:0;min-height:auto;box-shadow:none">
+            <div class="wid-emoji" id="food-emoji"></div>
+            <div class="wid-name" id="food-name"></div>
+            <div class="wid-cat" id="food-cat"></div>
+            <div class="wid-desc" id="food-desc"></div>
+          </div>
+          <button class="wid-btn primary" onclick="pickFood()" style="margin-top:1rem"><i class="fas fa-utensils"></i> Ăn gì?</button>
+        </div>
+      </div>
+
+      <!-- Mini Games -->
+      <div class="widget-panel" id="panel-games">
+        <div class="games-grid">
+          <div class="game-box">
+            <h3>🎲 Xúc xắc</h3>
+            <div class="game-result" id="dice-result">⚀</div>
+            <button class="primary" onclick="rollDice()">Lắc!</button>
+          </div>
+          <div class="game-box">
+            <h3>🪙 Tung đồng xu</h3>
+            <div class="game-result" id="coin-result">👑</div>
+            <button class="primary" onclick="flipCoin()">Tung!</button>
+          </div>
+          <div class="game-box">
+            <h3>🔢 Số ngẫu nhiên</h3>
+            <div class="game-range">
+              <label>Từ</label>
+              <input type="number" id="num-min" value="1" min="-9999" max="9999">
+              <label>đến</label>
+              <input type="number" id="num-max" value="100" min="-9999" max="9999">
+            </div>
+            <div class="num-result" id="num-result">50</div>
+            <button class="primary" onclick="randNum()">Lấy số!</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Password Generator -->
+      <div class="widget-panel" id="panel-password">
+        <div class="pw-card">
+          <div class="pw-display" id="pw-output">D3f@ult_P@ss1</div>
+          <div class="pw-options">
+            <label class="pw-opt"><input type="checkbox" id="pw-upper" checked onchange="genPassword()"> A-Z</label>
+            <label class="pw-opt"><input type="checkbox" id="pw-lower" checked onchange="genPassword()"> a-z</label>
+            <label class="pw-opt"><input type="checkbox" id="pw-nums" checked onchange="genPassword()"> 0-9</label>
+            <label class="pw-opt"><input type="checkbox" id="pw-syms" onchange="genPassword()"> !@#$%</label>
+          </div>
+          <div class="pw-length">
+            <label>Độ dài: <span class="pw-len-val" id="pw-len-label">16</span></label>
+            <input type="range" id="pw-len" min="6" max="64" value="16" oninput="document.getElementById('pw-len-label').textContent=this.value;genPassword()">
+          </div>
+          <div class="pw-strength">
+            <div class="pw-strength-bar"><div id="pw-bar"></div></div>
+            <div class="pw-strength-label" id="pw-strength-txt">Mạnh</div>
+          </div>
+          <div class="pw-btns">
+            <button class="wid-btn primary" onclick="genPassword()"><i class="fas fa-sync"></i> Tạo mới</button>
+            <button class="wid-btn" onclick="copyText(document.getElementById('pw-output').textContent,'Đã copy mật khẩu')"><i class="fas fa-copy"></i> Copy</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activities -->
+      <div class="widget-panel" id="panel-activities">
+        <div class="wid-card">
+          <div id="act-result">
+            <div class="act-icon" id="act-emoji">☕</div>
+            <div class="act-title" id="act-title">Đi pha ly cà phê</div>
+            <div class="act-cat thu-gian" id="act-cat">Thư giãn</div>
+          </div>
+          <button class="wid-btn primary" onclick="pickActivity()" style="margin-top:1rem"><i class="fas fa-lightbulb"></i> Gợi ý khác</button>
+        </div>
+      </div>
+
+      <!-- Gradient Generator -->
+      <div class="widget-panel" id="panel-gradient">
+        <div class="wid-card" style="cursor:default">
+          <div class="grad-preview" id="grad-preview"></div>
+          <div class="grad-code" id="grad-code">background: linear-gradient(135deg, #667eea, #764ba2);</div>
+          <div class="grad-options">
+            <select id="grad-type">
+              <option value="linear">Linear</option>
+              <option value="radial">Radial</option>
+            </select>
+            <button class="wid-btn primary" onclick="genGradient()"><i class="fas fa-dice"></i> Random</button>
+            <button class="wid-btn" onclick="copyText(document.getElementById('grad-code').textContent,'Đã copy CSS')"><i class="fas fa-copy"></i> Copy CSS</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Brain Dump -->
+      <div class="widget-panel" id="panel-brain">
+        <div class="brain-bar">
+          <span style="font-size:.8rem;color:var(--text-dim)">Click để thêm note, kéo để di chuyển</span>
+          <button onclick="brainExport('md')"><i class="fas fa-download"></i> Markdown</button>
+          <button onclick="brainExport('json')"><i class="fas fa-code"></i> JSON</button>
+          <button onclick="brainClear()" style="color:var(--red)"><i class="fas fa-trash"></i> Clear</button>
+          <span class="status" id="brain-status">0 notes</span>
+        </div>
+        <div class="brain-workspace" id="brain-ws" onclick="brainAdd(event)">
+          <div class="brain-hint" id="brain-hint">Bấm vào khoảng trống để thêm note</div>
         </div>
       </div>
     </div>
 
-    <!-- Tab: Password Generator -->
-    <div class="tab-panel" id="tab-password">
-      <div class="pw-card">
-        <div class="pw-display" id="pw-output">D3f@ult_P@ss1</div>
-        <div class="pw-options">
-          <label class="pw-opt"><input type="checkbox" id="pw-upper" checked onchange="genPassword()"> A-Z</label>
-          <label class="pw-opt"><input type="checkbox" id="pw-lower" checked onchange="genPassword()"> a-z</label>
-          <label class="pw-opt"><input type="checkbox" id="pw-nums" checked onchange="genPassword()"> 0-9</label>
-          <label class="pw-opt"><input type="checkbox" id="pw-syms" onchange="genPassword()"> !@#$%</label>
-        </div>
-        <div class="pw-length">
-          <label>Độ dài: <span class="pw-len-val" id="pw-len-label">16</span></label>
-          <input type="range" id="pw-len" min="6" max="64" value="16" oninput="document.getElementById('pw-len-label').textContent=this.value;genPassword()">
-        </div>
-        <div class="pw-strength">
-          <div class="pw-strength-bar"><div id="pw-bar"></div></div>
-          <div class="pw-strength-label" id="pw-strength-txt">Mạnh</div>
-        </div>
-        <div class="pw-btns" style="display:flex;gap:.5rem;margin-top:.8rem">
-          <button class="wid-btn primary" onclick="genPassword()"><i class="fas fa-sync"></i> Tạo mới</button>
-          <button class="wid-btn" onclick="copyText(document.getElementById('pw-output').textContent,'Đã copy mật khẩu')"><i class="fas fa-copy"></i> Copy</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tab: Activities -->
-    <div class="tab-panel" id="tab-activities">
-      <div class="wid-card">
-        <div id="act-result">
-          <div class="act-icon" id="act-emoji">☕</div>
-          <div class="act-title" id="act-title">Đi pha ly cà phê</div>
-          <div class="act-cat thu-gian" id="act-cat">Thư giãn</div>
-        </div>
-        <button class="wid-btn primary" onclick="pickActivity()" style="margin-top:1rem"><i class="fas fa-lightbulb"></i> Gợi ý khác</button>
-      </div>
-    </div>
-
-    <!-- Tab: Gradient Generator -->
-    <div class="tab-panel" id="tab-gradient">
-      <div class="wid-card" style="cursor:default">
-        <div class="grad-preview" id="grad-preview"></div>
-        <div class="grad-code" id="grad-code">background: linear-gradient(135deg, #667eea, #764ba2);</div>
-        <div class="grad-options">
-          <select id="grad-type">
-            <option value="linear">Linear</option>
-            <option value="radial">Radial</option>
-          </select>
-          <button class="wid-btn primary" onclick="genGradient()"><i class="fas fa-dice"></i> Random</button>
-          <button class="wid-btn" onclick="copyText(document.getElementById('grad-code').textContent,'Đã copy CSS')"><i class="fas fa-copy"></i> Copy CSS</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tab: Brain Dump -->
-    <div class="tab-panel" id="tab-brain">
-      <div class="brain-bar">
-        <span style="font-size:.8rem;color:var(--text-dim)">Click để thêm note, kéo để di chuyển</span>
-        <button onclick="brainExport('md')"><i class="fas fa-download"></i> Markdown</button>
-        <button onclick="brainExport('json')"><i class="fas fa-code"></i> JSON</button>
-        <button onclick="brainClear()" style="color:var(--red)"><i class="fas fa-trash"></i> Clear</button>
-        <span class="status" id="brain-status">0 notes</span>
-      </div>
-      <div class="brain-workspace" id="brain-ws" onclick="brainAdd(event)">
-        <div class="brain-hint" id="brain-hint">Bấm vào khoảng trống để thêm note</div>
-      </div>
-    </div>
   </div>
 </main>
 
@@ -308,18 +336,71 @@
 
 <script src="/assets/theme.js?v=2"></script>
 <script>
-// ── Tab switch ──
-function switchTab(id){
-  document.querySelectorAll('.tabs li').forEach(l=>l.classList.toggle('is-active',l.dataset.tab===id));
-  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active',p.id==='tab-'+id));
+// ── Widget registry ──
+const WIDGETS = [
+  { id:'random',     icon:'🎲', title:'Khám phá ngẫu nhiên', desc:'Wikipedia, fact hoặc YouTube — bấm phát ra 1 thứ',      cat:'Ngẫu nhiên', color:'#818cf8' },
+  { id:'colors',     icon:'🎨', title:'Bảng màu',            desc:'Sinh palette 5 màu hài hòa, click copy mã hex',          cat:'Tiện ích',   color:'#a855f7' },
+  { id:'food',       icon:'🍜', title:'Ăn gì hôm nay?',      desc:'Random món ăn Việt Nam, kèm mô tả — khỏi nghĩ',         cat:'Đời sống',   color:'#f59e0b' },
+  { id:'games',      icon:'🎲', title:'Mini Game',           desc:'Xúc xắc, tung đồng xu, random số — giải trí nhanh',    cat:'Giải trí',   color:'#22c55e' },
+  { id:'password',   icon:'🔐', title:'Mật khẩu',            desc:'Generator password mạnh, tùy độ dài, ký tự',            cat:'Bảo mật',    color:'#ef4444' },
+  { id:'activities', icon:'💭', title:'Làm gì?',             desc:'Gợi ý hoạt động hữu ích khi thấy chán',                 cat:'Đời sống',   color:'#06b6d4' },
+  { id:'gradient',   icon:'🌈', title:'Gradient',            desc:'Tạo background gradient + CSS code, click copy',       cat:'Tiện ích',   color:'#f472b6' },
+  { id:'brain',      icon:'🧠', title:'Brain Dump',          desc:'Note sticky, kéo thả, export Markdown',                cat:'Ghi chú',    color:'#6366f1' },
+];
+
+// ── Grid / Detail navigation ──
+function initPage(){
+  const hash = window.location.hash.slice(1);
+  if(hash && WIDGETS.find(w=>w.id===hash)){
+    showDetail(hash);
+  }else{
+    showGrid();
+  }
 }
+
+function showGrid(){
+  document.getElementById('grid-view').classList.add('active');
+  document.getElementById('detail-view').classList.remove('active');
+  window.location.hash = '';
+}
+
+function showDetail(id){
+  document.getElementById('grid-view').classList.remove('active');
+  document.getElementById('detail-view').classList.add('active');
+  document.querySelectorAll('.widget-panel').forEach(p=>p.style.display='none');
+  const panel = document.getElementById('panel-'+id);
+  if(panel) panel.style.display = 'block';
+  const w = WIDGETS.find(x=>x.id===id);
+  if(w) document.getElementById('detail-title').textContent = w.icon+' '+w.title;
+  // init widget
+  if(id==='colors'){genPalette();genGradient();}
+  if(id==='password')genPassword();
+  if(id==='activities')pickActivity();
+  if(id==='food')pickFood();
+  if(id==='brain')brainLoad();
+  if(id==='gradient')genGradient();
+}
+
+function openWidget(id){
+  window.location.hash = id;
+  showDetail(id);
+}
+
+function closeWidget(){
+  showGrid();
+}
+
+window.addEventListener('hashchange',()=>{
+  const hash = window.location.hash.slice(1);
+  if(hash && WIDGETS.find(w=>w.id===hash)) showDetail(hash);
+  else showGrid();
+});
 
 // ── Toast ──
 function toast(msg,type='success'){
   const c=document.getElementById('toast-container');
   const t=document.createElement('div');t.className='toast '+type;
-  t.innerHTML=msg;
-  c.appendChild(t);
+  t.innerHTML=msg;c.appendChild(t);
   setTimeout(()=>t.classList.add('removing'),1500);
   setTimeout(()=>t.remove(),1700);
 }
@@ -327,7 +408,7 @@ function copyText(text,msg){
   navigator.clipboard.writeText(text).then(()=>toast(msg||'Đã copy!')).catch(()=>toast('Không thể copy','error'));
 }
 
-// ── Random Discovery (existing) ──
+// ── Random Discovery ──
 async function discover(type){
   const card=document.getElementById('rand-card'),empty=document.getElementById('rand-empty'),skel=document.getElementById('rand-skel'),res=document.getElementById('rand-result');
   empty.style.display='none';res.style.display='none';skel.style.display='block';
@@ -361,10 +442,9 @@ function hslToHex(h,s,l){
   const t=x=>Math.round(255*f(x/3)).toString(16).padStart(2,'0');
   return '#'+t(0)+t(8)+t(4);
 }
-function randHsl(){return Math.random()*360}
 function genPalette(){
   const golden=0.618033988749895;
-  let hue=randHsl();
+  let hue=Math.random()*360;
   const sBase=45+Math.random()*20;
   const lBase=40+Math.random()*15;
   const colors=Array.from({length:5},(_,i)=>{
@@ -378,10 +458,7 @@ function genPalette(){
   ).join('');
   window._palette=colors;
 }
-function copyPalette(){
-  if(!window._palette)return;
-  copyText(window._palette.join(', '),'Đã copy tất cả màu');
-}
+function copyPalette(){if(window._palette)copyText(window._palette.join(', '),'Đã copy tất cả màu')}
 
 // ── Food Picker ──
 const foods=[
@@ -399,23 +476,22 @@ const foods=[
   {n:'Bánh cuốn',e:'🫔',c:'Món mặn',d:'Bánh tráng mỏng, nhân tôm thịt, nước mắm, chả lụa'},
   {n:'Cơm niêu',e:'🍚',c:'Món mặn',d:'Cơm niêu giòn, sườn non, cá kho, canh nóng'},
   {n:'Nem rán',e:'🥟',c:'Món mặn',d:'Nem nhân thịt heo, miến, nấm, trứng, chiên vàng giòn'},
-  {n:'Cao lầu',e:'🍜',c:'Món mặn',d:'Sợi mì đặc biệt, thịt heo xá xíu, rau sống, nước dùng đậm đà'},
+  {n:'Cao lầu',e:'🍜',c:'Món mặn',d:'Sợi mì đặc biệt, thịt heo xá xíu, rau sống, nước dùng'},
   {n:'Bún thịt nướng',e:'🍖',c:'Món mặn',d:'Bún tươi, thịt heo nướng, nem, rau, đậu phộng, nước mắm'},
   {n:'Lẩu',e:'🥘',c:'Món mặn',d:'Nồi lẩu nghi ngút, thịt, hải sản, rau, bún, chấm nước mắm ớt'},
-  {n:'Bánh tráng trộn',e:'🌯',c:'Món mặn',d:'Bánh tráng cắt sợi, trứng cút, khô bò, xoài, đậu phộng, sốt'},
+  {n:'Bánh tráng trộn',e:'🌯',c:'Món mặn',d:'Bánh tráng cắt sợi, trứng cút, khô bò, xoài, đậu phộng'},
   {n:'Chè',e:'🍮',c:'Tráng miệng',d:'Đủ loại: chè đậu xanh, chè thập cẩm, chè bà ba, chè chuối'},
-  {n:'Cà phê sữa đá',e:'☕',c:'Đồ uống',d:'Cà phê phin đậm, sữa đặc, đá, đánh đều — thức uống quốc dân'},
-  {n:'Sinh tố',e:'🥤',c:'Đồ uống',d:'Xoài, bơ, dâu, mãng cầu xay nhuyễn với sữa đặc và đá'},
+  {n:'Cà phê sữa đá',e:'☕',c:'Đồ uống',d:'Cà phê phin đậm, sữa đặc, đá — thức uống quốc dân'},
+  {n:'Sinh tố',e:'🥤',c:'Đồ uống',d:'Xoài, bơ, dâu, mãng cầu xay nhuyễn với sữa đặc'},
   {n:'Trà sữa',e:'🧋',c:'Đồ uống',d:'Trà đen/trà xanh, sữa, trân châu đường đen'},
   {n:'Bánh dày',e:'🍡',c:'Tráng miệng',d:'Bánh nếp dẻo, nhân đậu xanh, dừa nạo, đường'},
   {n:'Chả giò',e:'🥟',c:'Món mặn',d:'Thịt băm, tôm, cà rốt, nấm, khoai môn, cuốn bánh tráng chiên'},
   {n:'Bánh đa cua',e:'🍜',c:'Món mặn',d:'Bánh đa đỏ, cua đồng, thịt, chả, rau sống, nước dùng đậm'},
   {n:'Cơm gà',e:'🍚',c:'Món mặn',d:'Cơm gà luộc, gà xé, dưa leo, hành phi, muối tiêu chanh'},
-  {n:'Bánh căn',e:'🥞',c:'Món mặn',d:'Bánh căn chén đất, trứng cút, mực, hành phi, chấm nước mắm'},
-  {n:'Bánh bèo',e:'🫓',c:'Món mặn',d:'Bánh bèo chén, tôm khô, hành phi, mỡ, chấm nước mắm ngọt'},
   {n:'Bánh ướt',e:'🫔',c:'Món mặn',d:'Bánh ướt mỏng, chả lụa, tôm khô, hành phi, nước mắm chua ngọt'},
-  {n:'Chè chuối',e:'🍌',c:'Tráng miệng',d:'Chuối nấu nước cốt dừa, bột báng, đậu phộng, vừng'},
-  {n:'Mít trộn',e:'🥗',c:'Món mặn',d:'Mít non luộc, thịt heo, đậu phộng, rau răm, nước mắm trộn'},
+  {n:'Bánh bèo',e:'🫓',c:'Món mặn',d:'Bánh bèo chén, tôm khô, hành phi, mỡ, chấm nước mắm'},
+  {n:'Bánh căn',e:'🥞',c:'Món mặn',d:'Bánh căn chén đất, trứng cút, mực, hành phi, nước mắm'},
+  {n:'Chè chuối',e:'🍌',c:'Tráng miệng',d:'Chuối nấu nước cốt dừa, bột báng, đậu phộng'},
 ];
 function pickFood(){
   const f=foods[Math.floor(Math.random()*foods.length)];
@@ -432,16 +508,14 @@ function rollDice(){
   const r=Math.floor(Math.random()*6)+1;
   const dice=['⚀','⚁','⚂','⚃','⚄','⚅'];
   const el=document.getElementById('dice-result');
-  el.className='game-result';
-  void el.offsetWidth;
+  el.className='game-result';void el.offsetWidth;
   el.className='game-result game-roll';
   setTimeout(()=>{el.className='game-result';el.textContent=dice[r-1]},300);
 }
 function flipCoin(){
   const r=Math.random()<0.5;
   const el=document.getElementById('coin-result');
-  el.className='game-result';
-  void el.offsetWidth;
+  el.className='game-result';void el.offsetWidth;
   el.className='game-result coin-flip';
   setTimeout(()=>{el.className='game-result';el.textContent=r?'👑':'🌿'},400);
 }
@@ -455,12 +529,7 @@ function randNum(){
 // ── Password Generator ──
 function genPassword(){
   const len=parseInt(document.getElementById('pw-len').value);
-  const sets={
-    upper:'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
-    lower:'abcdefghijklmnopqrstuvwxyz',
-    nums:'0123456789',
-    syms:'!@#$%^&*()_+-=[]{}|;:,.<>?'
-  };
+  const sets={upper:'ABCDEFGHIJKLMNOPQRSTUVWXYZ',lower:'abcdefghijklmnopqrstuvwxyz',nums:'0123456789',syms:'!@#$%^&*()_+-=[]{}|;:,.<>?'};
   let chars='';
   if(document.getElementById('pw-upper').checked)chars+=sets.upper;
   if(document.getElementById('pw-lower').checked)chars+=sets.lower;
@@ -499,7 +568,7 @@ const activities=[
   {t:'Làm 10 cái squat',e:'🏋️',c:'van-dong',l:'Vận động'},
   {t:'Uống 1 cốc nước',e:'💧',c:'thu-gian',l:'Thư giãn'},
   {t:'Tập hít thở sâu 30 giây',e:'🌬️',c:'thu-gian',l:'Thư giãn'},
-  {t:'Xem 1 video ngắn thư giãn',e:'📺',c:'thu-gian',l:'Thư giãn'},
+  {t:'Xem 1 video ngắn',e:'📺',c:'thu-gian',l:'Thư giãn'},
   {t:'Gấp quần áo',e:'👕',c:'hoc-tap',l:'Học tập'},
   {t:'Viết 1 câu chuyện ngắn',e:'📝',c:'sang-tao',l:'Sáng tạo'},
   {t:'Duỗi cổ, vai, gáy',e:'💆',c:'thu-gian',l:'Thư giãn'},
@@ -531,19 +600,13 @@ function pickActivity(){
 }
 
 // ── Gradient Generator ──
-function randColor(){
-  return '#'+Math.floor(Math.random()*0xFFFFFF).toString(16).padStart(6,'0');
-}
+function randColor(){return '#'+Math.floor(Math.random()*0xFFFFFF).toString(16).padStart(6,'0')}
 function genGradient(){
   const type=document.getElementById('grad-type').value;
   const c1=randColor(),c2=randColor();
-  let css;
-  if(type==='linear'){
-    const angle=Math.floor(Math.random()*360);
-    css='linear-gradient('+angle+'deg, '+c1+', '+c2+')';
-  }else{
-    css='radial-gradient(circle, '+c1+', '+c2+')';
-  }
+  const css=type==='linear'
+    ? 'linear-gradient('+Math.floor(Math.random()*360)+'deg, '+c1+', '+c2+')'
+    : 'radial-gradient(circle, '+c1+', '+c2+')';
   document.getElementById('grad-preview').style.background=css;
   document.getElementById('grad-code').textContent='background: '+css+';';
 }
@@ -636,12 +699,21 @@ function makeDraggable(el){
   });
 }
 
+// ── Build grid ──
+(function buildGrid(){
+  const grid=document.getElementById('widget-grid');
+  grid.innerHTML=WIDGETS.map(w=>`
+    <div class="widget-card" onclick="openWidget('${w.id}')">
+      <div class="card-icon">${w.icon}</div>
+      <div class="card-title">${w.title}</div>
+      <div class="card-desc">${w.desc}</div>
+      <span class="card-badge" style="background:${w.color}">${w.cat}</span>
+    </div>
+  `).join('');
+})();
+
 // ── Init ──
-genPalette();
-genGradient();
-genPassword();
-pickActivity();
-brainLoad();
+initPage();
 </script>
 </body>
 </html>
