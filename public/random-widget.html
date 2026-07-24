@@ -978,13 +978,13 @@ function makeDraggable(el){
 
 // ── 1. Magic 8-Ball ──
 const BALL_ANSWERS = [
-  {t:'It is certain',s:'positive'},{t:'It is decidedly so',s:'positive'},{t:'Without a doubt',s:'positive'},
-  {t:'Yes definitely',s:'positive'},{t:'You may rely on it',s:'positive'},{t:'As I see it, yes',s:'positive'},
-  {t:'Most likely',s:'positive'},{t:'Outlook good',s:'positive'},{t:'Yes',s:'positive'},{t:'Signs point to yes',s:'positive'},
-  {t:'Reply hazy, try again',s:'neutral'},{t:'Ask again later',s:'neutral'},{t:'Better not tell you now',s:'neutral'},
-  {t:'Cannot predict now',s:'neutral'},{t:'Concentrate and ask again',s:'neutral'},
-  {t:"Don't count on it",s:'negative'},{t:'My reply is no',s:'negative'},{t:'My sources say no',s:'negative'},
-  {t:'Outlook not so good',s:'negative'},{t:'Very doubtful',s:'negative'},
+  {t:'It is certain',v:'Chắc chắn rồi',s:'positive'},{t:'It is decidedly so',v:'Rõ ràng là vậy',s:'positive'},{t:'Without a doubt',v:'Không còn nghi ngờ',s:'positive'},
+  {t:'Yes definitely',v:'Chuẩn luôn',s:'positive'},{t:'You may rely on it',v:'Cứ tin đi',s:'positive'},{t:'As I see it, yes',v:'Theo tao thấy là có',s:'positive'},
+  {t:'Most likely',v:'Rất có khả năng',s:'positive'},{t:'Outlook good',v:'Triển vọng tốt',s:'positive'},{t:'Yes',v:'Có',s:'positive'},{t:'Signs point to yes',v:'Mọi dấu hiệu đều là có',s:'positive'},
+  {t:'Reply hazy, try again',v:'Mờ quá, thử lại',s:'neutral'},{t:'Ask again later',v:'Hỏi lại sau đi',s:'neutral'},{t:'Better not tell you now',v:'Tốt nhất chưa nói',s:'neutral'},
+  {t:'Cannot predict now',v:'Chưa đoán được',s:'neutral'},{t:'Concentrate and ask again',v:'Tập trung rồi hỏi lại',s:'neutral'},
+  {t:"Don't count on it",v:'Đừng trông chờ',s:'negative'},{t:'My reply is no',v:'Câu trả lời là không',s:'negative'},{t:'My sources say no',v:'Nguồn của tao nói không',s:'negative'},
+  {t:'Outlook not so good',v:'Không khả quan lắm',s:'negative'},{t:'Very doubtful',v:'Rất khó xảy ra',s:'negative'},
 ];
 let _balling=false;
 function shakeBall(){
@@ -1002,7 +1002,7 @@ function shakeBall(){
     const a=BALL_ANSWERS[Math.floor(Math.random()*BALL_ANSWERS.length)];
     ans.textContent=a.t;
     ans.className='ball-answer-text show';
-    label.textContent='✨ '+a.t;
+    label.innerHTML='✨ '+a.t+'<br><span style="font-size:.85rem;opacity:.7">→ '+a.v+'</span>';
     shape.className='ball-shape';
     _balling=false;
   },450);
