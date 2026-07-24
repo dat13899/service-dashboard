@@ -2,14 +2,15 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>✦ Hermes — Cosmic Dreamscape</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>✦ Hermes — Cosmic Dreamscape v5</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌀</text></svg>">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:100%;height:100%;overflow:hidden;background:#05060f;font-family:system-ui,sans-serif}
 #c{position:fixed;top:0;left:0;width:100%;height:100%;display:block;cursor:crosshair;z-index:2}
 #trailCanvas{position:fixed;top:0;left:0;width:100%;height:100%;display:block;z-index:1;pointer-events:none}
+#bloom{position:fixed;top:0;left:0;width:100%;height:100%;display:block;z-index:3;pointer-events:none}
 
 /* HUD */
 #hud{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);display:flex;gap:10px;align-items:center;
@@ -70,14 +71,28 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05060f;font-family:
   font-size:11px;letter-spacing:3px;text-transform:uppercase;
   transition:all 3s ease;opacity:0}
 #constellation.show{opacity:1;color:rgba(200,220,255,.06)}
+
+/* mode badge */
+#mode-badge{position:fixed;top:60px;left:50%;transform:translateX(-50%);
+  z-index:5;pointer-events:none;font-size:11px;letter-spacing:6px;text-transform:uppercase;
+  color:rgba(200,220,255,.08);transition:opacity 1.5s,color .8s;opacity:0}
+#mode-badge.show{opacity:1}
+#mode-badge.hyper{color:rgba(255,180,60,.2);letter-spacing:10px}
+
+/* gravity indicator */
+#gravity-indicator{position:fixed;pointer-events:none;z-index:4;border-radius:50%;
+  border:1px dashed rgba(255,255,255,.08);transition:opacity .3s;opacity:0}
+#gravity-indicator.show{opacity:1}
 </style>
 </head>
 <body>
 <div id="splash"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="rgba(91,192,255,.4)" stroke-width="2" stroke-dasharray="80 30"/><circle cx="50" cy="50" r="20" fill="none" stroke="rgba(255,107,203,.4)" stroke-width="2" stroke-dasharray="40 20"/></svg></div>
-<div id="hint">✦ move mouse · click explode · 1-6 palettes · ? help · H hud ✦</div>
+<div id="hint">✦ move · click explode · hold drag gravity · T tunnel · 1-6 palettes · ? help ✦</div>
 <div id="title">✦ hermes — cosmic dreamscape ✦</div>
+<div id="mode-badge">◆ cosmic drift ◆</div>
 <div id="palette-indicator"></div>
 <div id="constellation">✦ wandering through the cosmos ✦</div>
+<div id="gravity-indicator"></div>
 <div id="hud">
   <span><span class="hud-dot cyan"></span><span id="starsC">0</span> stars</span>
   <span class="hud-div"></span>
@@ -93,6 +108,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05060f;font-family:
 <div id="vol-toggle">♪</div>
 <canvas id="trailCanvas"></canvas>
 <canvas id="c"></canvas>
+<canvas id="bloom"></canvas>
 
 <div id="help-overlay">
   <h2>⌘ hermes — controls</h2>
@@ -102,8 +118,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05060f;font-family:
       <div class="help-desc"><span class="help-key">Z</span> random palette</div>
       <div class="help-desc"><span class="help-key">SPACE</span> explode!</div>
       <div class="help-desc"><span class="help-key">click</span> burst at cursor</div>
+      <div class="help-desc"><span class="help-key">hold drag</span> gravity well</div>
     </div>
     <div class="help-col">
+      <div class="help-desc"><span class="help-key">T</span> hyperspace tunnel</div>
       <div class="help-desc"><span class="help-key">H</span> toggle hud</div>
       <div class="help-desc"><span class="help-key">M</span> toggle audio</div>
       <div class="help-desc"><span class="help-key">F</span> audio-reactive</div>
@@ -114,15 +132,14 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05060f;font-family:
 </div>
 
 <script>
-// ─── Cosmic Dreamscape v4 — dual-canvas, particle merge, panorama nebula, glow trails ──
+// ─── Cosmic Dreamscape v5 — Hyperspace Tunnel, Gravity Wells, Light Bloom ──
 const c=document.getElementById('c'),ctx=c.getContext('2d');
 const tc=document.getElementById('trailCanvas'),tctx=tc.getContext('2d');
+const bc=document.getElementById('bloom'),bctx=bc.getContext('2d');
 let W,H;
 function resize(){
-  W=c.width=tc.width=innerWidth;
-  H=c.height=tc.height=innerHeight;
-  ctx.imageSmoothingEnabled=false;
-  tctx.imageSmoothingEnabled=false;
+  W=c.width=tc.width=bc.width=innerWidth;
+  H=c.height=tc.height=bc.height=innerHeight;
 }
 resize();addEventListener('resize',resize);
 
@@ -156,11 +173,17 @@ let paletteIdx=0;
 let palettePrev=0;
 let paletteTransition=1;
 
-// ─── Background panorama (full-canvas gradient) ─────────────────────
+// ─── Tunnel Mode ─────────────────────────────────────────────────────
+let tunnelMode=false;
+let tunnelTransition=0; // 0=normal, 1=full tunnel
+let tunnelTargetTransition=0;
+const TUNNEL_SPEED=.04;
+let tunnelAngle=0;
+
+// ─── Background panorama ────────────────────────────────────────────
 const PANO_SPEED=.00005;
 const PANO_W=400;
 const PANO_H=400;
-const panoData=new Uint8Array(PANO_W*PANO_H*4);
 const panoCanvas=document.createElement('canvas');
 panoCanvas.width=PANO_W;panoCanvas.height=PANO_H;
 const panoCtx=panoCanvas.getContext('2d');
@@ -173,12 +196,10 @@ function renderPanorama(time){
   for(let y=0;y<PANO_H;y++){
     for(let x=0;x<PANO_W;x++){
       const i=(y*PANO_W+x)*4;
-      // simplex-like noise using layered sin/cos
       const n1=Math.sin(x*.02+time*PANO_SPEED)*Math.cos(y*.025+time*PANO_SPEED*.7);
       const n2=Math.sin((x-y)*.015+time*PANO_SPEED*1.3)*Math.cos((x+y)*.01+time*PANO_SPEED*.5);
       const n3=Math.sin(x*.03-time*PANO_SPEED*.9)*Math.cos(y*.035+time*PANO_SPEED*1.1);
       const n=(n1*.5+n2*.3+n3*.2)*.5+.5;
-      // Mix bg gradient with nebula colors
       const bgl=lerp(p.bgGrad[0][0],p.bgGrad[1][0],y/PANO_H);
       const bgr=lerp(p.bgGrad[0][1],p.bgGrad[1][1],y/PANO_H);
       const bgb=lerp(p.bgGrad[0][2],p.bgGrad[1][2],y/PANO_H);
@@ -193,8 +214,8 @@ function renderPanorama(time){
   panoCtx.putImageData(img,0,0);
 }
 
-// ─── Stars (with galaxy rotation) ───────────────────────────────────
-const STARS_CNT=1000;
+// ─── Stars (with galaxy rotation + tunnel z) ────────────────────────
+const STARS_CNT=1200;
 const stars=[];
 const GALAXY_ROTATION={x:W/2,y:H/4,strength:.02};
 for(let i=0;i<STARS_CNT;i++){
@@ -203,18 +224,21 @@ for(let i=0;i<STARS_CNT;i++){
   const radial=rand(0,1);
   stars.push({
     x:rand(0,W),y:rand(0,H),
-    size:layer===0?rand(.2,.5):layer===1?rand(.5,1):layer===2?rand(1,1.8):rand(1.8,3.2),
+    size:layer===0?rand(.2,.5):layer===1?rand(.5,1):layer===2?rand(1,1.8):rand(1.8,3.5),
     layer,
     baseAlpha:layer===0?rand(.15,.4):layer===1?rand(.3,.55):layer===2?rand(.5,.8):rand(.7,1),
     twinkleSpeed:rand(.2,4),
     twinklePhase:rand(0,PI2),
-    // galaxy coordinates
-    gAngle:angle,gRadial:radial,gSpeed:rand(-.0002,.0002)
+    gAngle:angle,gRadial:radial,gSpeed:rand(-.0002,.0002),
+    // tunnel mode z-depth
+    tz:rand(.01,.99),
+    tAngle:rand(0,PI2),
+    tRadial:rand(.05,.95)
   });
 }
 
-// ─── Nebula clouds (migration) ──────────────────────────────────────
-const NEBULA_CNT=12;
+// ─── Nebula clouds ──────────────────────────────────────────────────
+const NEBULA_CNT=14;
 const nebulas=[];
 for(let i=0;i<NEBULA_CNT;i++){
   const c=PALETTES[0].nebula[i%PALETTES[0].nebula.length];
@@ -225,21 +249,67 @@ for(let i=0;i<NEBULA_CNT;i++){
     baseAlpha:rand(.025,.07),
     pulse:rand(.2,.6),pulseSpeed:rand(.0008,.0035),
     phase:rand(0,PI2),
-    cr:c[0],cg:c[1],cb:c[2], // current (animating)
-    tr:c[0],tg:c[1],tb:c[2]  // target
+    cr:c[0],cg:c[1],cb:c[2],
+    tr:c[0],tg:c[1],tb:c[2]
   });
 }
 
 // ─── Particles ──────────────────────────────────────────────────────
-const MAX_PARTICLES=200;
+const MAX_PARTICLES=250;
 const particles=[];
 let mouse={x:W/2,y:H/2,active:false};
 let clickBoom=false,boomTimer=0;
 
+// ─── Gravity Well ───────────────────────────────────────────────────
+let gravityWell={active:false,x:0,y:0,strength:0,radius:200};
+let mouseDown=false;
+let gravityDownTimer=0;
+
 addEventListener('mousemove',e=>{mouse.x=e.clientX;mouse.y=e.clientY;mouse.active=true});
-addEventListener('click',()=>{doExplosion(mouse.x,mouse.y,50)});
-addEventListener('touchmove',e=>{const t=e.touches[0];mouse.x=t.clientX;mouse.y=t.clientY;mouse.active=true},{passive:true});
-addEventListener('touchstart',e=>{const t=e.touches[0];mouse.x=t.clientX;mouse.y=t.clientY;mouse.active=true;doExplosion(mouse.x,mouse.y,40)},{passive:true});
+addEventListener('mousedown',e=>{
+  mouseDown=true;gravityDownTimer=0;
+  gravityWell.active=true;
+  gravityWell.x=e.clientX;gravityWell.y=e.clientY;
+  gravityWell.strength=0;
+});
+addEventListener('mouseup',e=>{
+  mouseDown=false;
+  // Burst particles away from gravity well on release
+  for(const p of particles){
+    const dx=p.x-gravityWell.x,dy=p.y-gravityWell.y;
+    const d=Math.sqrt(dx*dx+dy*dy);
+    if(d<gravityWell.radius*1.5&&d>1){
+      const f=Math.min(12,gravityWell.strength*30/(d+10));
+      p.vx+=dx/d*f;p.vy+=dy/d*f;
+      p.life=Math.min(1,p.life+.15);
+    }
+  }
+  gravityWell.active=false;gravityWell.strength=0;
+});
+addEventListener('click',()=>{
+  if(!mouseDown)doExplosion(mouse.x,mouse.y,50);
+});
+addEventListener('touchmove',e=>{
+  const t=e.touches[0];mouse.x=t.clientX;mouse.y=t.clientY;mouse.active=true;
+  if(e.touches.length===1){
+    gravityWell.active=true;gravityWell.x=mouse.x;gravityWell.y=mouse.y;
+  }
+},{passive:true});
+addEventListener('touchstart',e=>{
+  const t=e.touches[0];mouse.x=t.clientX;mouse.y=t.clientY;mouse.active=true;
+  gravityWell.active=true;gravityWell.x=mouse.x;gravityWell.y=mouse.y;
+  doExplosion(mouse.x,mouse.y,30);
+},{passive:true});
+addEventListener('touchend',()=>{
+  gravityWell.active=false;gravityWell.strength=0;
+  for(const p of particles){
+    const dx=p.x-gravityWell.x,dy=p.y-gravityWell.y;
+    const d=Math.sqrt(dx*dx+dy*dy);
+    if(d<gravityWell.radius*1.5&&d>1){
+      p.vx+=dx/d*4;p.vy+=dy/d*4;
+    }
+  }
+});
 
 function doExplosion(x,y,count){
   clickBoom=true;boomTimer=1.2;
@@ -265,10 +335,11 @@ function createParticle(x,y,vx,vy,explosion=false){
     lig:rand(p.partLig[0],p.partLig[1]),
     targetHue:null,
     trail:[],oscPhase:rand(0,PI2),
-    baseSize:size
+    baseSize:size,
+    _gravitated:false
   };
 }
-for(let i=0;i<30;i++){
+for(let i=0;i<40;i++){
   const ang=rand(0,PI2),spd=rand(10,60);
   particles.push(createParticle(rand(0,W),rand(0,H),Math.cos(ang)*spd,Math.sin(ang)*spd));
 }
@@ -280,17 +351,13 @@ let shooters=[];
 function spawnShooter(){
   const angle=rand(-.4,.4)-Math.PI/1.7;
   const speed=rand(1200,3500);
-  const ci=Math.floor(Math.random()*4);
-  const colorAT=[255,230,200];
-  const colorBT=[200,220,255];
   shooters.push({
     x:rand(0,W),y:rand(-H*.12,0),
     vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,
     life:1,decay:rand(.005,.016),
     width:rand(1.2,3.8),
-    colorA:`rgba(${colorAT[0]},${colorAT[1]},${colorAT[2]},`,
-    colorB:`rgba(${colorBT[0]},${colorBT[1]},${colorBT[2]},`,
-    sparkleTimer:0,sparks:[]
+    colorA:'rgba(255,245,230,',
+    colorB:'rgba(220,230,255,',
   });
 }
 
@@ -301,8 +368,11 @@ for(let i=0;i<WEB_POINTS;i++){
   webPoints.push({x:rand(0,W),y:rand(0,H),vx:rand(-.03,.03),vy:rand(-.03,.03)});
 }
 function drawCosmicWeb(time){
+  const tr=tunnelTransition;
+  if(tr>.5)return; // fade out web in tunnel
   const accent=PALETTES[paletteIdx].accent;
   const dMax=160;
+  const alphaMul=1-tr;
   for(let i=0;i<webPoints.length;i++){
     const a=webPoints[i];
     a.x+=a.vx;a.y+=a.vy;
@@ -313,7 +383,7 @@ function drawCosmicWeb(time){
       const dx=a.x-b.x,dy=a.y-b.y;
       const d=dx*dx+dy*dy;
       if(d<dMax*dMax){
-        const alpha=(1-d/(dMax*dMax))*.25;
+        const alpha=(1-d/(dMax*dMax))*.25*alphaMul;
         if(alpha<.005)continue;
         ctx.globalAlpha=alpha*(.5+audioLevel*1.5);
         ctx.strokeStyle=`rgba(${accent[0]},${accent[1]},${accent[2]},${alpha*2})`;
@@ -427,6 +497,33 @@ function updateAudioLevel(){
   }catch(_){}
 }
 
+// ─── Title Vignette ─────────────────────────────────────────────────
+function drawVignette(){
+  const grd=ctx.createRadialGradient(W/2,H/2,Math.min(W,H)*.15,W/2,H/2,Math.max(W,H)*.75);
+  grd.addColorStop(0,'rgba(0,0,0,0)');
+  grd.addColorStop(.6,'rgba(0,0,0,0)');
+  grd.addColorStop(1,`rgba(0,0,0,${.35+tunnelTransition*.3})`);
+  ctx.fillStyle=grd;ctx.fillRect(0,0,W,H);
+}
+
+// ─── Light Bloom ────────────────────────────────────────────────────
+const bloom={x:W/2,y:H/2,radius:200,alpha:0};
+function drawBloom(){
+  bctx.clearRect(0,0,W,H);
+  if(tunnelTransition>.9){bloom.alpha=lerp(bloom.alpha,0,.05);return}
+  bloom.x=lerp(bloom.x,mouse.x,.08);
+  bloom.y=lerp(bloom.y,mouse.y,.08);
+  const targetAlpha=gravityWell.active?.4:.15+audioLevel*.25;
+  bloom.alpha=lerp(bloom.alpha,targetAlpha,.03);
+  if(bloom.alpha<.01)return;
+  const accent=PALETTES[paletteIdx].accent;
+  const grd=bctx.createRadialGradient(bloom.x,bloom.y,0,bloom.x,bloom.y,bloom.radius*(1+audioLevel*.8));
+  grd.addColorStop(0,`rgba(${accent[0]},${accent[1]},${accent[2]},${bloom.alpha*.3})`);
+  grd.addColorStop(.4,`rgba(${accent[0]},${accent[1]},${accent[2]},${bloom.alpha*.08})`);
+  grd.addColorStop(1,'rgba(0,0,0,0)');
+  bctx.fillStyle=grd;bctx.fillRect(0,0,W,H);
+}
+
 // ─── Palette ────────────────────────────────────────────────────────
 function buildPaletteUI(){
   const c=document.getElementById('palette-indicator');c.innerHTML='';
@@ -462,9 +559,34 @@ addEventListener('keydown',e=>{
   if(k==='h'||k==='H'){e.preventDefault();document.getElementById('hud').classList.toggle('hidden');return}
   if(k==='m'||k==='M'){e.preventDefault();toggleAudio();return}
   if(k==='f'||k==='F'){e.preventDefault();audioReactive=!audioReactive;return}
+  if(k==='t'||k==='T'){
+    e.preventDefault();
+    tunnelMode=!tunnelMode;
+    tunnelTargetTransition=tunnelMode?1:0;
+    document.getElementById('mode-badge').classList.toggle('hyper',tunnelMode);
+    document.getElementById('mode-badge').textContent=tunnelMode?'◇ H Y P E R S P A C E ◇':'◆ c o s m i c  d r i f t ◆';
+    if(tunnelMode){document.getElementById('mode-badge').classList.add('show')}
+    // after transition ends, hide badge if returning to normal
+    if(!tunnelMode)setTimeout(()=>document.getElementById('mode-badge').classList.remove('show'),2500);
+  }
   if(k==='?'||k==='/'){e.preventDefault();document.getElementById('help-overlay').classList.toggle('show');}
 });
 document.getElementById('help-overlay').addEventListener('click',()=>document.getElementById('help-overlay').classList.remove('show'));
+
+// ─── Gravity Indicator ──────────────────────────────────────────────
+const gravInd=document.getElementById('gravity-indicator');
+function updateGravityIndicator(){
+  if(gravityWell.active&&gravityWell.strength>.3){
+    gravInd.classList.add('show');
+    const r=gravityWell.radius*(.5+gravityWell.strength*.5);
+    gravInd.style.left=(gravityWell.x-r)+'px';gravInd.style.top=(gravityWell.y-r)+'px';
+    gravInd.style.width=(r*2)+'px';gravInd.style.height=(r*2)+'px';
+    const accent=PALETTES[paletteIdx].accent;
+    gravInd.style.borderColor=`rgba(${accent[0]},${accent[1]},${accent[2]},${.05+gravityWell.strength*.15})`;
+  }else{
+    gravInd.classList.remove('show');
+  }
+}
 
 // ─── Drawing ────────────────────────────────────────────────────────
 let prevTime=0,fps=0,frameCount=0,fpsTimer=0;
@@ -496,53 +618,100 @@ function drawBgGradient(){
 }
 
 function drawStars(time){
-  // Apply subtle galaxy rotation
   for(const s of stars){
-    if(s.gSpeed!==0){
-      s.gAngle+=s.gSpeed;
-      const rad=s.gRadial*Math.max(W,H)*.4;
-      const cx=GALAXY_ROTATION.x,sx=Math.cos(s.gAngle)*rad;
-      const sy=Math.sin(s.gAngle)*rad*.6;
-      s.x=cx+sx;s.y=GALAXY_ROTATION.y+sy;
+    if(!tunnelMode&&tunnelTransition<.1){
+      // Normal galaxy rotation
+      if(s.gSpeed!==0){
+        s.gAngle+=s.gSpeed*(1-tunnelTransition);
+        const rad=s.gRadial*Math.max(W,H)*.4;
+        const cx=GALAXY_ROTATION.x,sx=Math.cos(s.gAngle)*rad;
+        const sy=Math.sin(s.gAngle)*rad*.6;
+        s.x=cx+sx;s.y=GALAXY_ROTATION.y+sy;
+      }
     }
   }
+
   for(const s of stars){
+    const tr=tunnelTransition;
+    let px,py,sz,al;
+
+    if(tr>.01){
+      // ── Tunnel projection ──
+      const cx=W/2,cy=H/2;
+      // Update z: stars stream toward viewer
+      s.tz = ((s.tz - TUNNEL_SPEED * tr) % 1 + 1) % 1;
+      // Project: z=0 is far (center), z=near 1 is edge (warp outward)
+      const zDepth = s.tz;
+      const angle = s.tAngle + time * .00008 * (1-zDepth) * tr;
+      const radial = s.tRadial * Math.max(W,H) * .55 * (1+zDepth*2);
+      const sx2 = Math.cos(angle) * radial;
+      const sy2 = Math.sin(angle) * radial * .6;
+      // Tunnel center shift for rotation
+      const rot = time * .0003 * tr;
+      const cosR=Math.cos(rot),sinR=Math.sin(rot);
+      const rx = sx2*cosR - sy2*sinR;
+      const ry = sx2*sinR + sy2*cosR;
+      px = cx + rx; py = cy + ry;
+      sz = s.size * (1 + zDepth * 3) * (1 + tr);
+      al = s.baseAlpha * (1 + zDepth) * .8;
+    } else {
+      px=s.x; py=s.y; sz=s.size; al=s.baseAlpha;
+    }
+
     const tw=Math.sin(time*s.twinkleSpeed+s.twinklePhase)*.4+.6;
-    const a=s.baseAlpha*tw;
-    // parallax + mouse wake
-    const px=s.x-(mouse.x-s.x)*.001*(s.layer+1)*(1+audioLevel*.5);
-    const py=s.y-(mouse.y-s.y)*.001*(s.layer+1)*(1+audioLevel*.5);
-    // glow for bright stars
-    if(s.layer>=3&&s.size>1.5){
+    const a=al*tw;
+    if(a<.01)continue;
+
+    // parallax
+    if(tr<.5){
+      const pfx=px-(mouse.x-px)*.001*(s.layer+1)*(1+audioLevel*.5)*(1-tr);
+      const pfy=py-(mouse.y-py)*.001*(s.layer+1)*(1+audioLevel*.5)*(1-tr);
+      px=lerp(px,pfx,.5); py=lerp(py,pfy,.5);
+    }
+
+    if(s.layer>=3&&sz>1.5&&tr<.8){
       ctx.globalAlpha=a*.03;
       ctx.fillStyle='rgba(255,255,255,.5)';
-      ctx.beginPath();ctx.arc(px,py,s.size*6,0,PI2);ctx.fill();
+      ctx.beginPath();ctx.arc(px,py,sz*6,0,PI2);ctx.fill();
     }
     ctx.globalAlpha=a;
     ctx.fillStyle='#fff';
-    ctx.beginPath();ctx.arc(px,py,s.size,0,PI2);ctx.fill();
+    ctx.beginPath();ctx.arc(px,py,sz,0,PI2);ctx.fill();
   }
   ctx.globalAlpha=1;
 }
 
 function drawNebulas(time){
+  const tr=tunnelTransition;
   for(const n of nebulas){
     n.x+=n.vx;n.y+=n.vy;
     if(n.x<-n.radius)n.x=W+n.radius;if(n.x>W+n.radius)n.x=-n.radius;
     if(n.y<-n.radius)n.y=H+n.radius;if(n.y>H+n.radius)n.y=-n.radius;
     const pu=1+Math.sin(time*n.pulseSpeed+n.phase)*n.pulse*.5;
-    const r=n.radius*pu;
-    const a=n.baseAlpha*(.8+audioLevel*.5);
-    const g=ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,r);
+    const r=n.radius*pu*(1-tr*.4);
+    const a=n.baseAlpha*(.8+audioLevel*.5)*(1-tr*.6);
+    if(a<.005)continue;
+
+    // In tunnel: nebulas stretch toward center
+    let nx=n.x,ny=n.y,nr=r;
+    if(tr>.1){
+      const cx=W/2,cy=H/2;
+      nx=lerp(n.x,cx,tr*.3);
+      ny=lerp(n.y,cy,tr*.3);
+      nr=r*(1+tr*.5);
+    }
+
+    const g=ctx.createRadialGradient(nx,ny,0,nx,ny,nr);
     const cr=Math.round(n.cr),cg=Math.round(n.cg),cb=Math.round(n.cb);
     g.addColorStop(0,`rgba(${cr},${cg},${cb},${a})`);
     g.addColorStop(.5,`rgba(${cr},${cg},${cb},${a*.3})`);
     g.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.fillStyle=g;ctx.beginPath();ctx.arc(n.x,n.y,r,0,PI2);ctx.fill();
+    ctx.fillStyle=g;ctx.beginPath();ctx.arc(nx,ny,nr,0,PI2);ctx.fill();
   }
 }
 
 function drawShooters(dt){
+  const tr=tunnelTransition;
   let alive=0;
   for(let i=shooters.length-1;i>=0;i--){
     const s=shooters[i];s.life-=s.decay*dt;
@@ -552,20 +721,17 @@ function drawShooters(dt){
     const dist=Math.sqrt((tx-s.x)**2+(ty-s.y)**2);
     const hs=s.width*(1+audioLevel*2.5);
 
-    // head glow on trail canvas
-    tctx.globalAlpha=s.life*.3;
+    tctx.globalAlpha=s.life*.3*(1-tr*.8);
     const gl=tctx.createRadialGradient(tx,ty,0,tx,ty,hs*15);
     gl.addColorStop(0,`rgba(255,245,230,${s.life*.3+audioLevel*.2})`);
     gl.addColorStop(1,'rgba(0,0,0,0)');
     tctx.fillStyle=gl;tctx.beginPath();tctx.arc(tx,ty,hs*15,0,PI2);tctx.fill();
 
-    // main trail
-    ctx.globalAlpha=s.life*.55;
+    ctx.globalAlpha=s.life*.55*(1-tr*.7);
     ctx.strokeStyle='rgba(255,235,210,.5)';
     ctx.lineWidth=s.width;ctx.beginPath();ctx.moveTo(s.x,s.y);ctx.lineTo(tx,ty);ctx.stroke();
 
-    // head
-    ctx.globalAlpha=s.life;
+    ctx.globalAlpha=s.life*(1-tr*.5);
     ctx.fillStyle='#fffbe6';
     ctx.shadowColor='rgba(255,230,180,.8)';ctx.shadowBlur=hs*10;
     ctx.beginPath();ctx.arc(tx,ty,hs,0,PI2);ctx.fill();
@@ -579,15 +745,24 @@ function drawShooters(dt){
 }
 
 function drawParticles(dt){
-  const connDist=220;const mousePull=.13;
-  let aliveCt=0;
+  const connDist=220;
   const ar=audioReactive?1+audioLevel*4:1;
-  // merge list
+  const tr=tunnelTransition;
   const toMerge=[];
 
+  // Gravity well growth
+  if(mouseDown&&gravityWell.active){
+    gravityDownTimer+=dt;
+    gravityWell.strength=Math.min(1,gravityDownTimer/2000);
+    gravityWell.x=lerp(gravityWell.x,mouse.x,.1);
+    gravityWell.y=lerp(gravityWell.y,mouse.y,.1);
+    gravityWell.radius=200+gravityWell.strength*200;
+  }
+
+  let aliveCt=0;
   for(let i=particles.length-1;i>=0;i--){
     const p=particles[i];
-    // Hue migration
+
     if(p.targetHue!==null){
       const d=p.targetHue-p.hue;
       if(Math.abs(d)>180)p.hue+=d>0?360:-360;
@@ -598,22 +773,45 @@ function drawParticles(dt){
     if(p.life<=0){particles.splice(i,1);continue}
     aliveCt++;
 
+    // Boom repulsion
     if(!p._exploded&&clickBoom&&boomTimer>.5){
       const dx=mouse.x-p.x,dy=mouse.y-p.y;
       const d=Math.sqrt(dx*dx+dy*dy);
       if(d<200){const f=8/(d+.1);p.vx-=dx*f;p.vy-=dy*f;p._exploded=true}
     }
-    const dx=mouse.x-p.x,dy=mouse.y-p.y;
-    const d=Math.sqrt(dx*dx+dy*dy);
-    if(d>5){p.vx+=dx*mousePull*2/(d+10);p.vy+=dy*mousePull*2/(d+10)}
 
-    // soft repel + merge candidates
+    // Gravity well pull
+    if(gravityWell.active&&gravityWell.strength>.05){
+      const gx=gravityWell.x-p.x,gy=gravityWell.y-p.y;
+      const gd=Math.sqrt(gx*gx+gy*gy);
+      if(gd<gravityWell.radius&&gd>.5){
+        const gf=gravityWell.strength*2.5/(gd*.1+1);
+        p.vx+=gx/gd*gf;p.vy+=gy/gd*gf;
+        // Absorb very close particles
+        if(gd<12&&p.life>.3&&p.size>1.5){
+          p.life+=.15;p.size=Math.min(8,p.size*1.15);p.baseSize=p.size;
+          p.sat=Math.min(100,p.sat+5);p.lig=Math.min(95,p.lig+5);
+        }
+        // Wrap around well if ultra close (black hole)
+        if(gd<6){
+          const ang=Math.atan2(gy,gx)+rand(-.5,.5);
+          const spd=rand(80,200);
+          p.vx=Math.cos(ang)*spd;p.vy=Math.sin(ang)*spd;
+        }
+      }
+    }else{
+      // Mouse pull (normal mode)
+      const dx=mouse.x-p.x,dy=mouse.y-p.y;
+      const d=Math.sqrt(dx*dx+dy*dy);
+      if(d>5&&tr<.5){p.vx+=dx*.26/(d+10);p.vy+=dy*.26/(d+10)}
+    }
+
+    // Soft repel + merge
     for(let j=i+1;j<particles.length;j++){
       const o=particles[j];
       const rx=p.x-o.x,ry=p.y-o.y;
       const rd=Math.sqrt(rx*rx+ry*ry);
       if(rd<8&&rd>.1&&p.life>.5&&o.life>.5){
-        // Merge!
         toMerge.push({a:i,b:j,at:p,bt:o});
       }else if(rd<20&&rd>.1){
         const f=repelForce/(rd*rd+1);
@@ -632,19 +830,19 @@ function drawParticles(dt){
 
     const pSize=p.baseSize*(p.life*.7+.3)*ar;
 
-    // ── Draw trail on trail canvas ──
+    // Draw trail on trail canvas
     const tLen=p.trail.length;
     for(let t=1;t<tLen;t++){
       const ta=t/tLen;
-      tctx.globalAlpha=ta*.08*p.life;
+      tctx.globalAlpha=ta*.08*p.life*(1-tr*.8);
       tctx.strokeStyle=`hsla(${p.hue},${p.sat}%,${p.lig+10}%,${ta*.3})`;
       tctx.lineWidth=pSize*ta*.3;
       tctx.beginPath();tctx.moveTo(p.trail[t-1].x,p.trail[t-1].y);
       tctx.lineTo(p.trail[t].x,p.trail[t].y);tctx.stroke();
     }
 
-    // ── Draw particle on main canvas ──
-    ctx.globalAlpha=(p.life*.6)*(.6+audioLevel*.4);
+    // Draw particle on main canvas
+    ctx.globalAlpha=(p.life*.6)*(.6+audioLevel*.4)*(1-tr*.3);
     const gl=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,pSize*5);
     gl.addColorStop(0,`hsla(${p.hue},${p.sat}%,${p.lig}%,.5)`);
     gl.addColorStop(.4,`hsla(${p.hue},${p.sat}%,${p.lig}%,.12)`);
@@ -656,12 +854,11 @@ function drawParticles(dt){
     ctx.beginPath();ctx.arc(p.x,p.y,pSize,0,PI2);ctx.fill();
   }
 
-  // ── Merge particles ──
+  // Merge particles
   for(const m of toMerge){
     const a=particles[m.a],b=particles[m.b];
     if(!a||!b||a.merged||b.merged)continue;
     if(a.life<.3||b.life<.3)continue;
-    // Merge b into a
     a.x=(a.x+b.x)/2;a.y=(a.y+b.y)/2;
     a.vx=(a.vx+b.vx)*.5;a.vy=(a.vy+b.vy)*.5;
     a.size=Math.min(8,a.size*1.3);
@@ -672,7 +869,6 @@ function drawParticles(dt){
     a.lig=Math.min(95,a.lig+8);
     a.merged=true;
     b.life=0;b.merged=true;
-    // Spawn extra particles from merge
     if(aliveCt<MAX_PARTICLES-5){
       const pPal=PALETTES[paletteIdx];
       for(let k=0;k<3;k++){
@@ -684,11 +880,10 @@ function drawParticles(dt){
     }
   }
 
-  // Clean merged dead particles
   for(let i=particles.length-1;i>=0;i--){if(particles[i].life<=0)particles.splice(i,1);}
 
-  // ── Connections ──
-  const connReach=audioReactive?connDist*(1+audioLevel*2):connDist;
+  // Connections
+  const connReach=audioReactive?connDist*(1+audioLevel*2)*(1-tr*.5):connDist*(1-tr*.5);
   const cr2=connReach*connReach;
   for(let i=0;i<particles.length;i++){
     for(let j=i+1;j<particles.length;j++){
@@ -696,7 +891,7 @@ function drawParticles(dt){
       const dx=a.x-b.x,dy=a.y-b.y;
       const d=dx*dx+dy*dy;
       if(d<cr2){
-        const alpha=(1-d/cr2)*.35*Math.min(a.life,b.life);
+        const alpha=(1-d/cr2)*.3*Math.min(a.life,b.life)*(1-tr*.6);
         ctx.globalAlpha=alpha;
         ctx.strokeStyle=`hsla(${(a.hue+b.hue)/2},70%,70%,${alpha})`;
         ctx.lineWidth=.5;
@@ -724,11 +919,22 @@ function loop(time){
   updateAudioLevel();
   panoTime=time;
 
+  // Smooth tunnel transition
+  if(Math.abs(tunnelTransition-tunnelTargetTransition)>.002){
+    tunnelTransition=lerp(tunnelTransition,tunnelTargetTransition,.02*dt);
+  }else{
+    tunnelTransition=tunnelTargetTransition;
+  }
+
+  // Update tunnel angle
+  if(tunnelMode)tunnelAngle+=.003;
+
   // Background
   drawBgGradient();
   fadeTrailCanvas();
 
   updateNebulas(dt);
+  updateGravityIndicator();
 
   // Layers
   drawCosmicWeb(time);
@@ -737,12 +943,18 @@ function loop(time){
   drawShooters(dt);
   drawParticles(dt);
 
+  // Vignette
+  drawVignette();
+
+  // Light bloom (on separate canvas, drawn above)
+  drawBloom();
+
   // Boom
   if(clickBoom){boomTimer-=dt*.001;if(boomTimer<=0){clickBoom=false;boomTimer=0}}
 
   // Shooters
   shooterTimer-=dt;
-  if(shooterTimer<=0){shooterTimer=SHOOTER_INTERVAL+rand(-1000,2000);if(Math.random()<.65)spawnShooter()}
+  if(shooterTimer<=0){shooterTimer=SHOOTER_INTERVAL+rand(-1000,2000);if(Math.random()<.65&&tunnelTransition<.7)spawnShooter()}
 
   // Constellation
   constelTimer+=dt;
@@ -756,8 +968,8 @@ function loop(time){
 
 // ─── Start ──────────────────────────────────────────────────────────
 setTimeout(()=>document.getElementById('splash').classList.add('fade'),800);
-setTimeout(()=>{document.getElementById('hint').style.opacity='0'},6000);
-setTimeout(()=>document.getElementById('title').style.opacity='0',9000);
+setTimeout(()=>{document.getElementById('hint').style.opacity='0'},8000);
+setTimeout(()=>document.getElementById('title').style.opacity='0',12000);
 document.addEventListener('click',()=>{if(!audioInitialized)initAudio()},{once:true});
 document.addEventListener('touchstart',()=>{if(!audioInitialized)initAudio()},{once:true});
 requestAnimationFrame(loop);

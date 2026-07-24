@@ -1,8 +1,8 @@
 {
   "iteration": 1,
-  "phase": "done",
+  "phase": "build",
   "vision": "Cosmic Dreamscape — immersive generative art with mouse-reactive particle swarm, nebula clouds, deep star field, cosmic web, shooting stars, ambient audio, 6 color palettes. Pure canvas, zero deps.",
-  "goal": "Complete — all core features shipped. v4: dual-canvas, particle merge, animated panorama, galaxy rotation, palette accent web.",
+  "goal": "Tiếp tục mở rộng — thêm tính năng mới, cải thiện visual, tối ưu.",
   "built": [
     "v1: 600 stars parallax, 8 nebulas, 60 particles, trails, connections, click explosion",
     "v2: 6 color palettes, Web Audio ambient (4 drone layers + chimes), shooting stars, keyboard controls, palette UI, constellation wander",
@@ -10,7 +10,7 @@
     "v4: Dual-canvas (main + trail), particle merging with spark burst, animated panorama noise background, radial gradient bg, galaxy rotation (1000 stars, 4 layers), accent-colored cosmic web, 15 waves of polish"
   ],
   "todo": [],
-  "critic": "Score 9.0. Dead variable wf. Galaxy rotation too subtle. Merge flash could be bigger. No resize debounce. But overall: dual-canvas trails, audio-reactive particles via Web Audio analyser, 6 palettes with full visual migration, particle merging + spark burst, animated panorama — genuinely impressive single-file HTML. Zero deps. Smooth 60fps.",
-  "score": 9.0,
-  "done": true
+  "critic": "",
+  "score": null,
+  "done": false
 }
