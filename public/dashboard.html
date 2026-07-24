@@ -152,6 +152,7 @@
   <div class="dash-stat stat-gray"><div class="stat-num" id="stat-stopped">0</div><div class="stat-label">Stopped</div></div>
   <div class="dash-stat stat-red"><div class="stat-num" id="stat-error">0</div><div class="stat-label">Errors</div></div>
   <div class="dash-stat stat-blue"><div class="stat-num" id="stat-total">0</div><div class="stat-label">Total</div></div>
+  <button class="button is-small" onclick="loadSvcs();loadResources()" title="Refresh" style="align-self:center;flex-shrink:0;background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:8px;color:var(--text-dim)">↻</button>
 </div>
 
 <div class="dash-layout">
@@ -501,8 +502,7 @@ function formatSize(s){if(s<1024)return s+'B';if(s<1048576)return (s/1024).toFix
     if(svcs.length)selLog(svcs[0].id);
   }catch(e){}
 })();
-setInterval(loadSvcs,5000);loadSvcs();
-setInterval(loadResources,15000);
+loadSvcs();
 function fmt(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;return(h?h+'h ':'')+(m?m+'m ':'')+sec+'s'}
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
 </script>
