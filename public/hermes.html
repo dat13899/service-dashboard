@@ -510,7 +510,6 @@ function drawStars(time){
     const tw=Math.sin(time*s.twinkleSpeed+s.twinklePhase)*.4+.6;
     const a=s.baseAlpha*tw;
     // parallax + mouse wake
-    const wf=mouse.active?0.1:0;
     const px=s.x-(mouse.x-s.x)*.001*(s.layer+1)*(1+audioLevel*.5);
     const py=s.y-(mouse.y-s.y)*.001*(s.layer+1)*(1+audioLevel*.5);
     // glow for bright stars
