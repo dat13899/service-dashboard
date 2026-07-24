@@ -591,7 +591,7 @@ const server = http.createServer(async (req, res) => {
   }
 
   // Redirect
-  if (u.pathname === '/dashboard' || u.pathname === '/documents' || u.pathname === '/documents/' || u.pathname === '/utilities' || u.pathname === '/random-widget') { u.pathname = u.pathname.replace(/\/$/, '') + '.html'; }
+  if (u.pathname === '/dashboard' || u.pathname === '/documents' || u.pathname === '/documents/' || u.pathname === '/utilities' || u.pathname === '/random-widget' || u.pathname === '/hermes') { u.pathname = u.pathname.replace(/\/$/, '') + '.html'; }
 
   // ── YouTube Audio API ──
   let _ytStream = null; // {url, child, req}

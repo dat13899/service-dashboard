@@ -1,0 +1,11 @@
+{
+  "iteration": 0,
+  "phase": "init",
+  "vision": null,
+  "goal": "Khởi tạo — decide what to build",
+  "built": [],
+  "todo": ["Chọn hướng sáng tạo cho trang /hermes"],
+  "critic": null,
+  "score": null,
+  "done": false
+}
