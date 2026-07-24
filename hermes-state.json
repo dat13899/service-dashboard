@@ -1,18 +1,17 @@
 {
   "iteration": 1,
   "phase": "build",
-  "vision": "Cosmic Dreamscape — immersive generative art with mouse-reactive particle swarm, nebula clouds, deep star field, and cosmic web connections. Pure canvas, zero deps.",
-  "goal": "Build the core canvas: stars, nebula, particles, cosmic connections",
-  "built": [],
+  "vision": "Cosmic Dreamscape — immersive generative art with mouse-reactive particle swarm, nebula clouds, deep star field, cosmic web, shooting stars, ambient audio, and color palettes. Pure canvas, zero deps.",
+  "goal": "v3: audio-reactive particles, particle hue migration, dramatic shooting stars + cosmic web grid + help overlay",
+  "built": ["v2 base: 6 palettes, Web Audio, shooting stars, keyboard controls"],
   "todo": [
-    "Layer 1: deep star field with parallax (3 layers)",
-    "Layer 2: nebula clouds — drifting color blobs",
-    "Layer 3: interactive particle swarm — mouse-following glow dots",
-    "Layer 4: cosmic web — lines between nearby particles",
-    "Layer 5: color transitions, visual polish",
-    "Responsive, smooth 60fps"
+    "Audio-reactive: AnalyserNode pulses particle size/hue",
+    "Particle hue lerp towards new palette on switch",
+    "Shooting stars: colored tails, sparkle fragmentation",
+    "Cosmic web: faint static grid background",
+    "Shortcut overlay: ? key toggles help panel"
   ],
-  "critic": null,
-  "score": null,
+  "critic": "Score 7.5. Audio exists but isn't tied to visuals. Palette switch leaves old-colored particles. Shooting stars basic. Missing cosmic web layer. No permanent help.",
+  "score": 7.5,
   "done": false
 }

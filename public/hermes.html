@@ -51,30 +51,31 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05060f;font-family:
   color:rgba(200,220,255,.5);font-size:16px;cursor:pointer;transition:.3s;user-select:none}
 #vol-toggle:hover{background:rgba(5,6,15,.8);border-color:rgba(120,180,255,.3);color:rgba(200,220,255,.8)}
 
-/* keys help */
-#keys-help{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:9;
-  display:flex;gap:14px;font-size:11px;color:rgba(200,220,255,.12);letter-spacing:1px;transition:opacity 2s;pointer-events:none}
-.key-badge{padding:4px 8px;border:1px solid rgba(200,220,255,.06);border-radius:6px;
-  background:rgba(5,6,15,.3);font-size:10px;letter-spacing:.5px}
+/* help overlay */
+#help-overlay{position:fixed;inset:0;z-index:50;background:rgba(5,6,15,.85);backdrop-filter:blur(8px);
+  display:none;flex-direction:column;align-items:center;justify-content:center;user-select:none}
+#help-overlay.show{display:flex}
+#help-overlay h2{color:rgba(200,220,255,.6);font-size:14px;letter-spacing:4px;text-transform:uppercase;margin-bottom:28px;font-weight:300}
+#help-overlay .help-row{display:flex;gap:40px;margin-bottom:10px}
+#help-overlay .help-col{text-align:left}
+.help-key{display:inline-block;min-width:32px;padding:3px 8px;background:rgba(200,220,255,.06);border:1px solid rgba(200,220,255,.1);border-radius:6px;
+  text-align:center;font-size:12px;color:rgba(200,220,255,.7);margin-right:10px;font-family:monospace}
+.help-desc{font-size:13px;color:rgba(200,220,255,.45);line-height:2}
+#help-close{position:absolute;bottom:40px;font-size:12px;color:rgba(200,220,255,.2);letter-spacing:2px;cursor:pointer;transition:.3s}
+#help-close:hover{color:rgba(200,220,255,.6)}
 
 /* constellation label */
 #constellation{position:fixed;z-index:5;pointer-events:none;
   font-size:11px;letter-spacing:3px;text-transform:uppercase;
-  color:rgba(200,220,255,.03);transition:all 3s ease;opacity:0}
+  transition:all 3s ease;opacity:0}
 #constellation.show{opacity:1;color:rgba(200,220,255,.06)}
 </style>
 </head>
 <body>
 <div id="splash"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="rgba(91,192,255,.4)" stroke-width="2" stroke-dasharray="80 30"/><circle cx="50" cy="50" r="20" fill="none" stroke="rgba(255,107,203,.4)" stroke-width="2" stroke-dasharray="40 20"/></svg></div>
-<div id="hint">✦ move mouse · click explode · 1-6 palettes · space boom · H hud ✦</div>
+<div id="hint">✦ move mouse · click explode · 1-6 palettes · ? help · H hud ✦</div>
 <div id="title">✦ hermes — cosmic dreamscape ✦</div>
 <div id="palette-indicator"></div>
-<div id="keys-help">
-  <span class="key-badge">1-6 palette</span>
-  <span class="key-badge">SPACE boom</span>
-  <span class="key-badge">H hud</span>
-  <span class="key-badge">M audio</span>
-</div>
 <div id="constellation">✦ wandering through the cosmos ✦</div>
 <div id="hud">
   <span><span class="hud-dot cyan"></span><span id="starsC">0</span> stars</span>
@@ -83,14 +84,36 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05060f;font-family:
   <span class="hud-div"></span>
   <span><span class="hud-dot gold"></span><span id="shootersC">0</span> meteors</span>
   <span class="hud-div"></span>
+  <span class="hud-dot cyan" style="width:5px;height:5px;animation:pulse-audio 1s ease infinite" id="audio-dot"></span>
   <span id="fpsC">0</span> fps
   <span class="hud-div"></span>
   <span id="palette-name" style="font-size:11px;opacity:.6">NEBULA</span>
 </div>
 <div id="vol-toggle">♪</div>
 <canvas id="c"></canvas>
+
+<!-- Help Overlay -->
+<div id="help-overlay">
+  <h2>⌘ hermes — controls</h2>
+  <div class="help-row">
+    <div class="help-col">
+      <div class="help-desc"><span class="help-key">1-6</span> switch palette</div>
+      <div class="help-desc"><span class="help-key">SPACE</span> explode!</div>
+      <div class="help-desc"><span class="help-key">click</span> burst at cursor</div>
+      <div class="help-desc"><span class="help-key">H</span> toggle hud</div>
+    </div>
+    <div class="help-col">
+      <div class="help-desc"><span class="help-key">M</span> toggle audio</div>
+      <div class="help-desc"><span class="help-key">?</span> / <span class="help-key">/</span> this help</div>
+      <div class="help-desc"><span class="help-key">F</span> toggle audio-reactive</div>
+      <div class="help-desc"><span class="help-key">Z</span> random palette</div>
+    </div>
+  </div>
+  <div id="help-close">press ? or click to close</div>
+</div>
+
 <script>
-// ─── Cosmic Dreamscape v2 — with audio, palettes, shooting stars ──────
+// ─── Cosmic Dreamscape v3 — audio-reactive, hue migration, cosmic web, help ──
 const c=document.getElementById('c'),ctx=c.getContext('2d');
 let W,H;
 function resize(){W=c.width=innerWidth;H=c.height=innerHeight;ctx.imageSmoothingEnabled=false}
@@ -103,28 +126,28 @@ const clamp=(v,lo,hi)=>v<lo?lo:v>hi?hi:v;
 
 // ─── Color Palettes ──────────────────────────────────────────────────
 const PALETTES=[
-  {name:'NEBULA', stars:'#fff', web:'hsla(220,100%,70%,VAR)', bg:[5,6,15],
+  {name:'NEBULA', stars:'#fff', bg:[5,6,15],
     nebula:[[40,80,180],[120,40,160],[180,60,120],[30,120,140],[90,30,140]],
-    partHue:[190,330], partSat:[60,100], partLig:[55,85]},
-  {name:'SUNSET', stars:'#ffe', web:'hsla(10,90%,65%,VAR)', bg:[20,8,10],
+    partHue:[190,330], partSat:[60,100], partLig:[55,85], webHue:220},
+  {name:'SUNSET', stars:'#ffe', bg:[20,8,10],
     nebula:[[200,50,30],[180,70,40],[140,60,50],[100,30,70],[60,10,80]],
-    partHue:[0,50], partSat:[70,100], partLig:[55,85]},
-  {name:'AURORA', stars:'#eff', web:'hsla(140,80%,65%,VAR)', bg:[5,20,20],
+    partHue:[0,50], partSat:[70,100], partLig:[55,85], webHue:10},
+  {name:'AURORA', stars:'#eff', bg:[5,20,20],
     nebula:[[30,120,80],[20,80,120],[40,160,60],[60,140,100],[80,40,140]],
-    partHue:[100,200], partSat:[60,100], partLig:[55,85]},
-  {name:'DEEPSEA', stars:'#cdf', web:'hsla(200,60%,50%,VAR)', bg:[2,6,25],
+    partHue:[100,200], partSat:[60,100], partLig:[55,85], webHue:140},
+  {name:'DEEPSEA', stars:'#cdf', bg:[2,6,25],
     nebula:[[10,20,100],[20,40,140],[10,60,120],[5,30,160],[40,10,130]],
-    partHue:[160,260], partSat:[50,90], partLig:[45,75]},
-  {name:'LAVA', stars:'#fda', web:'hsla(30,100%,60%,VAR)', bg:[25,8,5],
+    partHue:[160,260], partSat:[50,90], partLig:[45,75], webHue:200},
+  {name:'LAVA', stars:'#fda', bg:[25,8,5],
     nebula:[[180,40,10],[200,60,20],[160,80,30],[100,20,10],[140,10,5]],
-    partHue:[0,40], partSat:[80,100], partLig:[55,90]},
-  {name:'VOID', stars:'#aac', web:'hsla(280,60%,50%,VAR)', bg:[8,6,20],
+    partHue:[0,40], partSat:[80,100], partLig:[55,90], webHue:30},
+  {name:'VOID', stars:'#aac', bg:[8,6,20],
     nebula:[[60,20,100],[80,40,120],[40,20,80],[100,30,140],[20,10,60]],
-    partHue:[240,310], partSat:[50,80], partLig:[45,75]},
+    partHue:[240,310], partSat:[50,80], partLig:[45,75], webHue:280},
 ];
 let paletteIdx=0;
-let paletteTarget=0;
-let paletteTransition=1; // 1=done
+let palettePrev=0;
+let paletteTransition=1; // 0→1 transition progress
 
 // ─── Stars ──────────────────────────────────────────────────────────
 const STARS_CNT=800;
@@ -137,207 +160,221 @@ for(let i=0;i<STARS_CNT;i++){
     layer,
     baseAlpha:layer===0?rand(.2,.5):layer===1?rand(.4,.7):rand(.6,1),
     twinkleSpeed:rand(.3,3.5),
-    twinklePhase:rand(0,PI2),
-    hueShift:rand(-20,20)
+    twinklePhase:rand(0,PI2)
   });
 }
 
 // ─── Nebula clouds ──────────────────────────────────────────────────
 const NEBULA_CNT=10;
 const nebulas=[];
+const nebulaInitColors=[[40,80,180],[120,40,160],[180,60,120],[30,120,140],[90,30,140]];
+// each nebula stores current displayed color + target palette index for smooth migration
 for(let i=0;i<NEBULA_CNT;i++){
+  const c=NEBULA_CNT>1?nebulaInitColors[i%nebulaInitColors.length]:[60,60,120];
   nebulas.push({
     x:rand(0,W),y:rand(0,H),
     vx:rand(-.06,.06),vy:rand(-.06,.06),
     radius:rand(100,300),
-    alpha:rand(.03,.08),
+    baseAlpha:rand(.03,.08),
     pulse:rand(.2,.7),pulseSpeed:rand(.001,.004),
     phase:rand(0,PI2),
-    ci:i
+    cr:c[0],cg:c[1],cb:c[2],
+    tr:c[0],tg:c[1],tb:c[2] // target colors for palette migration
   });
 }
 
 // ─── Particles ──────────────────────────────────────────────────────
-const MAX_PARTICLES=120;
+const MAX_PARTICLES=150;
 const particles=[];
 let mouse={x:W/2,y:H/2,active:false};
 let clickBoom=false,boomTimer=0;
 
 addEventListener('mousemove',e=>{mouse.x=e.clientX;mouse.y=e.clientY;mouse.active=true});
-addEventListener('click',()=>{doExplosion(mouse.x,mouse.y,40)});
+addEventListener('click',()=>{doExplosion(mouse.x,mouse.y,45)});
 addEventListener('touchmove',e=>{const t=e.touches[0];mouse.x=t.clientX;mouse.y=t.clientY;mouse.active=true},{passive:true});
-addEventListener('touchstart',e=>{const t=e.touches[0];mouse.x=t.clientX;mouse.y=t.clientY;mouse.active=true;doExplosion(mouse.x,mouse.y,30)},{passive:true});
+addEventListener('touchstart',e=>{const t=e.touches[0];mouse.x=t.clientX;mouse.y=t.clientY;mouse.active=true;doExplosion(mouse.x,mouse.y,35)},{passive:true});
 
 function doExplosion(x,y,count){
   clickBoom=true;boomTimer=1;
   for(let i=0;i<count;i++){
     if(particles.length>=MAX_PARTICLES)break;
-    const ang=rand(0,PI2),spd=rand(80,300);
+    const ang=rand(0,PI2),spd=rand(100,350);
     particles.push(createParticle(x,y,Math.cos(ang)*spd,Math.sin(ang)*spd,true));
   }
 }
+
+let audioReactive=true;
+let audioLevel=0;
 
 function createParticle(x,y,vx,vy,explosion=false){
   const p=PALETTES[paletteIdx];
   return{
     x,y,vx,vy,
-    life:1,decay:explosion?rand(.006,.015):rand(.0015,.005),
+    life:1,decay:explosion?rand(.006,.014):rand(.0015,.005),
     size:explosion?rand(2,6):rand(1.5,4.5),
     hue:rand(p.partHue[0],p.partHue[1]),
     sat:rand(p.partSat[0],p.partSat[1]),
     lig:rand(p.partLig[0],p.partLig[1]),
-    trail:[],oscPhase:rand(0,PI2)
+    targetHue:null, // set on palette change for migration
+    trail:[],oscPhase:rand(0,PI2),
+    baseSize:explosion?rand(2,6):rand(1.5,4.5)
   };
 }
 
 // seed particles
-for(let i=0;i<20;i++){
+for(let i=0;i<25;i++){
   const ang=rand(0,PI2),spd=rand(10,50);
   particles.push(createParticle(rand(0,W),rand(0,H),Math.cos(ang)*spd,Math.sin(ang)*spd));
 }
 
 // ─── Shooting Stars ─────────────────────────────────────────────────
-const SHOOTER_INTERVAL=3000; // ms between spawn attempts
+const SHOOTER_INTERVAL=3000;
 let shooterTimer=rand(0,SHOOTER_INTERVAL);
 const shooters=[];
 function spawnShooter(){
-  const angle=rand(-.4,.4)-Math.PI/2; // mostly downward, slightly angled
-  const speed=rand(800,2000);
+  const angle=rand(-.5,.5)-Math.PI/1.8; // steep downward
+  const speed=rand(1000,3000);
   const x=rand(0,W);
   const y=rand(-H*.1,0);
-  const len=rand(60,200);
+  const len=rand(80,300);
+  const colors=['rgba(255,230,200,','rgba(200,220,255,','rgba(255,200,220,','rgba(200,255,220,'];
+  const ci=Math.floor(Math.random()*colors.length);
+  const ci2=Math.floor(Math.random()*colors.length);
   shooters.push({
     x,y,
     vx:Math.cos(angle)*speed,
     vy:Math.sin(angle)*speed,
     len,
     life:1,
-    decay:rand(.008,.02),
-    width:rand(1,3),
+    decay:rand(.006,.018),
+    width:rand(1,3.5),
+    colorHead:`rgba(255,250,240,${'VAR'})`.replace(',${VAR})',')'),
+    colorTrailA:colors[ci],
+    colorTrailB:colors[ci2],
+    sparkleTimer:0,
+    sparks:[]
   });
+}
+
+// ─── Cosmic Web (static background grid) ────────────────────────────
+const WEB_POINTS=120;
+const webPoints=[];
+for(let i=0;i<WEB_POINTS;i++){
+  webPoints.push({x:rand(0,W),y:rand(0,H),vx:rand(-.02,.02),vy:rand(-.02,.02)});
+}
+function drawCosmicWeb(){
+  ctx.globalAlpha=.015;
+  const dMax=150;
+  for(let i=0;i<webPoints.length;i++){
+    const a=webPoints[i];
+    a.x+=a.vx;a.y+=a.vy;
+    if(a.x<0||a.x>W)a.vx*=-1;
+    if(a.y<0||a.y>H)a.vy*=-1;
+    for(let j=i+1;j<webPoints.length;j++){
+      const b=webPoints[j];
+      const dx=a.x-b.x,dy=a.y-b.y;
+      const d=dx*dx+dy*dy;
+      if(d<dMax*dMax){
+        const alpha=(1-d/(dMax*dMax))*.15;
+        ctx.strokeStyle=`rgba(100,150,255,${alpha})`;
+        ctx.lineWidth=.3;
+        ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+      }
+    }
+  }
+  ctx.globalAlpha=1;
 }
 
 // ─── Web Audio — Generative Ambient ─────────────────────────────────
 let audioCtx=null;
 let audioGain=null;
+let analyser=null;
 let audioNodes=[];
 let audioEnabled=false;
 let audioInitialized=false;
+let freqData=null;
 
 function initAudio(){
   if(audioInitialized)return;
   audioInitialized=true;
   try{
     audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    analyser=audioCtx.createAnalyser();
+    analyser.fftSize=64;
+    freqData=new Uint8Array(analyser.frequencyBinCount);
     audioGain=audioCtx.createGain();
     audioGain.gain.value=0;
-    audioGain.connect(audioCtx.destination);
+    audioGain.connect(analyser);
+    analyser.connect(audioCtx.destination);
 
-    // Fade in over 3s
     const now=audioCtx.currentTime;
     audioGain.gain.setValueAtTime(0,now);
-    audioGain.gain.linearRampToValueAtTime(.18,now+3);
+    audioGain.gain.linearRampToValueAtTime(.2,now+3);
 
-    // ── Drone 1: deep sub-bass ──
+    // Drone 1: sub-bass
     const osc1=audioCtx.createOscillator();
     osc1.type='sine';
-    osc1.frequency.value=27.5; // A0
-    const g1=audioCtx.createGain();
-    g1.gain.value=.12;
-    const lfo1=audioCtx.createOscillator();
-    lfo1.frequency.value=.3;
-    const gLfo1=audioCtx.createGain();
-    gLfo1.gain.value=4;
-    lfo1.connect(gLfo1);
-    gLfo1.connect(osc1.frequency);
-    osc1.connect(g1);
-    g1.connect(audioGain);
-    osc1.start();
-    lfo1.start();
+    osc1.frequency.value=27.5;
+    const g1=audioCtx.createGain();g1.gain.value=.12;
+    const lfo1=audioCtx.createOscillator();lfo1.frequency.value=.3;
+    const gLfo1=audioCtx.createGain();gLfo1.gain.value=4;
+    lfo1.connect(gLfo1);gLfo1.connect(osc1.frequency);
+    osc1.connect(g1);g1.connect(audioGain);osc1.start();lfo1.start();
     audioNodes.push(osc1,lfo1);
 
-    // ── Drone 2: fifth ──
+    // Drone 2: fifth
     const osc2=audioCtx.createOscillator();
-    osc2.type='sine';
-    osc2.frequency.value=41.2; // E1
-    const g2=audioCtx.createGain();
-    g2.gain.value=.08;
-    const lfo2=audioCtx.createOscillator();
-    lfo2.frequency.value=.5;
-    const gLfo2=audioCtx.createGain();
-    gLfo2.gain.value=3;
-    lfo2.connect(gLfo2);
-    gLfo2.connect(osc2.frequency);
-    osc2.connect(g2);
-    g2.connect(audioGain);
-    osc2.start();
-    lfo2.start();
+    osc2.type='sine';osc2.frequency.value=41.2;
+    const g2=audioCtx.createGain();g2.gain.value=.08;
+    const lfo2=audioCtx.createOscillator();lfo2.frequency.value=.5;
+    const gLfo2=audioCtx.createGain();gLfo2.gain.value=3;
+    lfo2.connect(gLfo2);gLfo2.connect(osc2.frequency);
+    osc2.connect(g2);g2.connect(audioGain);osc2.start();lfo2.start();
     audioNodes.push(osc2,lfo2);
 
-    // ── Pad: filtered noise ──
+    // Drone 3: filtered noise pad
     const bufSize=audioCtx.sampleRate*2;
     const buf=audioCtx.createBuffer(1,bufSize,audioCtx.sampleRate);
     const data=buf.getChannelData(0);
     for(let i=0;i<bufSize;i++)data[i]=Math.random()*2-1;
     const noiseSrc=audioCtx.createBufferSource();
-    noiseSrc.buffer=buf;
-    noiseSrc.loop=true;
+    noiseSrc.buffer=buf;noiseSrc.loop=true;
     const bp=audioCtx.createBiquadFilter();
-    bp.type='bandpass';
-    bp.frequency.value=200;
-    bp.Q.value=2;
-    const g3=audioCtx.createGain();
-    g3.gain.value=.04;
-    const lfo3=audioCtx.createOscillator();
-    lfo3.frequency.value=.08;
-    const gLfo3=audioCtx.createGain();
-    gLfo3.gain.value=150;
-    lfo3.connect(gLfo3);
-    gLfo3.connect(bp.frequency);
-    noiseSrc.connect(bp);
-    bp.connect(g3);
-    g3.connect(audioGain);
-    noiseSrc.start();
-    lfo3.start();
+    bp.type='bandpass';bp.frequency.value=200;bp.Q.value=2;
+    const g3=audioCtx.createGain();g3.gain.value=.04;
+    const lfo3=audioCtx.createOscillator();lfo3.frequency.value=.08;
+    const gLfo3=audioCtx.createGain();gLfo3.gain.value=150;
+    lfo3.connect(gLfo3);gLfo3.connect(bp.frequency);
+    noiseSrc.connect(bp);bp.connect(g3);g3.connect(audioGain);noiseSrc.start();lfo3.start();
     audioNodes.push(noiseSrc,lfo3);
 
-    // ── High shimmer ──
+    // Drone 4: high shimmer
     const osc3=audioCtx.createOscillator();
-    osc3.type='triangle';
-    osc3.frequency.value=880;
-    const g4=audioCtx.createGain();
-    g4.gain.value=.02;
-    const lfo4=audioCtx.createOscillator();
-    lfo4.frequency.value=.15;
-    const gLfo4=audioCtx.createGain();
-    gLfo4.gain.value=440;
-    lfo4.connect(gLfo4);
-    gLfo4.connect(osc3.frequency);
-    osc3.connect(g4);
-    g4.connect(audioGain);
-    osc3.start();
-    lfo4.start();
+    osc3.type='triangle';osc3.frequency.value=880;
+    const g4=audioCtx.createGain();g4.gain.value=.02;
+    const lfo4=audioCtx.createOscillator();lfo4.frequency.value=.15;
+    const gLfo4=audioCtx.createGain();gLfo4.gain.value=440;
+    lfo4.connect(gLfo4);gLfo4.connect(osc3.frequency);
+    osc3.connect(g4);g4.connect(audioGain);osc3.start();lfo4.start();
     audioNodes.push(osc3,lfo4);
 
-    // ── Melodic chime (repeating) ──
+    // Melodic chime
     function scheduleChime(){
       if(!audioEnabled)return;
-      const chimeNow=audioCtx.currentTime;
-      const chimeOsc=audioCtx.createOscillator();
-      chimeOsc.type='sine';
-      const chimeG=audioCtx.createGain();
-      chimeG.gain.setValueAtTime(0,chimeNow);
-      const notes=[261.63,293.66,329.63,392,440,523.25];
+      const now=audioCtx.currentTime;
+      const osc=audioCtx.createOscillator();
+      osc.type='sine';
+      const gg=audioCtx.createGain();
+      gg.gain.setValueAtTime(0,now);
+      const notes=[261.63,293.66,329.63,392,440,523.25,587.33,659.25];
       const note=notes[Math.floor(Math.random()*notes.length)];
-      chimeOsc.frequency.value=note;
-      const startTime=chimeNow+rand(4,12);
-      chimeG.gain.linearRampToValueAtTime(.03,startTime+.1);
-      chimeG.gain.exponentialRampToValueAtTime(.001,startTime+rand(1.5,4));
-      chimeOsc.connect(chimeG);
-      chimeG.connect(audioGain);
-      chimeOsc.start(startTime);
-      chimeOsc.stop(startTime+5);
-      setTimeout(scheduleChime,(rand(6,18))*1000);
+      osc.frequency.value=note;
+      const start=now+rand(4,14);
+      gg.gain.linearRampToValueAtTime(.035,start+.1);
+      gg.gain.exponentialRampToValueAtTime(.001,start+rand(1.5,4));
+      osc.connect(gg);gg.connect(audioGain);
+      osc.start(start);osc.stop(start+5);
+      setTimeout(scheduleChime,rand(6,20)*1000);
     }
     scheduleChime();
 
@@ -351,33 +388,41 @@ function initAudio(){
 }
 
 function toggleAudio(){
-  if(!audioInitialized){
-    initAudio();
-    return;
-  }
+  if(!audioInitialized){initAudio();return}
   audioEnabled=!audioEnabled;
   const now=audioCtx.currentTime;
   if(audioEnabled){
-    audioGain.gain.linearRampToValueAtTime(.18,now+2);
+    audioGain.gain.linearRampToValueAtTime(.2,now+2);
     document.getElementById('vol-toggle').textContent='♫';
     document.getElementById('vol-toggle').style.color='rgba(91,192,255,.8)';
-    scheduleChime();
   }else{
     audioGain.gain.linearRampToValueAtTime(0,now+1);
     document.getElementById('vol-toggle').textContent='♪';
     document.getElementById('vol-toggle').style.color='rgba(200,220,255,.5)';
+    audioLevel=0;
   }
 }
-
 document.getElementById('vol-toggle').addEventListener('click',toggleAudio);
 
-// ─── Update palette indicator ──────────────────────────────────────
+function updateAudioLevel(){
+  if(!audioEnabled||!analyser||!freqData)return;
+  try{
+    analyser.getByteFrequencyData(freqData);
+    let sum=0;
+    for(let i=0;i<freqData.length;i++)sum+=freqData[i];
+    audioLevel=sum/(freqData.length*255);
+    // audio-reactive dot
+    document.getElementById('audio-dot').style.opacity=.3+audioLevel*.7;
+  }catch(_){}
+}
+
+// ─── Palette UI ─────────────────────────────────────────────────────
 function buildPaletteUI(){
   const container=document.getElementById('palette-indicator');
   container.innerHTML='';
   PALETTES.forEach((p,i)=>{
     const dot=document.createElement('div');
-    dot.className='palette-dot'+ (i===paletteIdx?' active':'');
+    dot.className='palette-dot'+(i===paletteIdx?' active':'');
     const col=PALETTES[i].nebula[0];
     dot.style.background=`rgb(${col[0]},${col[1]},${col[2]})`;
     dot.style.color=`rgb(${col[0]},${col[1]},${col[2]})`;
@@ -389,60 +434,88 @@ buildPaletteUI();
 
 function setPalette(idx){
   if(idx===paletteIdx&&paletteTransition>=1)return;
-  paletteTarget=idx;
+  palettePrev=paletteIdx;
+  paletteIdx=idx;
   paletteTransition=0;
+
+  // Set target nebula colors
+  const p=PALETTES[idx];
+  for(let i=0;i<nebulas.length;i++){
+    const n=nebulas[i];
+    const c=p.nebula[i%p.nebula.length];
+    n.tr=c[0];n.tg=c[1];n.tb=c[2];
+  }
+  // Set particle migration targets
+  for(const pt of particles){
+    pt.targetHue=rand(p.partHue[0],p.partHue[1]);
+  }
 }
 
 // ─── Keyboard Controls ──────────────────────────────────────────────
 addEventListener('keydown',e=>{
   const k=e.key;
-  // 1-6: palette
   const n=parseInt(k);
-  if(n>=1&&n<=PALETTES.length){e.preventDefault();setPalette(n-1)}
-  // Space: explode
-  if(k===' '||k==='Space'){e.preventDefault();doExplosion(mouse.x,mouse.y,50)}
-  // H: toggle hud
-  if(k==='h'||k==='H'){document.getElementById('hud').classList.toggle('hidden')}
-  // M: toggle audio
-  if(k==='m'||k==='M'){e.preventDefault();toggleAudio()}
+  if(n>=1&&n<=PALETTES.length){e.preventDefault();setPalette(n-1);return}
+  if(k==='z'||k==='Z'){e.preventDefault();let r;do{r=Math.floor(Math.random()*PALETTES.length)}while(r===paletteIdx);setPalette(r);return}
+  if(k===' '||k==='Space'){e.preventDefault();doExplosion(mouse.x,mouse.y,55);return}
+  if(k==='h'||k==='H'){e.preventDefault();document.getElementById('hud').classList.toggle('hidden');return}
+  if(k==='m'||k==='M'){e.preventDefault();toggleAudio();return}
+  if(k==='f'||k==='F'){e.preventDefault();audioReactive=!audioReactive;
+    document.getElementById('palette-name').textContent=PALETTES[paletteIdx].name+(audioReactive?' ◇':'')}
+  if(k==='?'||k==='/'){
+    e.preventDefault();
+    const el=document.getElementById('help-overlay');
+    el.classList.toggle('show');
+  }
+});
+
+document.getElementById('help-overlay').addEventListener('click',()=>{
+  document.getElementById('help-overlay').classList.remove('show');
 });
 
 // ─── Drawing ────────────────────────────────────────────────────────
 let prevTime=0;let frameCount=0;let fpsTimer=0;let fps=0;
 const MAX_TRAIL=8;
-const ABSORB=0.08;
-const repelForce=0.15;
-
-// Constellation label wander
+const repelForce=0.12;
 const constel=document.getElementById('constellation');
 let constelTimer=0;
 
-function updatePalette(dt){
-  if(paletteTransition>=1)return;
-  paletteTransition=Math.min(1,paletteTransition+dt*.001);
-  if(paletteTransition>=1)paletteIdx=paletteTarget;
-  const pname=PALETTES[paletteTransition>=1?paletteIdx:paletteTarget].name;
-  document.getElementById('palette-name').textContent=pname;
-  // update dots
+function updatePaletteAndNebulas(dt,time){
+  // Migrate nebula colors toward target
+  for(const n of nebulas){
+    n.cr=lerp(n.cr,n.tr,.005*dt);
+    n.cg=lerp(n.cg,n.tg,.005*dt);
+    n.cb=lerp(n.cb,n.tb,.005*dt);
+  }
+
+  // Transition progress
+  if(paletteTransition<1){
+    paletteTransition=Math.min(1,paletteTransition+dt*.0012);
+  }
+  constelTimer+=dt;
+
+  // Update palette name
+  const pn=PALETTES[paletteIdx].name+(audioReactive?' ◇':'');
+  document.getElementById('palette-name').textContent=pn;
+
+  // Update palette dots
   document.querySelectorAll('.palette-dot').forEach((dot,i)=>{
-    dot.classList.toggle('active',i===paletteIdx||(paletteTransition<1&&i===paletteTarget));
+    dot.classList.toggle('active',i===paletteIdx);
   });
 }
 
 function drawStars(time){
-  const p=PALETTES[paletteIdx];
   for(const s of stars){
     const twinkle=Math.sin(time*s.twinkleSpeed+s.twinklePhase)*.4+.6;
     const a=s.baseAlpha*twinkle;
-    ctx.globalAlpha=a;
-    // parallax
     const px=s.x-(mouse.x-s.x)*.001*(s.layer+1);
     const py=s.y-(mouse.y-s.y)*.001*(s.layer+1);
-    // star glow for bright ones
     if(s.layer===2&&s.size>1.8){
-      ctx.fillStyle='rgba(255,255,255,.03)';
+      ctx.globalAlpha=a*.04;
+      ctx.fillStyle='rgba(255,255,255,1)';
       ctx.beginPath();ctx.arc(px,py,s.size*5,0,PI2);ctx.fill();
     }
+    ctx.globalAlpha=a;
     ctx.fillStyle='#fff';
     ctx.beginPath();ctx.arc(px,py,s.size,0,PI2);ctx.fill();
   }
@@ -450,9 +523,7 @@ function drawStars(time){
 }
 
 function drawNebulas(time){
-  const p=PALETTES[paletteIdx];
-  for(let i=0;i<NEBULA_CNT;i++){
-    const n=nebulas[i];
+  for(const n of nebulas){
     n.x+=n.vx;n.y+=n.vy;
     if(n.x<-n.radius)n.x=W+n.radius;
     if(n.x>W+n.radius)n.x=-n.radius;
@@ -460,59 +531,75 @@ function drawNebulas(time){
     if(n.y>H+n.radius)n.y=-n.radius;
     const pulse=1+Math.sin(time*n.pulseSpeed+n.phase)*n.pulse*.5;
     const r=n.radius*pulse;
-
-    // blend between current and target palette's nebula colors
-    const srcIdx=paletteTransition>=1?paletteIdx:paletteTarget;
-    const c=PALETTES[srcIdx].nebula[i%PALETTES[srcIdx].nebula.length];
-    const alpha=n.alpha;
+    const alpha=n.baseAlpha*(.8+audioLevel*.4);
 
     const grad=ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,r);
-    grad.addColorStop(0,`rgba(${c[0]},${c[1]},${c[2]},${alpha})`);
-    grad.addColorStop(.5,`rgba(${c[0]},${c[1]},${c[2]},${alpha*.35})`);
+    grad.addColorStop(0,`rgba(${Math.round(n.cr)},${Math.round(n.cg)},${Math.round(n.cb)},${alpha})`);
+    grad.addColorStop(.5,`rgba(${Math.round(n.cr)},${Math.round(n.cg)},${Math.round(n.cb)},${alpha*.35})`);
     grad.addColorStop(1,'rgba(0,0,0,0)');
     ctx.fillStyle=grad;
     ctx.beginPath();ctx.arc(n.x,n.y,r,0,PI2);ctx.fill();
   }
 }
 
-function drawShooters(time,dt){
+function drawShooters(dt){
   let alive=0;
-  ctx.globalAlpha=1;
   for(let i=shooters.length-1;i>=0;i--){
     const s=shooters[i];
     s.life-=s.decay*dt;
     if(s.life<=0){shooters.splice(i,1);continue}
     alive++;
+    s.sparkleTimer+=dt;
     const tx=s.x+s.vx*dt*.016;
     const ty=s.y+s.vy*dt*.016;
     const dx=tx-s.x,dy=ty-s.y;
     const dist=Math.sqrt(dx*dx+dy*dy);
 
-    // head glow
-    const glow=ctx.createRadialGradient(tx,ty,0,tx,ty,s.width*8);
-    glow.addColorStop(0,`rgba(255,240,210,${s.life*.4})`);
-    glow.addColorStop(.5,`rgba(255,200,150,${s.life*.1})`);
+    // Head glow
+    const gp=1+audioLevel*2;
+    // audio-reactive head size
+    const headSize=s.width*(1+audioLevel*2);
+    const glow=ctx.createRadialGradient(tx,ty,0,tx,ty,headSize*12);
+    glow.addColorStop(0,`rgba(255,245,230,${s.life*.3+audioLevel*.2})`);
+    glow.addColorStop(.5,`rgba(255,210,180,${s.life*.1})`);
     glow.addColorStop(1,'rgba(0,0,0,0)');
     ctx.fillStyle=glow;
-    ctx.beginPath();ctx.arc(tx,ty,s.width*8,0,PI2);ctx.fill();
+    ctx.beginPath();ctx.arc(tx,ty,headSize*12,0,PI2);ctx.fill();
 
-    // trail
-    const tLen=Math.min(30,Math.floor(dist/10));
-    ctx.globalAlpha=s.life*.6;
-    ctx.strokeStyle='rgba(255,230,200,.6)';
-    ctx.lineWidth=s.width;
-    ctx.beginPath();
-    ctx.moveTo(s.x,s.y);
-    ctx.lineTo(tx,ty);
-    ctx.stroke();
+    // Trail
+    const tLen=Math.min(40,Math.floor(dist/8));
+    for(let t=0;t<tLen;t++){
+      const ta=t/tLen;
+      const px=s.x+(tx-s.x)*ta+rand(-1,1);
+      const py=s.y+(ty-s.y)*ta+rand(-1,1);
+      ctx.globalAlpha=s.life*ta*.7;
+      const col=s.colorTrailA||'rgba(255,230,200,';
+      ctx.strokeStyle=col+ta*.6+')';
+      ctx.lineWidth=s.width*ta*.8;
+      ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px+rand(-2,2),py+rand(-2,2));
+      ctx.stroke();
+    }
 
-    // bright head
+    // Bright head with audio-reactive pulse
     ctx.globalAlpha=s.life;
     ctx.fillStyle='#fffbe6';
     ctx.shadowColor='rgba(255,230,180,.8)';
-    ctx.shadowBlur=s.width*10;
-    ctx.beginPath();ctx.arc(tx,ty,s.width,0,PI2);ctx.fill();
+    ctx.shadowBlur=headSize*12;
+    ctx.beginPath();ctx.arc(tx,ty,headSize,0,PI2);ctx.fill();
     ctx.shadowBlur=0;
+
+    // Sparkles along trail
+    if(s.sparkleTimer>80){
+      s.sparkleTimer=0;
+      const sparkCount=Math.floor(2+audioLevel*4);
+      for(let k=0;k<sparkCount;k++){
+        const ang=rand(0,PI2),spd=rand(1,4);
+        ctx.globalAlpha=s.life*rand(.2,.6);
+        ctx.fillStyle=s.colorTrailA||'rgba(255,230,200,1)';
+        ctx.beginPath();ctx.arc(tx+Math.cos(ang)*spd,ty+Math.sin(ang)*spd,rand(.5,1.5),0,PI2);
+        ctx.fill();
+      }
+    }
 
     s.x=tx;s.y=ty;
   }
@@ -524,9 +611,25 @@ function drawParticles(dt){
   const connDist=200;
   const mousePull=.15;
   let aliveCt=0;
+  const pCol=PALETTES[paletteIdx];
+  const ar=audioReactive?1+audioLevel*3:1;
 
   for(let i=particles.length-1;i>=0;i--){
     const p=particles[i];
+
+    // Migrate hue towards palette target
+    if(p.targetHue!==null){
+      const diff=p.targetHue-p.hue;
+      if(Math.abs(diff)>180){
+        p.hue+=diff>0?360:-360;
+      }else if(Math.abs(diff)>1){
+        p.hue+=diff*.02*dt;
+      }else{
+        p.hue=p.targetHue;
+        p.targetHue=null;
+      }
+    }
+
     p.life-=p.decay*dt;
     if(p.life<=0){particles.splice(i,1);continue}
     aliveCt++;
@@ -550,7 +653,7 @@ function drawParticles(dt){
       p.vy+=dy*mousePull*2/(dist+10);
     }
 
-    // repel from other particles (soft)
+    // soft repel between particles
     for(let j=i+1;j<particles.length;j++){
       const o=particles[j];
       const rdx=p.x-o.x,rdy=p.y-o.y;
@@ -576,7 +679,8 @@ function drawParticles(dt){
     p.trail.push({x:p.x,y:p.y});
     if(p.trail.length>MAX_TRAIL)p.trail.shift();
 
-    const pCol=PALETTES[paletteIdx];
+    // audio-reactive size
+    const pSize=p.baseSize*(p.life*.7+.3)*ar;
 
     // draw trail
     const tLen=p.trail.length;
@@ -584,36 +688,37 @@ function drawParticles(dt){
       const ta=t/tLen;
       ctx.globalAlpha=ta*.12*p.life;
       ctx.strokeStyle=`hsla(${p.hue},${p.sat}%,${p.lig+10}%,1)`;
-      ctx.lineWidth=p.size*ta*.35;
-      ctx.beginPath();
-      ctx.moveTo(p.trail[t-1].x,p.trail[t-1].y);
+      ctx.lineWidth=pSize*ta*.35;
+      ctx.beginPath();ctx.moveTo(p.trail[t-1].x,p.trail[t-1].y);
       ctx.lineTo(p.trail[t].x,p.trail[t].y);
       ctx.stroke();
     }
 
     // glow
-    ctx.globalAlpha=p.life*.6;
-    const glow=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.size*4);
+    ctx.globalAlpha=(p.life*.6)*(.6+audioLevel*.4);
+    const glow=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,pSize*4);
     glow.addColorStop(0,`hsla(${p.hue},${p.sat}%,${p.lig}%,.5)`);
     glow.addColorStop(.4,`hsla(${p.hue},${p.sat}%,${p.lig}%,.15)`);
     glow.addColorStop(1,'hsla(0,0%,100%,0)');
     ctx.fillStyle=glow;
-    ctx.beginPath();ctx.arc(p.x,p.y,p.size*3.5,0,PI2);ctx.fill();
+    ctx.beginPath();ctx.arc(p.x,p.y,pSize*3.5,0,PI2);ctx.fill();
 
     // core
-    ctx.globalAlpha=1;
+    ctx.globalAlpha=.85+audioLevel*.15;
     ctx.fillStyle=`hsla(${p.hue},${p.sat}%,${p.lig}%,.9)`;
-    ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,PI2);ctx.fill();
+    ctx.beginPath();ctx.arc(p.x,p.y,pSize,0,PI2);ctx.fill();
   }
 
-  // connections (dynamic alpha based on audio)
+  // connections (audio-reactive reach)
+  const connReach=audioReactive?connDist*(1+audioLevel*1.5):connDist;
+  const connReach2=connReach*connReach;
   for(let i=0;i<particles.length;i++){
     for(let j=i+1;j<particles.length;j++){
       const a=particles[i],b=particles[j];
       const dx=a.x-b.x,dy=a.y-b.y;
       const d=dx*dx+dy*dy;
-      if(d<connDist*connDist){
-        const alpha=(1-d/(connDist*connDist))*.3*Math.min(a.life,b.life);
+      if(d<connReach2){
+        const alpha=(1-d/connReach2)*.35*Math.min(a.life,b.life);
         ctx.globalAlpha=alpha;
         ctx.strokeStyle=`hsla(${(a.hue+b.hue)/2},70%,70%,${alpha})`;
         ctx.lineWidth=.5;
@@ -621,7 +726,6 @@ function drawParticles(dt){
       }
     }
   }
-
   ctx.globalAlpha=1;
   particles.length>0&&(document.getElementById('particlesC').textContent=particles.length);
   return aliveCt;
@@ -637,16 +741,21 @@ function loop(time){
     document.getElementById('fpsC').textContent=fps;
   }
 
-  // fade trail bg
-  ctx.fillStyle='rgba(5,6,15,.12)';
+  // Read audio levels
+  updateAudioLevel();
+
+  // trail fade — color shifts with palette
+  const bg=PALETTES[paletteIdx].bg;
+  ctx.fillStyle=`rgba(${bg[0]},${bg[1]},${bg[2]},.12)`;
   ctx.fillRect(0,0,W,H);
 
-  updatePalette(dt);
+  updatePaletteAndNebulas(dt,time);
 
-  // layers
+  // draw layers
+  drawCosmicWeb();
   drawNebulas(time);
   drawStars(time);
-  drawShooters(time,dt);
+  drawShooters(dt);
   drawParticles(dt);
 
   // boom decay
@@ -658,11 +767,10 @@ function loop(time){
   shooterTimer-=dt;
   if(shooterTimer<=0){
     shooterTimer=SHOOTER_INTERVAL+rand(-1000,2000);
-    if(Math.random()<.6)spawnShooter();
+    if(Math.random()<.65)spawnShooter();
   }
 
   // constellation label wander
-  constelTimer+=dt;
   if(constelTimer>8000&&constelTimer<18000){
     constel.classList.add('show');
     constel.style.left=rand(10,70)+'%';
@@ -672,7 +780,7 @@ function loop(time){
     if(constelTimer>25000)constelTimer=0;
   }
 
-  // hud counts
+  // HUD star count
   document.getElementById('starsC').textContent=STARS_CNT;
 
   requestAnimationFrame(loop);
@@ -682,9 +790,8 @@ function loop(time){
 setTimeout(()=>document.getElementById('splash').classList.add('fade'),800);
 setTimeout(()=>{const h=document.getElementById('hint');h.style.opacity='0'},6000);
 setTimeout(()=>document.getElementById('title').style.opacity='0',9000);
-setTimeout(()=>document.getElementById('keys-help').style.opacity='0',12000);
 
-// Init audio on first interaction (autoplay policy)
+// init audio on first interaction
 document.addEventListener('click',()=>{if(!audioInitialized)initAudio()},{once:true});
 document.addEventListener('touchstart',()=>{if(!audioInitialized)initAudio()},{once:true});
 
