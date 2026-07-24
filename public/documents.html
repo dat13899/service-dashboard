@@ -131,6 +131,7 @@ a{color:var(--accent)}a:hover{color:var(--accent-hover)}
 </style>
 </head>
 <body>
+<script src="/assets/theme.js?v=2"></script>
 <div class="blob-container"><div class="blob"></div><div class="blob"></div><div class="blob"></div><div class="blob"></div></div>
 <div id="nav-target" data-active="docs" data-bc=" / documents"></div>
 <script>initNavbar()</script>
@@ -262,7 +263,6 @@ a{color:var(--accent)}a:hover{color:var(--accent-hover)}
   </div>
 </div>
 
-<script src="/assets/theme.js?v=2"></script>
 <script>
 function clearCacheAndSW(){
   if('caches' in window){caches.keys().then(ks=>Promise.all(ks.map(k=>caches.delete(k)))).then(()=>{toast('🧹 Cache cleared','success')})}

@@ -71,6 +71,7 @@
 </style>
 </head>
 <body>
+<script src="/assets/theme.js?v=2"></script>
 <div id="alert-badge" class="alert-badge" onclick="toggleAlerts()">!</div>
 <div class="alert-dropdown" id="alert-dropdown"></div>
 <div class="blob-container"><div class="blob"></div><div class="blob"></div><div class="blob"></div><div class="blob"></div></div>
@@ -185,7 +186,6 @@
   </div>
 </div>
 
-<script src="/assets/theme.js?v=2"></script>
 <script>
 function clearCacheAndSW(){
   if('caches' in window){caches.keys().then(ks=>Promise.all(ks.map(k=>caches.delete(k)))).then(()=>{toast('🧹 Cache cleared','success')})}
