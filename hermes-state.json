@@ -1,8 +1,8 @@
 {
-  "iteration": 8,
+  "iteration": 9,
   "phase": "build",
-  "vision": "Cosmic Dreamscape v8 — slide-in config panel with 4 real-time sliders (tunnel speed, bloom intensity, nebula drift speed, particle density) + 3 toggle switches (audio reactive, trails, HUD), spiral swirl scene transition animation when switching between the 6 scene modes, G key toggles settings panel on/off, settings button (⚙) next to mode panel for mouse access, trail toggle clears trail canvas when off, tunnel speed dynamically adjustable via slider, bloom intensity multiplier follows config slider, nebula drift speed scales with slider.",
-  "goal": "Thêm Config Panel (G key / button ⚙) với slider real-time: tốc độ tunnel, bloom intensity, tốc độ nebula, density; toggle audio reactive, trails, HUD; và spiral swirl scene transition animation khi chuyển giữa các mode.",
+  "vision": "Cosmic Dreamscape v9 — Prism Rave 7th scene mode with kaleidoscope polygon geometry, color-cycling mirrored sectors, central mandala glow, rotating laser lines, and swirling prism particles + Tab/Arrow key cycling between all 7 scene modes + mobile dual-touch gestures (pinch to open/close config panel) + density slider actually controls MAX_PARTICLES dynamically (150–950 particles) via getEffMaxParticles() function + R key shortcut for Prism Rave + updated help overlay with mobile gesture hints.",
+  "goal": "Thêm scene Prism Rave (kaleidoscope geometry), Tab/arrow key cycling, mobile pinch gestures, và wiring density slider vào particle system.",
   "built": [
     "v1: 600 stars parallax, 8 nebulas, 60 particles, trails, connections, click explosion",
     "v2: 6 color palettes, Web Audio ambient (4 drone layers + chimes), shooting stars, keyboard controls, palette UI, constellation wander",
@@ -11,14 +11,16 @@
     "v5: Hyperspace tunnel mode (T key — 3D star projection, depth warping, rotational drift, colorshift), gravity wells (hold mouse drag — pull/absorb/black-hole-spin particles, burst on release), light bloom canvas overlay (mouse-following soft glow bloom), mode badge, gravity indicator ring, 1200 stars, 250 max particles",
     "v6: Scene Mode system — 5 modes (Cosmic/Hyperspace/Paint/Constellation/Nebula) with slide-in panel, Particle Paint mode with brush size & hue range sliders, clear button, paint particles spawn on drag with glow boost + thicker trails, Constellation mode (2.5x web, 3x particle connections, wider connection range), Nebula Flow mode (2.2x nebula alpha/size), per-scene multipliers, mode-specific badge colors, keyboard shortcuts P/C/N, paint hue influences bloom canvas color, fixed lerp() bug, fixed tunnel rotation typo",
     "v7: Particle Word Form mode (6th scene — type text, particles assemble into glowing letter shapes from 800px offscreen canvas, auto-disperse after 8s, green-accented badge), interactive gradient strip color picker for paint brush (drag across full rainbow spectrum, highlights hue indicator), snapshot export (S key saves 3-canvas composite as downloadable PNG with filename hermes-{mode}-{timestamp}.png, toast notification), word input modal with Enter submit / Escape dismiss, 3 buttons wide mode panel (136px)",
-    "v8: Config panel with real-time sliders (tunnel speed, bloom intensity, nebula drift speed) + 3 toggle switches (audio reactive, trails, HUD), spiral swirl scene transition animation (swirl-closes then opens-to-reveal) when switching scene modes, G key toggles settings panel, settings button (⚙) in mode panel area, trail toggle clears trail canvas instantly, tunnel/nebula speed dynamically adjustable, bloom intensity multiplier follows config slider"
+    "v8: Config panel with real-time sliders (tunnel speed, bloom intensity, nebula drift speed) + 3 toggle switches (audio reactive, trails, HUD), spiral swirl scene transition animation (swirl-closes then opens-to-reveal) when switching scene modes, G key toggles settings panel, settings button (⚙) in mode panel area, trail toggle clears trail canvas instantly, tunnel/nebula speed dynamically adjustable, bloom intensity multiplier follows config slider",
+    "v9: Prism Rave scene mode (7th mode, R key) — 8-sector kaleidoscope with 6 concentric polygon layers, hue-cycling, audio-reactive glow and rotation, central mandala dot, 8 rotating laser lines, swirling prism particles. Tab / Arrow key cycling through all 7 scene modes. Mobile dual-touch: pinch to open/close config panel. Density slider actually wires into getEffMaxParticles() — dynamically adjusts spawn cap 150–950 particles across explosions, paint, and natural spawn. Resize handler reinitializes prism geometry."
   ],
   "todo": [
-    "Thêm mobile dual-touch gestures cho các scene modes",
-    "Thêm preset scenes gallery với preview thumbnails",
-    "Thêm MIDI keyboard input cho particle music visualization",
-    "Thêm keyboard shortcut to cycle through modes (Tab / arrow keys)",
-    "Thêm particle density slider thực sự spawn hiệu ứng lên số lượng particles (hiện chỉ là biến config chưa dùng)"
+    "Thêm video recording / GIF export mode với WebGL capture",
+    "Thêm shader-based background (WebGL fragment shaders thay vì CPU noise)",
+    "Thêm mid-air particle text that follows mouse on a path",
+    "Thêm audio visualizer bars that wrap around the kaleidoscope",
+    "Thêm SVG overlay hiển thị dạng waveform dưới dạng circular ring",
+    "Export preset scenes as data URL bookmarks (shareable)"
   ],
   "critic": "",
   "score": null,

@@ -83,6 +83,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05060f;font-family:
 #mode-badge.nebula-mode{color:rgba(80,200,180,.2);letter-spacing:10px}
 #mode-badge.word-mode{color:rgba(180,220,80,.2);letter-spacing:10px}
 #mode-badge.prism-mode{color:rgba(255,50,200,.25);letter-spacing:10px}
+#mode-badge.aurora-mode{color:rgba(80,220,160,.2);letter-spacing:10px}
 
 /* gravity indicator */
 #gravity-indicator{position:fixed;pointer-events:none;z-index:4;border-radius:50%;
@@ -111,6 +112,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05060f;font-family:
 #mode-panel.open .mode-btn:nth-child(5){transition-delay:.10s}
 #mode-panel.open .mode-btn:nth-child(6){transition-delay:.12s}
 #mode-panel.open .mode-btn:nth-child(7){transition-delay:.14s}
+#mode-panel.open .mode-btn:nth-child(8){transition-delay:.16s}
 .mode-btn:hover{border-color:rgba(120,180,255,.25);color:rgba(200,220,255,.7);background:rgba(5,6,15,.7)}
 .mode-btn.active{background:rgba(91,192,255,.12);border-color:rgba(91,192,255,.3);color:#5bc0ff}
 .mode-btn .mode-icon{font-size:16px;width:20px;text-align:center}
@@ -208,9 +210,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05060f;font-family:
 </head>
 <body>
 <div id="splash"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="rgba(91,192,255,.4)" stroke-width="2" stroke-dasharray="80 30"/><circle cx="50" cy="50" r="20" fill="none" stroke="rgba(255,107,203,.4)" stroke-width="2" stroke-dasharray="40 20"/></svg></div>
-<div id="hint">✦ click explode · hold drag gravity · T tunnel · P paint · C constellation · N nebula · R rave · W word · Tab/→ cycle · S snapshot · G settings · 1-6 palette · ? help ✦</div>
-<div id="title">✦ hermes — cosmic dreamscape v8 ✦</div>
+<div id="hint">✦ click explode · hold drag gravity · T tunnel · P paint · C const · N nebula · R rave · A aurora · W word · Tab/→ cycle · S snapshot · G settings · 1-6 palette · ? help ✦</div>
+<div id="title">✦ hermes — cosmic dreamscape v10 ✦</div>
 <div id="mode-badge">◆ cosmic drift ◆</div>
+<div id="aurora-vis"></div>
 <div id="palette-indicator"></div>
 <div id="constellation">✦ wandering through the cosmos ✦</div>
 <div id="gravity-indicator"></div>
@@ -225,6 +228,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05060f;font-family:
   <button class="mode-btn" data-mode="nebula"><span class="mode-icon">🌊</span><span class="mode-label">Nebula Flow</span><span class="mode-check">✓</span></button>
   <button class="mode-btn" data-mode="word"><span class="mode-icon">✎</span><span class="mode-label">Word Form</span><span class="mode-check">✓</span></button>
   <button class="mode-btn" data-mode="prism"><span class="mode-icon">🔮</span><span class="mode-label">Prism Rave</span><span class="mode-check">✓</span></button>
+  <button class="mode-btn" data-mode="aurora"><span class="mode-icon">🌟</span><span class="mode-label">Aurora</span><span class="mode-check">✓</span></button>
 </div>
 
 <!-- Paint Controls -->
@@ -266,10 +270,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05060f;font-family:
   <div class="cfg-row"><span class="cfg-label">Tunnel</span><input type="range" id="cfg-tunnel-speed" min="1" max="10" value="5"><span class="cfg-val" id="cfg-tunnel-val">5</span></div>
   <div class="cfg-row"><span class="cfg-label">Bloom</span><input type="range" id="cfg-bloom" min="0" max="10" value="5"><span class="cfg-val" id="cfg-bloom-val">5</span></div>
   <div class="cfg-row"><span class="cfg-label">Nebula</span><input type="range" id="cfg-nebula-speed" min="1" max="10" value="5"><span class="cfg-val" id="cfg-nebula-val">5</span></div>
+  <div class="cfg-row"><span class="cfg-label">Aurora</span><input type="range" id="cfg-aurora-speed" min="1" max="10" value="5"><span class="cfg-val" id="cfg-aurora-val">5</span></div>
   <div class="cfg-row"><span class="cfg-label">Density</span><input type="range" id="cfg-density" min="1" max="10" value="5"><span class="cfg-val" id="cfg-density-val">5</span></div>
   <div class="cfg-row" style="margin-top:2px"><span class="cfg-label">Reactive</span><div class="cfg-toggle on" id="cfg-reactive"></div></div>
   <div class="cfg-row"><span class="cfg-label">Trails</span><div class="cfg-toggle on" id="cfg-trails"></div></div>
   <div class="cfg-row"><span class="cfg-label">HUD</span><div class="cfg-toggle on" id="cfg-hud"></div></div>
+  <div class="cfg-row"><span class="cfg-label">Viz</span><div class="cfg-toggle on" id="cfg-viz"></div></div>
 </div>
 
 <div id="hud">
@@ -309,6 +315,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05060f;font-family:
       <div class="help-desc"><span class="help-key">C</span> constellation mode</div>
       <div class="help-desc"><span class="help-key">N</span> nebula flow mode</div>
       <div class="help-desc"><span class="help-key">R</span> prism rave mode</div>
+      <div class="help-desc"><span class="help-key">A</span> aurora mode</div>
       <div class="help-desc"><span class="help-key">W</span> word form mode</div>
       <div class="help-desc"><span class="help-key">S</span> snapshot (PNG)</div>
       <div class="help-desc"><span class="help-key">G</span> settings panel</div>
@@ -333,7 +340,7 @@ function resize(){
   W=c.width=tc.width=bc.width=transc.width=innerWidth;
   H=c.height=tc.height=bc.height=transc.height=innerHeight;
 }
-resize();addEventListener('resize',()=>{resize();initPrismGeometry();});
+resize();addEventListener('resize',()=>{resize();initPrismGeometry();initAuroraBands();});
 
 const PI2=Math.PI*2;
 const rand=(min,max)=>Math.random()*(max-min)+min;
@@ -374,6 +381,7 @@ const SCENE_MODES=[
   {id:'nebula',   label:'Nebula Flow',      icon:'🌊', desc:'Emphasized nebula clouds',       badge:'◇ N E B U L A  F L O W ◇',   badgeCls:'nebula-mode', nebulaMul:2.2, webMul:.3,   starParallax:.7,  tunnelDefault:false, paintMode:false, wordMode:false},
   {id:'word',     label:'Word Form',        icon:'✎', desc:'Type text → particle letters',   badge:'◇ W O R D  F O R M ◇',        badgeCls:'word-mode',  nebulaMul:.3,  webMul:0,    starParallax:.4,  tunnelDefault:false, paintMode:false, wordMode:true},
   {id:'prism',    label:'Prism Rave',       icon:'🔮', desc:'Kaleidoscope geometric rave',    badge:'◇ P R I S M  R A V E ◇',       badgeCls:'prism-mode', nebulaMul:.2,  webMul:0,    starParallax:.3,  tunnelDefault:false, paintMode:false, wordMode:false},
+  {id:'aurora',   label:'Aurora Borealis',  icon:'🌟', desc:'Flowing aurora curtain waves', badge:'◇ A U R O R A  B O R E A L I S ◇',badgeCls:'aurora-mode',nebulaMul:.08, webMul:0,    starParallax:.5,  tunnelDefault:false, paintMode:false, wordMode:false},
 ];
 let currentMode='cosmic';
 let paintMode=false;
@@ -389,6 +397,37 @@ let cfgTunnelSpeed=5;
 let cfgBloomIntensity=5;
 let cfgNebulaSpeed=5;
 let cfgDensity=5;
+let cfgAuroraSpeed=5;
+let showVisualizer=true;
+
+// ─── Aurora Mode ─────────────────────────────────────────────
+const AURORA_BANDS=6;
+let auroraBands=[];
+function initAuroraBands(){
+  auroraBands=[];
+  const colors=[
+    {h:110,s:70,l:55},
+    {h:150,s:65,l:50},
+    {h:190,s:60,l:45},
+    {h:250,s:55,l:50},
+    {h:300,s:50,l:45},
+    {h:340,s:45,l:50},
+  ];
+  for(let i=0;i<AURORA_BANDS;i++){
+    auroraBands.push({
+      color:colors[i%colors.length],
+      freq:rand(.003,.007),
+      amp:rand(.04,.12),
+      speed:rand(.15,.4),
+      phase:rand(0,PI2),
+      height:rand(80,180),
+      alpha:rand(.025,.06),
+    });
+  }
+}
+initAuroraBands();
+
+let auroraActive=false;
 
 // ─── Scene Transition ───────────────────────────────────────────────
 let sceneTransition={active:false,progress:0,fromMode:'',toMode:'',duration:600};
@@ -1194,6 +1233,11 @@ addEventListener('keydown',e=>{
     }
     return;
   }
+  if(k==='a'||k==='A'){
+    e.preventDefault();
+    setSceneMode(currentMode==='aurora'?'cosmic':'aurora');
+    return;
+  }
   if(k==='g'||k==='G'){
     e.preventDefault();
     toggleConfigPanel();
@@ -1253,6 +1297,7 @@ function toggleCfg(el,prop){
   if(prop==='reactive'){audioReactive=el.classList.contains('on');return}
   if(prop==='trails'){showTrails=el.classList.contains('on');return}
   if(prop==='hud'){document.getElementById('hud').classList.toggle('hidden',!el.classList.contains('on'));return}
+  if(prop==='viz'){showVisualizer=el.classList.contains('on');return}
 }
 
 cfgReactive.addEventListener('click',()=>toggleCfg(cfgReactive,'reactive'));
@@ -1316,14 +1361,23 @@ addEventListener('touchend',e=>{
 cfgDensitySlider.addEventListener('input',()=>{
   cfgDensity=parseFloat(cfgDensitySlider.value);
   cfgDensityVal.textContent=cfgDensity;
-  // Density affects how many particles can exist
   const newMax=getEffMaxParticles();
-  // Gradually adjust to prevent sudden pop
   while(particles.length<newMax&&particles.length<getEffMaxParticles()*1.5&&Math.random()<.3){
     const ang=rand(0,PI2),spd=rand(10,40);
     particles.push(createParticle(rand(0,W),rand(0,H),Math.cos(ang)*spd,Math.sin(ang)*spd));
   }
 });
+
+const cfgAuroraSlider=document.getElementById('cfg-aurora-speed');
+const cfgAuroraVal=document.getElementById('cfg-aurora-val');
+const cfgViz=document.getElementById('cfg-viz');
+
+cfgAuroraSlider.addEventListener('input',()=>{
+  cfgAuroraSpeed=parseFloat(cfgAuroraSlider.value);
+  cfgAuroraVal.textContent=cfgAuroraSpeed;
+});
+
+cfgViz.addEventListener('click',()=>toggleCfg(cfgViz,'viz'));
 
 // ─── Scene Transition Effect ────────────────────────────────────────
 function drawSceneTransition(time){
@@ -1877,6 +1931,77 @@ function drawPrismRave(time){
   ctx.restore();
 }
 
+// ─── Aurora Borealis ── Flowing curtain waves ──────────────────────
+function drawAurora(time){
+  if(currentMode!=='aurora')return;
+  const spd=cfgAuroraSpeed/5;
+  for(const b of auroraBands){
+    const baseY=H*0.12;
+    ctx.beginPath();
+    ctx.moveTo(0,H);
+    for(let x=0;x<=W;x+=3){
+      const yOff=baseY+b.phase+b.speed*time*spd;
+      const w1=Math.sin(x*b.freq+time*b.speed*.3*spd)*b.amp*H;
+      const w2=Math.sin(x*b.freq*1.7+time*b.speed*.5*spd+b.phase*1.3)*b.amp*H*.5;
+      const w3=Math.sin(x*b.freq*.4+time*b.speed*.1*spd+b.phase*.7)*b.amp*H*.3;
+      ctx.lineTo(x,yOff+w1+w2+w3);
+    }
+    ctx.lineTo(W,H);
+    ctx.closePath();
+    const mix=1+audioLevel*2;
+    ctx.fillStyle=`hsla(${b.color.h},${b.color.s}%,${b.color.l+Math.sin(time*.0005+b.phase)*8}%,${clamp(b.alpha*mix,0,.1)})`;
+    ctx.fill();
+    // Glowing crest line
+    ctx.beginPath();
+    for(let x=0;x<=W;x+=4){
+      const yOff=baseY+b.phase+b.speed*time*spd;
+      const w1=Math.sin(x*b.freq+time*b.speed*.3*spd)*b.amp*H;
+      const w2=Math.sin(x*b.freq*1.7+time*b.speed*.5*spd+b.phase*1.3)*b.amp*H*.5;
+      if(x===0)ctx.moveTo(x,yOff+w1+w2);
+      else ctx.lineTo(x,yOff+w1+w2);
+    }
+    ctx.strokeStyle=`hsla(${b.color.h},${b.color.s}%,${b.color.l+20}%,${clamp(b.alpha*mix*.4,0,.03)})`;
+    ctx.lineWidth=2;
+    ctx.stroke();
+  }
+}
+
+// ─── Circular Audio Visualizer Ring ────────────────────────────
+function drawCircularVisualizer(time){
+  if(!showVisualizer)return;
+  const cx=W/2,cy=H/2;
+  const rad=Math.min(W,H)*.32;
+  const bc=64;
+  let hasFreq=!!(freqData&&freqData.length);
+  const ar=audioLevel*3;
+  for(let i=0;i<bc;i++){
+    const a=(PI2/bc)*i+time*.00005;
+    const fi=hasFreq?Math.floor((i/bc)*freqData.length):0;
+    const ab=hasFreq?freqData[fi]/255:0;
+    const sh=Math.sin(time*.002+i*.7)*.3+.5;
+    const h=3+(ab*35+sh*14+ar*10);
+    const x=cx+Math.cos(a)*rad;
+    const y=cy+Math.sin(a)*rad;
+    const hue=(i/bc)*360+time*.006;
+    ctx.save();
+    ctx.translate(x,y);
+    ctx.rotate(a+Math.PI/2);
+    ctx.globalAlpha=clamp(.06+ab*.25+sh*.06+ar*.04,0,.4);
+    ctx.fillStyle=`hsla(${hue},80%,70%,${ctx.globalAlpha})`;
+    ctx.fillRect(-1.5,-h,3,h);
+    ctx.restore();
+  }
+  // Central glow pulse
+  if(audioLevel>.05||time%2000<500){
+    const gp=Math.min(1,audioLevel*4+Math.sin(time*.003)*.2);
+    const gg=ctx.createRadialGradient(cx,cy,0,cx,cy,rad*.2*gp);
+    gg.addColorStop(0,`rgba(100,200,255,${.02+gp*.04})`);
+    gg.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=gg;ctx.beginPath();ctx.arc(cx,cy,rad*.2*gp,0,PI2);ctx.fill();
+  }
+  ctx.globalAlpha=1;
+}
+
 // ─── Trail canvas fade ─────────────────────────────────────────────
 function fadeTrailCanvas(){
   if(!showTrails){tctx.clearRect(0,0,W,H);return}
@@ -1920,6 +2045,8 @@ function loop(time){
   drawStars(time);
   drawShooters(dt);
   drawPrismRave(time);
+  drawAurora(time);
+  drawCircularVisualizer(time);
   drawParticles(dt);
 
   // Word particles drawn on top
