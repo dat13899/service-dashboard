@@ -35,7 +35,7 @@
 .detail-title{font-size:1.1rem;font-weight:600}
 .widget-panel{display:none}
 
-/* Random Discovery (existing) */
+/* ── Random Discovery ── */
 .rand-card{background:var(--glass-bg);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:12px;padding:1.5rem;min-height:200px}
 .rand-card .tag{margin-bottom:.5rem}
 .rand-card .title{font-size:1rem;font-weight:600;margin-bottom:.5rem;line-height:1.4}
@@ -51,7 +51,7 @@
 .rand-skel .skel-line:nth-child(4){width:75%}
 .rand-source{font-size:.65rem;color:var(--text-dim);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.5px}
 
-/* Brain Dump (existing) */
+/* ── Brain Dump ── */
 .brain-workspace{position:relative;width:100%;height:70vh;overflow:hidden;background:var(--glass-bg);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid var(--glass-border);border-radius:12px;cursor:crosshair}
 .brain-note{position:absolute;min-width:140px;max-width:260px;padding:.5rem .7rem;background:rgba(79,70,229,.1);border:1px solid var(--glass-border);border-radius:8px;cursor:grab;z-index:10;font-size:.8rem;line-height:1.5;word-wrap:break-word}
 .brain-note .brain-note-text{outline:none;min-height:1.2em;width:100%;background:transparent;border:none;color:var(--text);font-size:.8rem;font-family:inherit;resize:vertical}
@@ -62,7 +62,6 @@
 .brain-bar button:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
 .brain-bar .status{font-size:.7rem;color:var(--text-dim);margin-left:auto;align-self:center}
 .brain-hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:.9rem;pointer-events:none;z-index:0}
-.no-notes .brain-note{display:none}
 
 /* ── Color Palette ── */
 .palette-grid{display:flex;gap:8px;flex-wrap:wrap;margin:.5rem 0 1rem}
@@ -71,7 +70,7 @@
 .palette-hex{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.55);color:#fff;padding:3px 10px;border-radius:6px;font-size:.75rem;font-family:monospace;backdrop-filter:blur(4px);letter-spacing:.5px}
 .palette-label{font-size:.7rem;color:var(--text-dim);margin-bottom:.3rem}
 
-/* ── Widget card base ── */
+/* ── Shared widget card ── */
 .wid-card{background:var(--glass-bg);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:12px;padding:2rem;min-height:200px;text-align:center}
 .wid-emoji{font-size:4rem;margin-bottom:.5rem;line-height:1.2}
 .wid-name{font-size:1.3rem;font-weight:600;margin-bottom:.4rem}
@@ -94,11 +93,9 @@
 .game-box button{border:1px solid var(--glass-border);background:rgba(255,255,255,.05);color:var(--text);padding:.4rem .8rem;border-radius:8px;font-size:.8rem;cursor:pointer;transition:.15s}
 .game-box button:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
 .game-box .primary{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600}
-.game-box .primary:hover{background:var(--accent-hover)}
 .game-range{display:flex;gap:.5rem;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:.5rem}
 .game-range label{font-size:.8rem;color:var(--text-dim)}
 .game-range input{width:70px;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:.3rem;color:var(--text);text-align:center;font-size:.85rem}
-.game-range .num-result{font-size:2.5rem;font-weight:700;margin-top:.5rem;color:var(--accent)}
 .num-result{font-size:2.5rem;font-weight:700;margin-top:.5rem;color:var(--accent);text-align:center}
 
 /* ── Password ── */
@@ -129,6 +126,110 @@
 .grad-code{background:var(--surface-2);padding:.8rem;border-radius:8px;font-family:monospace;font-size:.8rem;border:1px solid var(--border);word-break:break-all;user-select:all}
 .grad-options{display:flex;gap:1rem;flex-wrap:wrap;margin-top:.8rem;align-items:center}
 .grad-options select{background:var(--surface-2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:.35rem .6rem;font-size:.85rem;cursor:pointer}
+
+/* ═══════════════════ NEW WIDGETS ═══════════════════ */
+
+/* ── Magic 8-Ball ── */
+.ball-wrap{text-align:center;padding:.5rem}
+.ball-shape{position:relative;width:220px;height:220px;margin:.5rem auto .8rem;cursor:pointer;border-radius:50%;background:radial-gradient(circle at 35% 35%,#444,#111);box-shadow:0 8px 32px rgba(0,0,0,.5),inset 0 -6px 16px rgba(0,0,0,.4);transition:transform .1s;user-select:none}
+.ball-shape:active{transform:scale(.95)}
+.ball-shake{animation:ballShake .45s ease}
+@keyframes ballShake{0%{transform:rotate(0) scale(1)}20%{transform:rotate(-15deg) scale(1.04)}40%{transform:rotate(15deg) scale(1.01)}60%{transform:rotate(-10deg) scale(1.05)}80%{transform:rotate(10deg) scale(1.02)}100%{transform:rotate(0) scale(1)}}
+.ball-window{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:80px;height:80px;border-radius:50%;background:radial-gradient(circle at 40% 30%,#1a237e,#0d1448);border:3px solid #999;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.ball-triangle{width:0;height:0;border-left:28px solid transparent;border-right:28px solid transparent;border-bottom:40px solid #e3f2fd;opacity:.9;transition:opacity .2s}
+.ball-answer-text{position:absolute;font-size:.42rem;color:#e3f2fd;text-align:center;padding:6px;line-height:1.3;letter-spacing:.2px;opacity:0;transition:opacity .3s}
+.ball-answer-text.show{opacity:1}
+.ball-hint{font-size:.8rem;color:var(--text-dim);margin-top:.3rem}
+
+/* ── Card Draw ── */
+.cards-wrap{text-align:center;padding:1rem}
+.card-area{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;min-height:170px;margin:.5rem 0}
+.card{width:90px;height:128px;border-radius:6px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:serif;box-shadow:0 2px 8px rgba(0,0,0,.25);transition:transform .2s;animation:cardDeal .3s ease forwards;opacity:0}
+.card:nth-child(1){animation-delay:0s}.card:nth-child(2){animation-delay:.08s}.card:nth-child(3){animation-delay:.16s}.card:nth-child(4){animation-delay:.24s}.card:nth-child(5){animation-delay:.32s}
+@keyframes cardDeal{0%{transform:translateY(-50px) rotate(-10deg) scale(.8);opacity:0}100%{transform:translateY(0) rotate(0) scale(1);opacity:1}}
+.card:hover{transform:translateY(-6px) scale(1.06);z-index:5}
+.card .card-rank{font-size:1.3rem;font-weight:700;line-height:1;margin-bottom:2px}
+.card .card-suit{font-size:1.8rem;line-height:1}
+.card.red{color:#d32f2f}.card.black{color:#222}
+.card-back{width:90px;height:128px;border-radius:6px;background:repeating-linear-gradient(45deg,#1565c0,#1565c0 8px,#0d47a1 8px,#0d47a1 16px);box-shadow:0 2px 8px rgba(0,0,0,.2);display:inline-block}
+.card-mode{display:flex;gap:.4rem;justify-content:center;margin-bottom:.5rem}
+.card-mode button{font-size:.75rem;padding:.25rem .6rem;border-radius:6px;border:1px solid var(--glass-border);background:rgba(255,255,255,.03);color:var(--text-dim);cursor:pointer;transition:.1s}
+.card-mode button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.card-countdown{font-size:.75rem;color:var(--text-dim);min-height:1.2rem}
+
+/* ── Emoji Mix ── */
+.emoji-wrap{text-align:center;padding:1rem}
+.emoji-display{font-size:4.5rem;margin:.5rem 0;display:flex;align-items:center;justify-content:center;gap:.8rem;flex-wrap:wrap;min-height:7rem}
+.emoji-display .em-part{transition:transform .3s;animation:emojiPop .35s ease}
+@keyframes emojiPop{0%{transform:scale(0) rotate(-20deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
+.emoji-plus{font-size:2rem;opacity:.35;animation:fadeIn .2s}
+@keyframes fadeIn{0%{opacity:0}100%{opacity:.35}}
+.emoji-name{font-size:.8rem;color:var(--text-dim);margin-bottom:.3rem;min-height:1.2rem}
+.emoji-tag{display:inline-block;font-size:.6rem;padding:.12rem .5rem;border-radius:10px;color:#fff;margin-top:.3rem}
+
+/* ── Challenge ── */
+.challenge-wrap{text-align:center;padding:1.5rem}
+.challenge-filters{display:flex;gap:.4rem;justify-content:center;flex-wrap:wrap;margin-bottom:.8rem}
+.challenge-filters button{font-size:.65rem;padding:.25rem .55rem;border-radius:6px;border:1px solid var(--glass-border);background:rgba(255,255,255,.03);color:var(--text-dim);cursor:pointer;transition:.1s}
+.challenge-filters button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.challenge-icon{font-size:3rem;margin-bottom:.5rem}
+.challenge-text{font-size:1.1rem;font-weight:600;margin-bottom:.5rem;line-height:1.4;min-height:3rem}
+.challenge-badge{display:inline-block;padding:.15rem .6rem;border-radius:12px;font-size:.6rem;color:#fff;font-weight:500}
+
+/* ── Random List ── */
+.list-wrap{padding:.5rem}
+.list-wrap textarea{width:100%;min-height:120px;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:.5rem;font-size:.8rem;font-family:inherit;resize:vertical}
+.list-wrap textarea:focus{outline:none;border-color:var(--accent)}
+.list-result-box{font-size:1.2rem;font-weight:600;text-align:center;padding:.8rem .5rem;min-height:3rem;background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:8px;margin:.5rem 0;word-break:break-word}
+.list-actions{display:flex;gap:.5rem;flex-wrap:wrap}
+.list-actions button i{margin-right:4px}
+.list-mode{margin-bottom:.5rem}
+.list-mode label{font-size:.8rem;color:var(--text-dim);margin-right:.5rem}
+.list-mode select{background:var(--surface-2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:.25rem .5rem;font-size:.8rem}
+
+/* ── Pomodoro ── */
+.pomo-wrap{text-align:center;padding:.5rem}
+.pomo-timer{font-size:3.5rem;font-weight:700;font-variant-numeric:tabular-nums;margin:.3rem 0;letter-spacing:2px;font-family:monospace}
+.pomo-mode{display:flex;gap:.4rem;justify-content:center;margin-bottom:.5rem}
+.pomo-mode button{font-size:.7rem;padding:.25rem .65rem;border-radius:6px;border:1px solid var(--glass-border);background:rgba(255,255,255,.03);color:var(--text-dim);cursor:pointer;transition:.1s}
+.pomo-mode button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.pomo-actions{display:flex;gap:.5rem;justify-content:center;margin-top:.5rem}
+.pomo-progress{width:100%;max-width:260px;height:5px;background:var(--surface-2);border-radius:3px;margin:.5rem auto;overflow:hidden}
+.pomo-progress div{height:100%;border-radius:3px;background:var(--accent);transition:width 1s linear;width:0}
+.pomo-sessions{font-size:.75rem;color:var(--text-dim);margin-top:.3rem}
+.pomo-label{font-size:.75rem;color:var(--text-dim);font-weight:500}
+
+/* ── Text Generator ── */
+.tgen-wrap{padding:.5rem}
+.tgen-output{background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:.8rem;min-height:100px;font-size:.82rem;line-height:1.6;white-space:pre-wrap;word-break:break-word;max-height:300px;overflow-y:auto;user-select:all}
+.tgen-controls{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.6rem;align-items:center}
+.tgen-controls label{font-size:.78rem;color:var(--text-dim)}
+.tgen-controls select{background:var(--surface-2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:.25rem .4rem;font-size:.78rem;cursor:pointer}
+.tgen-controls input[type=number]{width:60px;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:.25rem .4rem;font-size:.78rem;text-align:center}
+
+/* ── Today in History ── */
+.hist-wrap{text-align:center;padding:1rem}
+.hist-year{font-size:2.8rem;font-weight:800;color:var(--accent);line-height:1.1;margin-bottom:.3rem}
+.hist-event{font-size:1rem;margin:.4rem 0;line-height:1.5;padding:0 .5rem;min-height:4rem}
+.hist-date-tag{font-size:.7rem;color:var(--text-dim);margin-bottom:.5rem}
+.hist-source{font-size:.6rem;color:var(--text-dim)}
+
+/* ── Workout ── */
+.wo-wrap{text-align:center;padding:1rem}
+.wo-emoji{font-size:3rem;margin-bottom:.3rem}
+.wo-name{font-size:1.2rem;font-weight:600;margin-bottom:.2rem}
+.wo-detail{font-size:.85rem;color:var(--text-dim);margin:.2rem 0;line-height:1.4}
+.wo-target{display:inline-block;font-size:.6rem;padding:.15rem .55rem;border-radius:10px;color:#fff;font-weight:500;margin-top:.3rem}
+
+/* ── Countdown ── */
+.cd-wrap{text-align:center;padding:.5rem}
+.cd-input{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:.5rem}
+.cd-input input[type=date]{background:var(--surface-2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:.35rem .6rem;font-size:.85rem}
+.cd-nums{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin:.5rem 0}
+.cd-num{text-align:center}
+.cd-num .cd-val{font-size:2.2rem;font-weight:700;font-variant-numeric:tabular-nums}
+.cd-num .cd-label{font-size:.6rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px}
+.cd-name{font-size:.8rem;color:var(--text-dim);margin-top:.3rem}
 
 /* ── Shared ── */
 .empty-state{padding:2rem 1rem;text-align:center;color:var(--text-dim)}
@@ -327,8 +428,164 @@
           <div class="brain-hint" id="brain-hint">Bấm vào khoảng trống để thêm note</div>
         </div>
       </div>
-    </div>
 
+      <!-- ═══ NEW WIDGETS ═══ -->
+
+      <!-- Magic 8-Ball -->
+      <div class="widget-panel" id="panel-8ball">
+        <div class="ball-wrap">
+          <div class="ball-hint">Hỏi 1 câu trong đầu, rồi bấm vào quả cầu</div>
+          <div class="ball-shape" id="ball-shape" onclick="shakeBall()">
+            <div class="ball-window" id="ball-window">
+              <div class="ball-triangle" id="ball-triangle"></div>
+              <div class="ball-answer-text" id="ball-answer">YES</div>
+            </div>
+          </div>
+          <div><button class="wid-btn primary" onclick="shakeBall()"><i class="fas fa-hand-pointer"></i> Lắc</button></div>
+        </div>
+      </div>
+
+      <!-- Card Draw -->
+      <div class="widget-panel" id="panel-cards">
+        <div class="cards-wrap">
+          <div class="card-mode">
+            <button class="active" id="card-mode-1" onclick="setCardMode(1)">1 lá</button>
+            <button id="card-mode-5" onclick="setCardMode(5)">5 lá</button>
+          </div>
+          <div class="card-area" id="card-area"><div class="card-back"></div></div>
+          <div class="card-countdown" id="card-countdown"></div>
+          <button class="wid-btn primary" onclick="drawCards()" style="margin-top:.3rem"><i class="fas fa-dice"></i> Rút bài</button>
+        </div>
+      </div>
+
+      <!-- Emoji Mix -->
+      <div class="widget-panel" id="panel-emoji">
+        <div class="emoji-wrap">
+          <div class="emoji-display" id="emoji-display">
+            <span class="em-part">🦊</span>
+            <span class="emoji-plus">+</span>
+            <span class="em-part">🔥</span>
+          </div>
+          <div class="emoji-name" id="emoji-name">Cáo + Lửa = Cáo Lửa 🔥</div>
+          <button class="wid-btn primary" onclick="mixEmoji()"><i class="fas fa-random"></i> Mix</button>
+        </div>
+      </div>
+
+      <!-- Random Challenge -->
+      <div class="widget-panel" id="panel-challenge">
+        <div class="challenge-wrap">
+          <div class="challenge-filters" id="challenge-filters"></div>
+          <div class="challenge-icon" id="challenge-icon">🏋️</div>
+          <div class="challenge-text" id="challenge-text">Hít đất 15 cái 💪</div>
+          <div><span class="challenge-badge" id="challenge-badge" style="background:#ef4444">Thể chất</span></div>
+          <button class="wid-btn primary" onclick="randomChallenge()" style="margin-top:.8rem"><i class="fas fa-dice"></i> Thử thách khác</button>
+        </div>
+      </div>
+
+      <!-- Random List -->
+      <div class="widget-panel" id="panel-list">
+        <div class="list-wrap">
+          <div class="list-mode">
+            <label>Chế độ:</label>
+            <select id="list-mode">
+              <option value="random">Rút ngẫu nhiên</option>
+              <option value="shuffle">Xáo trộn</option>
+              <option value="pick">Chọn N phần tử</option>
+            </select>
+            <input type="number" id="list-n" value="1" min="1" max="50" style="width:50px;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:.2rem .4rem;font-size:.78rem;text-align:center;display:none">
+          </div>
+          <textarea id="list-input" placeholder="Nhập danh sách, mỗi dòng một mục&#10;VD:&#10;Phở bò&#10;Bún chả&#10;Bánh mì&#10;Cơm tấm"></textarea>
+          <div class="list-result-box" id="list-result">⟳</div>
+          <div class="list-actions">
+            <button class="wid-btn primary" onclick="runList()"><i class="fas fa-play"></i> Thực hiện</button>
+            <button class="wid-btn" onclick="copyList()"><i class="fas fa-copy"></i> Copy kết quả</button>
+            <button class="wid-btn" onclick="document.getElementById('list-input').value='';document.getElementById('list-result').textContent='⟳'"><i class="fas fa-trash"></i> Xoá</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pomodoro Timer -->
+      <div class="widget-panel" id="panel-pomodoro">
+        <div class="pomo-wrap">
+          <div class="pomo-mode">
+            <button class="active" data-min="25" onclick="setPomoMode(25)">25m Focus</button>
+            <button data-min="5" onclick="setPomoMode(5)">5m Nghỉ</button>
+            <button data-min="15" onclick="setPomoMode(15)">15m Nghỉ dài</button>
+          </div>
+          <div class="pomo-label" id="pomo-label">Focus</div>
+          <div class="pomo-timer" id="pomo-timer">25:00</div>
+          <div class="pomo-progress"><div id="pomo-bar"></div></div>
+          <div class="pomo-actions">
+            <button class="wid-btn primary" id="pomo-start-btn" onclick="pomoStart()"><i class="fas fa-play"></i> Bắt đầu</button>
+            <button class="wid-btn" onclick="pomoReset()"><i class="fas fa-stop"></i> Reset</button>
+          </div>
+          <div class="pomo-sessions" id="pomo-sessions">Hôm nay: 0 pomodoro</div>
+        </div>
+      </div>
+
+      <!-- Text Generator -->
+      <div class="widget-panel" id="panel-textgen">
+        <div class="tgen-wrap">
+          <div class="tgen-output" id="tgen-output">Lorem ipsum dolor sit amet, consectetur adipiscing elit...</div>
+          <div class="tgen-controls">
+            <label>Loại:</label>
+            <select id="tgen-type" onchange="genText()">
+              <option value="lorem">Lorem Ipsum</option>
+              <option value="words">Từ ngẫu nhiên</option>
+              <option value="names">Tên người</option>
+              <option value="ipsum-vi">Lorem Ipsum (Việt)</option>
+            </select>
+            <label>Số lượng:</label>
+            <input type="number" id="tgen-amount" value="3" min="1" max="50" onchange="genText()">
+            <button class="wid-btn primary" onclick="genText()"><i class="fas fa-sync"></i> Sinh</button>
+            <button class="wid-btn" onclick="copyText(document.getElementById('tgen-output').textContent,'Đã copy')"><i class="fas fa-copy"></i> Copy</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Today in History -->
+      <div class="widget-panel" id="panel-history">
+        <div class="hist-wrap">
+          <div class="hist-date-tag" id="hist-date">📅 —</div>
+          <div class="hist-year" id="hist-year">—</div>
+          <div class="hist-event" id="hist-event">Bấm để khám phá sự kiện trong lịch sử</div>
+          <div class="hist-source" id="hist-source"></div>
+          <div class="rand-btn-group" style="justify-content:center">
+            <button class="primary" onclick="showHistory('today')"><i class="fas fa-calendar-day"></i> Hôm nay</button>
+            <button onclick="showHistory('random')"><i class="fas fa-dice"></i> Ngẫu nhiên</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Workout Random -->
+      <div class="widget-panel" id="panel-workout">
+        <div class="wo-wrap">
+          <div class="wo-emoji" id="wo-emoji">💪</div>
+          <div class="wo-name" id="wo-name">Hít đất</div>
+          <div class="wo-detail" id="wo-detail">4 × 12 reps</div>
+          <div><span class="wo-target" id="wo-target" style="background:#ef4444">Ngực, tay sau</span></div>
+          <button class="wid-btn primary" onclick="randomWorkout()" style="margin-top:.8rem"><i class="fas fa-dumbbell"></i> Bài tập khác</button>
+        </div>
+      </div>
+
+      <!-- Countdown -->
+      <div class="widget-panel" id="panel-countdown">
+        <div class="cd-wrap">
+          <div class="cd-input">
+            <input type="date" id="cd-date">
+            <button class="wid-btn primary" onclick="calcCountdown()"><i class="fas fa-calculator"></i> Tính</button>
+          </div>
+          <div class="cd-nums" id="cd-nums">
+            <div class="cd-num"><div class="cd-val" id="cd-days">—</div><div class="cd-label">Ngày</div></div>
+            <div class="cd-num"><div class="cd-val" id="cd-hours">—</div><div class="cd-label">Giờ</div></div>
+            <div class="cd-num"><div class="cd-val" id="cd-mins">—</div><div class="cd-label">Phút</div></div>
+            <div class="cd-num"><div class="cd-val" id="cd-secs">—</div><div class="cd-label">Giây</div></div>
+          </div>
+          <div class="cd-name" id="cd-name">Chọn ngày mục tiêu</div>
+        </div>
+      </div>
+
+    </div>
   </div>
 </main>
 
@@ -336,34 +593,44 @@
 
 <script src="/assets/theme.js?v=2"></script>
 <script>
-// ── Widget registry ──
+// ══════════════════════════════════════════════
+// WIDGET REGISTRY
+// ══════════════════════════════════════════════
 const WIDGETS = [
-  { id:'random',     icon:'🎲', title:'Khám phá ngẫu nhiên', desc:'Wikipedia, fact hoặc YouTube — bấm phát ra 1 thứ',      cat:'Ngẫu nhiên', color:'#818cf8' },
+  { id:'random',     icon:'🎲', title:'Khám phá ngẫu nhiên', desc:'Wikipedia, fact hoặc YouTube — bấm phát ra 1 thứ',       cat:'Ngẫu nhiên', color:'#818cf8' },
   { id:'colors',     icon:'🎨', title:'Bảng màu',            desc:'Sinh palette 5 màu hài hòa, click copy mã hex',          cat:'Tiện ích',   color:'#a855f7' },
-  { id:'food',       icon:'🍜', title:'Ăn gì hôm nay?',      desc:'Random món ăn Việt Nam, kèm mô tả — khỏi nghĩ',         cat:'Đời sống',   color:'#f59e0b' },
-  { id:'games',      icon:'🎲', title:'Mini Game',           desc:'Xúc xắc, tung đồng xu, random số — giải trí nhanh',    cat:'Giải trí',   color:'#22c55e' },
-  { id:'password',   icon:'🔐', title:'Mật khẩu',            desc:'Generator password mạnh, tùy độ dài, ký tự',            cat:'Bảo mật',    color:'#ef4444' },
-  { id:'activities', icon:'💭', title:'Làm gì?',             desc:'Gợi ý hoạt động hữu ích khi thấy chán',                 cat:'Đời sống',   color:'#06b6d4' },
-  { id:'gradient',   icon:'🌈', title:'Gradient',            desc:'Tạo background gradient + CSS code, click copy',       cat:'Tiện ích',   color:'#f472b6' },
-  { id:'brain',      icon:'🧠', title:'Brain Dump',          desc:'Note sticky, kéo thả, export Markdown',                cat:'Ghi chú',    color:'#6366f1' },
+  { id:'food',       icon:'🍜', title:'Ăn gì hôm nay?',      desc:'Random món ăn Việt Nam, kèm mô tả — khỏi nghĩ',          cat:'Đời sống',   color:'#f59e0b' },
+  { id:'games',      icon:'🎲', title:'Mini Game',           desc:'Xúc xắc, tung đồng xu, random số — giải trí nhanh',     cat:'Giải trí',   color:'#22c55e' },
+  { id:'password',   icon:'🔐', title:'Mật khẩu',            desc:'Generator password mạnh, tùy độ dài, ký tự',             cat:'Bảo mật',    color:'#ef4444' },
+  { id:'activities', icon:'💭', title:'Làm gì?',             desc:'Gợi ý hoạt động hữu ích khi thấy chán',                  cat:'Đời sống',   color:'#06b6d4' },
+  { id:'gradient',   icon:'🌈', title:'Gradient',            desc:'Tạo background gradient + CSS code, click copy',        cat:'Tiện ích',   color:'#f472b6' },
+  { id:'brain',      icon:'🧠', title:'Brain Dump',          desc:'Note sticky, kéo thả, export Markdown/JSON',            cat:'Ghi chú',    color:'#6366f1' },
+  // new
+  { id:'8ball',      icon:'🎱', title:'Magic 8-Ball',        desc:'Hỏi yes/no, lắc quả cầu thần — 20 câu trả lời',        cat:'Giải trí',   color:'#1e1e2e' },
+  { id:'cards',      icon:'🃏', title:'Rút bài',             desc:'Rút 1 hoặc 5 lá bài Tây, có animation',                cat:'Giải trí',   color:'#16a34a' },
+  { id:'emoji',      icon:'🌀', title:'Emoji Mix',           desc:'Ghép 2 emoji ngẫu nhiên ra combo độc lạ',              cat:'Giải trí',   color:'#eab308' },
+  { id:'challenge',  icon:'🎯', title:'Random Challenge',    desc:'Thử thách bản thân — thể chất, kỹ năng, sáng tạo...',   cat:'Đời sống',   color:'#dc2626' },
+  { id:'list',       icon:'📋', title:'Random List',         desc:'Nhập danh sách, xáo trộn / rút thăm / chọn ngẫu nhiên', cat:'Tiện ích',   color:'#7c3aed' },
+  { id:'pomodoro',   icon:'🍅', title:'Pomodoro Timer',      desc:'Timer 25/5/15 phút, đếm session hôm nay',               cat:'Tiện ích',   color:'#e11d48' },
+  { id:'textgen',    icon:'📝', title:'Text Generator',      desc:'Lorem Ipsum, tên người, từ ngẫu nhiên — cho dev',       cat:'Dev',        color:'#0891b2' },
+  { id:'history',    icon:'📜', title:'Hôm nay trong lịch sử',desc:'Sự kiện lịch sử theo ngày — Việt Nam & thế giới',        cat:'Học tập',    color:'#b45309' },
+  { id:'workout',    icon:'🏋️', title:'Workout Random',      desc:'Random bài tập kèm reps, target nhóm cơ',              cat:'Đời sống',   color:'#059669' },
+  { id:'countdown',  icon:'⏰', title:'Countdown',           desc:'Đếm ngược tới ngày tự chọn — Tết, sinh nhật...',        cat:'Tiện ích',   color:'#0ea5e9' },
 ];
 
-// ── Grid / Detail navigation ──
+// ══════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════
 function initPage(){
   const hash = window.location.hash.slice(1);
-  if(hash && WIDGETS.find(w=>w.id===hash)){
-    showDetail(hash);
-  }else{
-    showGrid();
-  }
+  if(hash && WIDGETS.find(w=>w.id===hash)) showDetail(hash);
+  else showGrid();
 }
-
 function showGrid(){
   document.getElementById('grid-view').classList.add('active');
   document.getElementById('detail-view').classList.remove('active');
   window.location.hash = '';
 }
-
 function showDetail(id){
   document.getElementById('grid-view').classList.remove('active');
   document.getElementById('detail-view').classList.add('active');
@@ -372,31 +639,35 @@ function showDetail(id){
   if(panel) panel.style.display = 'block';
   const w = WIDGETS.find(x=>x.id===id);
   if(w) document.getElementById('detail-title').textContent = w.icon+' '+w.title;
-  // init widget
-  if(id==='colors'){genPalette();genGradient();}
+  // init
+  if(id==='colors'){genPalette()}
   if(id==='password')genPassword();
   if(id==='activities')pickActivity();
   if(id==='food')pickFood();
   if(id==='brain')brainLoad();
   if(id==='gradient')genGradient();
+  if(id==='cards')drawCards();
+  if(id==='emoji')mixEmoji();
+  if(id==='challenge')randomChallenge();
+  if(id==='pomodoro')pomoReset();
+  if(id==='textgen')genText();
+  if(id==='history')showHistory('today');
+  if(id==='workout')randomWorkout();
 }
-
 function openWidget(id){
   window.location.hash = id;
   showDetail(id);
 }
-
-function closeWidget(){
-  showGrid();
-}
-
+function closeWidget(){ showGrid(); }
 window.addEventListener('hashchange',()=>{
   const hash = window.location.hash.slice(1);
   if(hash && WIDGETS.find(w=>w.id===hash)) showDetail(hash);
   else showGrid();
 });
 
-// ── Toast ──
+// ══════════════════════════════════════════════
+// TOAST / COPY
+// ══════════════════════════════════════════════
 function toast(msg,type='success'){
   const c=document.getElementById('toast-container');
   const t=document.createElement('div');t.className='toast '+type;
@@ -408,13 +679,17 @@ function copyText(text,msg){
   navigator.clipboard.writeText(text).then(()=>toast(msg||'Đã copy!')).catch(()=>toast('Không thể copy','error'));
 }
 
+// ══════════════════════════════════════════════
+// EXISTING WIDGETS
+// ══════════════════════════════════════════════
+
 // ── Random Discovery ──
 async function discover(type){
   const card=document.getElementById('rand-card'),empty=document.getElementById('rand-empty'),skel=document.getElementById('rand-skel'),res=document.getElementById('rand-result');
   empty.style.display='none';res.style.display='none';skel.style.display='block';
   try{
     const r=await fetch('/api/utilities/random'+(type?'?type='+type:''));
-    if(!r.ok)throw Error();
+    if(!r.ok) throw Error();
     const d=await r.json();
     document.getElementById('r-source').textContent=d.type==='wiki'?'📖 Wikipedia':d.type==='fact'?'💡 Fact':'🎬 YouTube';
     if(d.type==='fact'){
@@ -513,11 +788,10 @@ function rollDice(){
   setTimeout(()=>{el.className='game-result';el.textContent=dice[r-1]},300);
 }
 function flipCoin(){
-  const r=Math.random()<0.5;
   const el=document.getElementById('coin-result');
   el.className='game-result';void el.offsetWidth;
   el.className='game-result coin-flip';
-  setTimeout(()=>{el.className='game-result';el.textContent=r?'👑':'🌿'},400);
+  setTimeout(()=>{el.className='game-result';el.textContent=Math.random()<0.5?'👑':'🌿'},400);
 }
 function randNum(){
   const min=parseInt(document.getElementById('num-min').value)||0;
@@ -547,10 +821,8 @@ function genPassword(){
   const bar=document.getElementById('pw-bar');
   const pct=[0,20,35,55,75,100][Math.min(score,5)];
   bar.style.width=pct+'%';
-  const colors=['#ef4444','#ef4444','#f59e0b','#22c55e','#22c55e','#22c55e'];
-  bar.style.background=colors[Math.min(score,5)];
-  const labels=['Quá yếu','Yếu','Trung bình','Khá','Mạnh','Rất mạnh'];
-  document.getElementById('pw-strength-txt').textContent=labels[Math.min(score,5)];
+  bar.style.background=['#ef4444','#ef4444','#f59e0b','#22c55e','#22c55e','#22c55e'][Math.min(score,5)];
+  document.getElementById('pw-strength-txt').textContent=['Quá yếu','Yếu','Trung bình','Khá','Mạnh','Rất mạnh'][Math.min(score,5)];
 }
 
 // ── Activities ──
@@ -611,7 +883,7 @@ function genGradient(){
   document.getElementById('grad-code').textContent='background: '+css+';';
 }
 
-// ── Brain Dump (existing) ──
+// ── Brain Dump ──
 let noteId=0;
 function brainAdd(e){
   if(e.target!==document.getElementById('brain-ws')&&!e.target.closest('.brain-hint'))return;
@@ -685,34 +957,405 @@ function makeDraggable(el){
     e.preventDefault();down=true;
     const r=el.getBoundingClientRect(),ws=document.getElementById('brain-ws').getBoundingClientRect();
     offX=e.clientX-r.left;offY=e.clientY-r.top;
-    startX=parseFloat(el.style.left)||0;startY=parseFloat(el.style.top)||0;
     const mousemove=ev=>{
       if(!down)return;
-      const wsRect=document.getElementById('brain-ws').getBoundingClientRect();
-      let pctX=((ev.clientX-wsRect.left-offX)/wsRect.width)*100;
-      let pctY=((ev.clientY-wsRect.top-offY)/wsRect.height)*100;
-      pctX=Math.max(0,Math.min(90,pctX));pctY=Math.max(0,Math.min(90,pctY));
-      el.style.left=pctX+'%';el.style.top=pctY+'%';
+      const wr=document.getElementById('brain-ws').getBoundingClientRect();
+      let px=((ev.clientX-wr.left-offX)/wr.width)*100;
+      let py=((ev.clientY-wr.top-offY)/wr.height)*100;
+      el.style.left=Math.max(0,Math.min(90,px))+'%';
+      el.style.top=Math.max(0,Math.min(90,py))+'%';
     };
     const mouseup=()=>{down=false;document.removeEventListener('mousemove',mousemove);brainSave();};
-    document.addEventListener('mousemove',mousemove);document.addEventListener('mouseup',mouseup,{once:true});
+    document.addEventListener('mousemove',mousemove);
+    document.addEventListener('mouseup',mouseup,{once:true});
   });
 }
 
-// ── Build grid ──
-(function buildGrid(){
-  const grid=document.getElementById('widget-grid');
-  grid.innerHTML=WIDGETS.map(w=>`
-    <div class="widget-card" onclick="openWidget('${w.id}')">
-      <div class="card-icon">${w.icon}</div>
-      <div class="card-title">${w.title}</div>
-      <div class="card-desc">${w.desc}</div>
-      <span class="card-badge" style="background:${w.color}">${w.cat}</span>
-    </div>
-  `).join('');
+// ══════════════════════════════════════════════
+// NEW WIDGETS
+// ══════════════════════════════════════════════
+
+// ── 1. Magic 8-Ball ──
+const BALL_ANSWERS = [
+  {t:'It is certain',s:'positive'},{t:'It is decidedly so',s:'positive'},{t:'Without a doubt',s:'positive'},
+  {t:'Yes definitely',s:'positive'},{t:'You may rely on it',s:'positive'},{t:'As I see it, yes',s:'positive'},
+  {t:'Most likely',s:'positive'},{t:'Outlook good',s:'positive'},{t:'Yes',s:'positive'},{t:'Signs point to yes',s:'positive'},
+  {t:'Reply hazy, try again',s:'neutral'},{t:'Ask again later',s:'neutral'},{t:'Better not tell you now',s:'neutral'},
+  {t:'Cannot predict now',s:'neutral'},{t:'Concentrate and ask again',s:'neutral'},
+  {t:"Don't count on it",s:'negative'},{t:'My reply is no',s:'negative'},{t:'My sources say no',s:'negative'},
+  {t:'Outlook not so good',s:'negative'},{t:'Very doubtful',s:'negative'},
+];
+let _balling=false;
+function shakeBall(){
+  if(_balling)return;
+  _balling=true;
+  const shape=document.getElementById('ball-shape');
+  const tri=document.getElementById('ball-triangle');
+  const ans=document.getElementById('ball-answer');
+  shape.className='ball-shape ball-shake';
+  tri.style.opacity='0';
+  ans.className='ball-answer-text';
+  setTimeout(()=>{
+    const a=BALL_ANSWERS[Math.floor(Math.random()*BALL_ANSWERS.length)];
+    ans.textContent=a.t;
+    ans.style.fontSize=a.t.length>18?'.38rem':'.42rem';
+    ans.className='ball-answer-text show';
+    shape.className='ball-shape';
+    _balling=false;
+  },450);
+}
+
+// ── 2. Card Draw ──
+const SUITS=[{s:'♠',c:'black'},{s:'♥',c:'red'},{s:'♦',c:'red'},{s:'♣',c:'black'}];
+const RANKS=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+let _cardMode=1;
+function setCardMode(n){
+  _cardMode=n;
+  document.querySelectorAll('.card-mode button').forEach(b=>b.classList.toggle('active',b.id==='card-mode-'+n));
+  drawCards();
+}
+function drawCards(){
+  const deck=[];
+  SUITS.forEach(s=>RANKS.forEach(r=>deck.push({rank:r,suit:s.s,color:s.c})));
+  // Fisher-Yates
+  for(let i=deck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[deck[i],deck[j]]=[deck[j],deck[i]]}
+  const cards=deck.slice(0,_cardMode);
+  const area=document.getElementById('card-area');
+  area.innerHTML=cards.map(c=>
+    '<div class="card '+c.color+'" style="animation-delay:'+(Math.random()*0.2)+'s"><div class="card-rank">'+c.rank+'</div><div class="card-suit">'+c.suit+'</div></div>'
+  ).join('');
+  document.getElementById('card-countdown').textContent=_cardMode===1?'Rút được: '+cards[0].rank+cards[0].suit:(_cardMode-cards.length)+' lá trong bộ còn lại';
+}
+
+// ── 3. Emoji Mix ──
+const EMOJIS=['🦊','🔥','🌊','🌙','⭐','💀','👻','🤖','👽','🦄','🐉','🍕','🎸','🚀','🌈','💎','🧊','🍑','❤️','✨','🎯','🌀','🧩','🎲','🎪','🎭','🎤','🎧','🥁','🎮','🎰','🍄','🌵','🦋','🐙','🦩','🦦','🫶','🥷','🧙'];
+const EMOJI_NAMES={};
+let _lastEmojis=['🦊','🔥'];
+function mixEmoji(){
+  let e1,e2;
+  do{e1=EMOJIS[Math.floor(Math.random()*EMOJIS.length)];e2=EMOJIS[Math.floor(Math.random()*EMOJIS.length)]}while(e1===e2&&EMOJIS.length>1);
+  _lastEmojis=[e1,e2];
+  const display=document.getElementById('emoji-display');
+  display.innerHTML='<span class="em-part">'+e1+'</span><span class="emoji-plus">+</span><span class="em-part">'+e2+'</span>';
+  const n=e1+e2;
+  document.getElementById('emoji-name').textContent=EMOJI_NAMES[n]||'Combo độc quyền!';
+}
+
+// ── 4. Random Challenge ──
+const CHALLENGES=[
+  {t:'Hít đất 15 cái 💪',e:'🏋️',c:'thể-chất',bg:'#ef4444'},
+  {t:'Squat 20 cái 🦵',e:'🦵',c:'thể-chất',bg:'#ef4444'},
+  {t:'Plank 30 giây ⏱️',e:'🧘',c:'thể-chất',bg:'#ef4444'},
+  {t:'Chạy tại chỗ 50 bước 🏃',e:'🏃',c:'thể-chất',bg:'#ef4444'},
+  {t:'Nói 1 câu TA trong 30s 🗣️',e:'🗣️',c:'kỹ-năng',bg:'#f59e0b'},
+  {t:'Đọc to 1 trang sách 📖',e:'📖',c:'kỹ-năng',bg:'#f59e0b'},
+  {t:'Viết 3 điều biết ơn ✍️',e:'✍️',c:'sáng-tạo',bg:'#818cf8'},
+  {t:'Vẽ 1 thứ bất kỳ 🎨',e:'🎨',c:'sáng-tạo',bg:'#818cf8'},
+  {t:'Viết 1 câu chuyện 50 từ 📝',e:'📝',c:'sáng-tạo',bg:'#818cf8'},
+  {t:'Nhắn cho 1 người bạn 👋',e:'👋',c:'xã-hội',bg:'#06b6d4'},
+  {t:'Gọi cho người thân 📞',e:'📞',c:'xã-hội',bg:'#06b6d4'},
+  {t:'Khen 1 người lạ mặt 🌟',e:'🌟',c:'xã-hội',bg:'#06b6d4'},
+  {t:'Giải 1 câu đố 🧩',e:'🧩',c:'tư-duy',bg:'#22c55e'},
+  {t:'Học 1 từ mới 📚',e:'📚',c:'tư-duy',bg:'#22c55e'},
+  {t:'Sắp xếp lại bàn làm việc 🧹',e:'🧹',c:'kỹ-năng',bg:'#f59e0b'},
+  {t:'Làm 10 burpee 🔥',e:'🔥',c:'thể-chất',bg:'#ef4444'},
+  {t:'Tập hít thở sâu 1 phút 🌬️',e:'🌬️',c:'tư-duy',bg:'#22c55e'},
+  {t:'Chụp 1 bức ảnh đẹp 📸',e:'📸',c:'sáng-tạo',bg:'#818cf8'},
+  {t:'Học 1 câu tiếng Nhật 🇯🇵',e:'🇯🇵',c:'kỹ-năng',bg:'#f59e0b'},
+  {t:'Ngồi thiền 3 phút 🧘',e:'🧘',c:'tư-duy',bg:'#22c55e'},
+  {t:'Nhảy theo 1 bài nhạc 💃',e:'💃',c:'thể-chất',bg:'#ef4444'},
+  {t:'Tự nấu 1 món ăn mới 👨‍🍳',e:'👨‍🍳',c:'kỹ-năng',bg:'#f59e0b'},
+  {t:'Viết 1 bài thơ ngắn 🎭',e:'🎭',c:'sáng-tạo',bg:'#818cf8'},
+  {t:'Đi bộ 10 phút 🚶',e:'🚶',c:'thể-chất',bg:'#ef4444'},
+];
+const CHALLENGE_CATS=['tất-cả','thể-chất','kỹ-năng','sáng-tạo','xã-hội','tư-duy'];
+const CAT_LABELS={'tất-cả':'Tất cả','thể-chất':'Thể chất','kỹ-năng':'Kỹ năng','sáng-tạo':'Sáng tạo','xã-hội':'Xã hội','tư-duy':'Tư duy'};
+let _challengeFilter='tất-cả';
+function randomChallenge(filter){
+  if(filter!==undefined)_challengeFilter=filter;
+  const pool=_challengeFilter==='tất-cả'?CHALLENGES:CHALLENGES.filter(c=>c.c===_challengeFilter);
+  if(!pool.length)return toast('Không có thử thách nào trong danh mục này','error');
+  const c=pool[Math.floor(Math.random()*pool.length)];
+  document.getElementById('challenge-icon').textContent=c.e;
+  document.getElementById('challenge-text').textContent=c.t;
+  const b=document.getElementById('challenge-badge');
+  b.textContent=CAT_LABELS[c.c]||c.c;
+  b.style.background=c.bg;
+}
+(function initChallengeFilters(){
+  const d=document.getElementById('challenge-filters');
+  d.innerHTML=CHALLENGE_CATS.map(c=>
+    '<button class="'+(c==='tất-cả'?'active':'')+'" onclick="randomChallenge(\''+c+'\');document.querySelectorAll(\'#challenge-filters button\').forEach(b=>b.classList.remove(\'active\'));this.classList.add(\'active\')">'+CAT_LABELS[c]+'</button>'
+  ).join('');
 })();
 
-// ── Init ──
+// ── 5. Random List ──
+function runList(){
+  const txt=document.getElementById('list-input').value.trim();
+  if(!txt)return toast('Nhập danh sách trước','error');
+  const items=txt.split('\n').map(s=>s.trim()).filter(Boolean);
+  if(!items.length)return toast('Không có mục nào','error');
+  const mode=document.getElementById('list-mode').value;
+  let result;
+  if(mode==='random'){
+    result=items[Math.floor(Math.random()*items.length)];
+  }else if(mode==='shuffle'){
+    const a=[...items];
+    for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}
+    result=a.join('\n');
+  }else if(mode==='pick'){
+    const n=Math.min(parseInt(document.getElementById('list-n').value)||1,items.length);
+    const a=[...items];
+    for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}
+    result=a.slice(0,n).join('\n');
+  }
+  document.getElementById('list-result').textContent=result;
+}
+function copyList(){
+  const t=document.getElementById('list-result').textContent;
+  if(t&&t!=='⟳')copyText(t,'Đã copy kết quả');
+  else toast('Không có kết quả để copy','info');
+}
+(function initListMode(){
+  document.getElementById('list-mode').addEventListener('change',function(){
+    const nInput=document.getElementById('list-n');
+    nInput.style.display=this.value==='pick'?'inline-block':'none';
+  });
+})();
+
+// ── 6. Pomodoro Timer ──
+let _pomoMinutes=25,_pomoRemaining=1500,_pomoRunning=false,_pomoInterval=null,_pomoEnd=null,_pomoToday=0;
+function setPomoMode(mins){
+  if(_pomoRunning&&!confirm('Timer đang chạy. Reset?'))return;
+  _pomoRunning=false;if(_pomoInterval)clearInterval(_pomoInterval);_pomoInterval=null;
+  _pomoMinutes=mins;_pomoRemaining=mins*60;
+  document.querySelectorAll('.pomo-mode button').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.min)===mins));
+  document.getElementById('pomo-label').textContent=mins===25?'Focus':mins===5?'Nghỉ ngắn':'Nghỉ dài';
+  document.getElementById('pomo-start-btn').innerHTML='<i class="fas fa-play"></i> Bắt đầu';
+  document.getElementById('pomo-timer').textContent=padTime(mins)+':00';
+  document.getElementById('pomo-bar').style.width='0%';
+}
+function padTime(n){return String(Math.floor(n)).padStart(2,'0')}
+function pomoStart(){
+  if(_pomoRunning){
+    _pomoRunning=false;if(_pomoInterval)clearInterval(_pomoInterval);_pomoInterval=null;
+    document.getElementById('pomo-start-btn').innerHTML='<i class="fas fa-play"></i> Tiếp tục';
+    return;
+  }
+  _pomoRunning=true;
+  if(!_pomoEnd)_pomoEnd=Date.now()+_pomoRemaining*1000;
+  else _pomoEnd=Date.now()+_pomoRemaining*1000;
+  document.getElementById('pomo-start-btn').innerHTML='<i class="fas fa-pause"></i> Tạm dừng';
+  _pomoInterval=setInterval(()=>{
+    const left=Math.max(0,Math.floor((_pomoEnd-Date.now())/1000));
+    _pomoRemaining=left;
+    const m=Math.floor(left/60),s=left%60;
+    document.getElementById('pomo-timer').textContent=padTime(m)+':'+padTime(s);
+    document.getElementById('pomo-bar').style.width=((1-left/(_pomoMinutes*60))*100)+'%';
+    if(left<=0){
+      clearInterval(_pomoInterval);_pomoInterval=null;_pomoRunning=false;_pomoEnd=null;
+      _pomoToday++;
+      document.getElementById('pomo-sessions').textContent='Hôm nay: '+_pomoToday+' pomodoro';
+      document.getElementById('pomo-start-btn').innerHTML='<i class="fas fa-play"></i> Bắt đầu';
+      toast('🍅 Hết giờ! '+(document.getElementById('pomo-label').textContent==='Focus'?'Nghỉ ngơi thôi!':'Bắt đầu focus!'));
+      // play beep
+      try{new AudioContext().createOscillator().connect(new AudioContext().destination).start()}catch(_){}
+    }
+  },200);
+}
+function pomoReset(){
+  if(_pomoInterval)clearInterval(_pomoInterval);_pomoInterval=null;_pomoRunning=false;_pomoEnd=null;
+  _pomoRemaining=_pomoMinutes*60;
+  document.getElementById('pomo-timer').textContent=padTime(_pomoMinutes)+':00';
+  document.getElementById('pomo-bar').style.width='0%';
+  document.getElementById('pomo-start-btn').innerHTML='<i class="fas fa-play"></i> Bắt đầu';
+  // load saved sessions
+  try{_pomoToday=parseInt(localStorage.getItem('pomo-sessions'))||0}catch(_){_pomoToday=0}
+  document.getElementById('pomo-sessions').textContent='Hôm nay: '+_pomoToday+' pomodoro';
+}
+// Save sessions on change
+setInterval(()=>{try{localStorage.setItem('pomo-sessions',_pomoToday)}catch(_){}},5000);
+
+// ── 7. Text Generator ──
+const LOREM='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
+const LOREM_WORDS=LOREM.split(/[\s.,]+/).filter(Boolean);
+const NAMES_VI=['Nguyễn Văn An','Trần Thị Bích','Lê Hoàng Cường','Phạm Minh Đức','Hoàng Thị Hoa','Đặng Văn Hùng','Vũ Thị Hương','Bùi Quốc Huy','Đỗ Thị Mai','Hồ Văn Nam','Ngô Thị Ngọc','Dương Văn Phúc','Lý Thị Quỳnh','Mai Văn Sơn','Trịnh Thị Thảo','Đinh Văn Thắng','Lương Thị Thu','Cao Văn Tiến','Tạ Thị Trang','Phan Văn Tuấn'];
+const WORDS_VI=['mặt trời','ngôi sao','bầu trời','đại dương','ngọn núi','khu rừng','dòng sông','cơn gió','bông hoa','ánh trăng','cánh chim','mây trắng','biển cả','hoàng hôn','bình minh','mùa xuân','tiếng hát','nụ cười','hạnh phúc','bình yên'];
+const LOREM_VI='Lorem ipsum Việt Nam phiên bản. Cơm tấm sườn bì chả ngon tuyệt vời. Phở bò bún chả bánh mì cà phê sữa đá. Bạn ơi hôm nay ăn gì đi chơi đâu thật vui vẻ. Code chạy không bug test case pass hết. Một hai ba bốn năm sáu bảy tám chín mười.';
+function genText(){
+  const type=document.getElementById('tgen-type').value;
+  const amt=parseInt(document.getElementById('tgen-amount').value)||3;
+  const out=document.getElementById('tgen-output');
+  if(type==='lorem'){
+    const words=[];
+    for(let i=0;i<amt*30;i++)words.push(LOREM_WORDS[Math.floor(Math.random()*LOREM_WORDS.length)]);
+    out.textContent=words.join(' ').replace(/^\w/,c=>c.toUpperCase())+'.';
+  }else if(type==='words'){
+    const words=[];
+    for(let i=0;i<amt*5;i++)words.push(WORDS_VI[Math.floor(Math.random()*WORDS_VI.length)]);
+    out.textContent=words.join(' ');
+  }else if(type==='names'){
+    const shuffled=[...NAMES_VI];
+    for(let i=shuffled.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]]}
+    out.textContent=shuffled.slice(0,Math.min(amt,names.length)).join('\n');
+  }else if(type==='ipsum-vi'){
+    const lines=LOREM_VI.split('. ').filter(Boolean);
+    const result=[];
+    for(let i=0;i<amt;i++)result.push(lines[Math.floor(Math.random()*lines.length)]);
+    out.textContent=result.join('. ')+'.';
+  }
+}
+
+// ── 8. Today in History ──
+const EVENTS=[
+  {m:1,d:1,y:1959,e:'Cách mạng Cuba thành công, Fidel Castro lãnh đạo'},
+  {m:1,d:7,y:1979,e:'Chế độ Khmer Đỏ bị lật đổ, Việt Nam giải phóng Campuchia'},
+  {m:1,d:27,y:1973,e:'Hiệp định Paris được ký kết, chấm dứt chiến tranh Việt Nam'},
+  {m:1,d:30,y:1968,e:'Cuộc tổng tiến công Tết Mậu Thân bắt đầu'},
+  {m:2,d:3,y:1930,e:'Đảng Cộng sản Việt Nam thành lập'},
+  {m:2,d:11,y:1990,e:'Nelson Mandela được trả tự do sau 27 năm tù'},
+  {m:2,d:15,y:1942,e:'Singapore thất thủ trong Thế chiến II'},
+  {m:2,d:27,y:1883,e:'Vua Tự Đức băng hà — triều Nguyễn suy yếu'},
+  {m:3,d:8,y:1910,e:'Ngày Quốc tế Phụ nữ được tổ chức lần đầu'},
+  {m:3,d:15,y:2006,e:'Google mua lại YouTube với giá 1.65 tỷ USD'},
+  {m:3,d:23,y:1998,e:'Bắt đầu xây dựng Trạm Vũ trụ Quốc tế (ISS)'},
+  {m:3,d:25,y:1957,e:'Hiệp ước Rome thành lập Cộng đồng Kinh tế châu Âu (EEC)'},
+  {m:4,d:2,y:1954,e:'Transistor radio đầu tiên ra mắt — mở đầu kỷ nguyên bán dẫn'},
+  {m:4,d:4,y:1968,e:'Martin Luther King Jr. bị ám sát tại Memphis'},
+  {m:4,d:12,y:1961,e:'Yuri Gagarin trở thành người đầu tiên bay vào vũ trụ'},
+  {m:4,d:15,y:1912,e:'Tàu Titanic chìm sau khi va phải băng trôi'},
+  {m:4,d:22,y:1994,e:'Ngày Trái Đất được tổ chức toàn cầu'},
+  {m:4,d:30,y:1975,e:'Giải phóng miền Nam, thống nhất đất nước'},
+  {m:5,d:1,y:1886,e:'Ngày Quốc tế Lao động — cuộc đấu tranh đòi 8 giờ làm việc'},
+  {m:5,d:7,y:1954,e:'Chiến thắng Điện Biên Phủ lừng lẫy năm châu'},
+  {m:5,d:15,y:2001,e:'Apple Store đầu tiên mở cửa tại Virginia, Mỹ'},
+  {m:5,d:19,y:1890,e:'Chủ tịch Hồ Chí Minh ra đời tại Nghệ An'},
+  {m:5,d:25,y:1977,e:'Star Wars: A New Hope công chiếu — thay đổi điện ảnh'},
+  {m:6,d:6,y:1944,e:'Quân Đồng minh đổ bộ Normandy (D-Day)'},
+  {m:6,d:15,y:2014,e:'Twitter lên sàn chứng khoán New York (IPO)'},
+  {m:6,d:21,y:2004,e:'SpaceShipOne trở thành tàu vũ trụ tư nhân đầu tiên bay vào không gian'},
+  {m:6,d:28,y:1914,e:'Thái tử Áo-Hung bị ám sát — châm ngòi Thế chiến I'},
+  {m:7,d:7,y:1937,e:'Trung-Nhật chiến tranh bùng nổ — khởi đầu Thế chiến II ở châu Á'},
+  {m:7,d:13,y:1985,e:'Live Aid — buổi hòa nhạc từ thiện lớn nhất lịch sử'},
+  {m:7,d:16,y:1969,e:'Apollo 11 phóng lên Mặt Trăng'},
+  {m:7,d:20,y:1969,e:'Neil Armstrong đặt chân lên Mặt Trăng — "Một bước nhỏ cho loài người"'},
+  {m:7,d:27,y:1953,e:'Hiệp định đình chiến Triều Tiên được ký kết'},
+  {m:8,d:6,y:1945,e:'Mỹ ném bom nguyên tử xuống Hiroshima, Nhật Bản'},
+  {m:8,d:14,y:1991,e:'World Wide Web được giới thiệu ra công chúng'},
+  {m:8,d:19,y:1945,e:'Cách mạng tháng Tám thành công — chính quyền về tay nhân dân'},
+  {m:8,d:25,y:1958,e:'Michael Jackson ra đời — "Ông hoàng nhạc pop"'},
+  {m:9,d:2,y:1945,e:'Bác Hồ đọc Tuyên ngôn Độc lập, khai sinh nước Việt Nam Dân chủ Cộng hòa'},
+  {m:9,d:11,y:2001,e:'Khủng bố 11/9 tại Mỹ — sụp đổ Trung tâm Thương mại Thế giới'},
+  {m:9,d:15,y:2008,e:'Ngân hàng Lehman Brothers phá sản — khủng hoảng tài chính toàn cầu'},
+  {m:9,d:29,y:2014,e:'Apple Watch chính thức được công bố'},
+  {m:10,d:1,y:1949,e:'Nước Cộng hòa Nhân dân Trung Hoa thành lập'},
+  {m:10,d:5,y:2011,e:'Steve Jobs — người sáng lập Apple — qua đời'},
+  {m:10,d:9,y:1967,e:'Che Guevara bị hành quyết tại Bolivia'},
+  {m:10,d:13,y:2010,e:'33 thợ mỏ Chile được cứu sống sau 69 ngày mắc kẹt'},
+  {m:11,d:9,y:1989,e:'Bức tường Berlin sụp đổ — thống nhất nước Đức'},
+  {m:11,d:14,y:1999,e:'Pokémon Red & Green ra mắt — cơn sốt toàn cầu'},
+  {m:11,d:20,y:1982,e:'Ngày Nhà giáo Việt Nam'},
+  {m:11,d:28,y:1912,e:'Albania tuyên bố độc lập khỏi Đế quốc Ottoman'},
+  {m:12,d:1,y:1955,e:'Rosa Parks từ chối nhường ghế — phong trào dân quyền Mỹ'},
+  {m:12,d:7,y:1941,e:'Nhật Bản tấn công Trân Châu Cảng — Mỹ tham chiến'},
+  {m:12,d:17,y:1903,e:'Anh em nhà Wright thực hiện chuyến bay đầu tiên'},
+  {m:12,d:22,y:1989,e:'Cách mạng Romania lật đổ Ceaușescu'},
+  {m:12,d:25,y:1991,e:'Liên Xô chính thức tan rã, kết thúc Chiến tranh Lạnh'},
+];
+function showHistory(mode){
+  const d=document.getElementById('hist-date');
+  const y=document.getElementById('hist-year');
+  const ev=document.getElementById('hist-event');
+  const src=document.getElementById('hist-source');
+  let e;
+  if(mode==='today'){
+    const now=new Date();
+    const todayEvents=EVENTS.filter(x=>x.m===now.getMonth()+1&&x.d===now.getDate());
+    if(!todayEvents.length){y.textContent='—';ev.textContent='Hôm nay không có sự kiện nào trong danh sách';src.textContent='';d.textContent='📅 '+now.toLocaleDateString('vi-VN');return}
+    e=todayEvents[Math.floor(Math.random()*todayEvents.length)];
+    d.textContent='📅 Hôm nay — '+now.toLocaleDateString('vi-VN');
+  }else{
+    e=EVENTS[Math.floor(Math.random()*EVENTS.length)];
+    d.textContent='📅 Ngày '+e.d+'/'+e.m;
+  }
+  y.textContent=e.y;
+  ev.textContent=e.e;
+  src.textContent='Nguồn: tổng hợp lịch sử';
+}
+
+// ── 9. Workout Random ──
+const WORKOUTS=[
+  {n:'Hít đất',e:'💪',d:'4 × 12 reps',t:'Ngực, tay sau',bg:'#ef4444'},
+  {n:'Squat',e:'🦵',d:'4 × 15 reps',t:'Chân, mông',bg:'#ef4444'},
+  {n:'Plank',e:'🧘',d:'3 × 30 giây',t:'Core (bụng, lưng)',bg:'#f59e0b'},
+  {n:'Burpee',e:'🔥',d:'3 × 10 reps',t:'Toàn thân, tim mạch',bg:'#ef4444'},
+  {n:'Chống đẩy hẹp',e:'💪',d:'3 × 10 reps',t:'Tay sau (cơ tam đầu)',bg:'#ef4444'},
+  {n:'Jumping Jack',e:'🏃',d:'4 × 20 reps',t:'Tim mạch, toàn thân',bg:'#22c55e'},
+  {n:'Gập bụng',e:'🧎',d:'4 × 15 reps',t:'Bụng trên',bg:'#f59e0b'},
+  {n:'Superman',e:'🦸',d:'3 × 12 reps giữ 2s',t:'Lưng dưới, mông',bg:'#f59e0b'},
+  {n:'Lunges',e:'🚶',d:'4 × 10 mỗi chân',t:'Chân, mông, thăng bằng',bg:'#ef4444'},
+  {n:'Dips ghế',e:'🪑',d:'3 × 10 reps',t:'Tay sau, vai',bg:'#ef4444'},
+  {n:'Mountain Climber',e:'⛰️',d:'4 × 20 reps',t:'Tim mạch, core',bg:'#22c55e'},
+  {n:'Nâng tạ vai',e:'🏋️',d:'4 × 12 reps',t:'Vai (deltoid)',bg:'#818cf8'},
+  {n:'Đạp xe (Leg Raise)',e:'🚴',d:'4 × 15 mỗi chân',t:'Bụng dưới, đùi',bg:'#f59e0b'},
+  {n:'Calf Raise',e:'🦶',d:'4 × 20 reps',t:'Bắp chân',bg:'#ef4444'},
+  {n:'Russian Twist',e:'🔄',d:'3 × 16 reps (8 mỗi bên)',t:'Bụng xiên, core',bg:'#f59e0b'},
+  {n:'Push-up kim cương',e:'💎',d:'3 × 8 reps',t:'Tay sau, ngực trong',bg:'#ef4444'},
+  {n:'Squat Jump',e:'🦘',d:'3 × 10 reps',t:'Chân, mông, tim mạch',bg:'#22c55e'},
+  {n:'Hollow Body Hold',e:'🧊',d:'3 × 20 giây',t:'Core toàn bộ',bg:'#f59e0b'},
+];
+function randomWorkout(){
+  const w=WORKOUTS[Math.floor(Math.random()*WORKOUTS.length)];
+  document.getElementById('wo-emoji').textContent=w.e;
+  document.getElementById('wo-name').textContent=w.n;
+  document.getElementById('wo-detail').textContent=w.d;
+  const t=document.getElementById('wo-target');
+  t.textContent=w.t;t.style.background=w.bg;
+}
+
+// ── 10. Countdown ──
+(function initCountdown(){
+  // set default date to Tết or next special date
+  const now=new Date();
+  const def=new Date(now.getFullYear(),11,31); // Dec 31
+  document.getElementById('cd-date').valueAsDate=def;
+})();
+function calcCountdown(){
+  const val=document.getElementById('cd-date').value;
+  if(!val)return toast('Chọn ngày mục tiêu','error');
+  const target=new Date(val+'T23:59:59');
+  const now=Date.now();
+  if(target<=now)return toast('Ngày mục tiêu phải ở tương lai','error');
+  const diff=target-now;
+  const days=Math.floor(diff/86400000);
+  const hours=Math.floor((diff%86400000)/3600000);
+  const mins=Math.floor((diff%3600000)/60000);
+  const secs=Math.floor((diff%60000)/1000);
+  document.getElementById('cd-days').textContent=days;
+  document.getElementById('cd-hours').textContent=String(hours).padStart(2,'0');
+  document.getElementById('cd-mins').textContent=String(mins).padStart(2,'0');
+  document.getElementById('cd-secs').textContent=String(secs).padStart(2,'0');
+  const name=target.toLocaleDateString('vi-VN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('cd-name').textContent='Còn lại đến '+name;
+}
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+
+// Build grid
+(function buildGrid(){
+  const grid=document.getElementById('widget-grid');
+  grid.innerHTML=WIDGETS.map(w=>
+    '<div class="widget-card" onclick="openWidget(\''+w.id+'\')">'+
+      '<div class="card-icon">'+w.icon+'</div>'+
+      '<div class="card-title">'+w.title+'</div>'+
+      '<div class="card-desc">'+w.desc+'</div>'+
+      '<span class="card-badge" style="background:'+w.color+'">'+w.cat+'</span>'+
+    '</div>'
+  ).join('');
+})();
+
 initPage();
 </script>
 </body>
