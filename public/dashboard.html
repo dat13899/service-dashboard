@@ -75,22 +75,20 @@
 <div class="alert-dropdown" id="alert-dropdown"></div>
 <div class="blob-container"><div class="blob"></div><div class="blob"></div><div class="blob"></div><div class="blob"></div></div>
 
-<nav class="navbar is-glass" role="navigation" aria-label="Main navigation">
-  <div class="navbar-brand">
-    <a class="navbar-item has-text-weight-bold" href="/">btdat.io.vn <span class="has-text-grey-light" style="font-weight:400;margin-left:4px">/ dashboard</span></a>
-    <a role="button" class="navbar-burger" onclick="document.querySelector('.navbar-menu').classList.toggle('is-active')" aria-label="Menu"><span></span><span></span><span></span></a>
-  </div>
-  <div class="navbar-menu">
-    <div class="navbar-end">
-      <div class="navbar-item"><button class="button is-small" onclick="toggleTheme()" aria-label="Toggle theme"><span class="theme-btn-icon">☀️</span></button></div>
-      <div class="navbar-item"><span id="running-count" class="tag is-success is-light"><span class="sc-dot running" style="margin:0"></span> 0</span></div>
-      <div class="navbar-item"><span id="stopped-count" class="tag"><span class="sc-dot stopped" style="margin:0"></span> 0</span></div>
-      <div class="navbar-item"><a class="button is-small is-outlined" href="/documents">📄 Docs</a></div>
-      <div class="navbar-item"><a class="button is-small is-outlined is-link" href="/utilities">🧰 Tiện ích</a></div>
-    </div>
-  </div>
-</nav>
-
+<template id="nav-extra" data-bc=" / dashboard">
+  <div class="navbar-item"><span id="running-count" class="tag is-success is-light"><span class="sc-dot running" style="margin:0"></span> 0</span></div>
+  <div class="navbar-item"><span id="stopped-count" class="tag"><span class="sc-dot stopped" style="margin:0"></span> 0</span></div>
+  <div class="navbar-item"><a class="button is-small is-outlined" href="/documents">📄 Docs</a></div>
+  <div class="navbar-item"><a class="button is-small is-outlined is-link" href="/utilities">🧰 Tiện ích</a></div>
+</template>
+<div id="nav-target"></div>
+<script>
+fetch('/navbar.html').then(r=>r.text()).then(t=>{
+  const tmpl=document.getElementById('nav-extra');
+  document.getElementById('nav-target').outerHTML=t.replace(/{BREADCRUMB}/g,tmpl.dataset.bc||'').replace(/{EXTRA}/g,tmpl.innerHTML).replace(/{THEME_ICON}/g,localStorage.getItem('btdat-theme')==='light'?'🌙':'☀️');
+  const n=document.querySelector('.navbar.is-glass');if(n){const o=()=>n.classList.toggle('scrolled',window.scrollY>20);window.addEventListener('scroll',o,{passive:true});o()}
+});
+</script>
 <div class="navbar-spacer"></div>
 
 <main id="dash-main">

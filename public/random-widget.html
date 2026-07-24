@@ -349,22 +349,22 @@
 <body>
 <div class="blob-container"><div class="blob"></div><div class="blob"></div><div class="blob"></div><div class="blob"></div></div>
 
-<nav class="navbar is-glass" role="navigation">
-  <div class="navbar-brand">
-    <a class="navbar-item has-text-weight-bold" href="/">btdat.io.vn <span class="has-text-grey-light" style="font-weight:400;margin-left:4px">/ widget</span></a>
-    <a role="button" class="navbar-burger" onclick="document.querySelector('.navbar-menu').classList.toggle('is-active')"><span></span><span></span><span></span></a>
-  </div>
-  <div class="navbar-menu">
-    <div class="navbar-end">
-      <div class="navbar-item"><button class="button is-small" onclick="toggleTheme()"><span class="theme-btn-icon">☀️</span></button></div>
-      <a class="navbar-item" href="/">Home</a>
-      <a class="navbar-item" href="/dashboard">Dashboard</a>
-      <a class="navbar-item" href="/documents">Docs</a>
-      <a class="navbar-item" href="/utilities">Tiện ích</a>
-      <a class="navbar-item has-text-link" href="/random-widget">🎲 Widget</a>
-    </div>
-  </div>
-</nav>
+<template id="nav-extra" data-bc=" / widget">
+  <a class="navbar-item" href="/">Home</a>
+  <a class="navbar-item" href="/dashboard">Dashboard</a>
+  <a class="navbar-item" href="/documents">Docs</a>
+  <a class="navbar-item" href="/utilities">Tiện ích</a>
+  <a class="navbar-item has-text-link" href="/random-widget">🎲 Widget</a>
+</template>
+<div id="nav-target"></div>
+<script>
+fetch('/navbar.html').then(r=>r.text()).then(t=>{
+  const tmpl=document.getElementById('nav-extra');
+  document.getElementById('nav-target').outerHTML=t.replace(/{BREADCRUMB}/g,tmpl.dataset.bc||'').replace(/{EXTRA}/g,tmpl.innerHTML).replace(/{THEME_ICON}/g,localStorage.getItem('btdat-theme')==='light'?'🌙':'☀️');
+  const n=document.querySelector('.navbar.is-glass');if(n){const o=()=>n.classList.toggle('scrolled',window.scrollY>20);window.addEventListener('scroll',o,{passive:true});o()}
+});
+</script>
+
 <div class="navbar-spacer"></div>
 
 <main class="section">
