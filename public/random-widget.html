@@ -231,6 +231,106 @@
 .cd-num .cd-label{font-size:.6rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px}
 .cd-name{font-size:.8rem;color:var(--text-dim);margin-top:.3rem}
 
+/* ── Oẳn tù tì ── */
+.rps-wrap{text-align:center;padding:1rem}
+.rps-choices{display:flex;gap:.8rem;justify-content:center;margin:.5rem 0;flex-wrap:wrap}
+.rps-btn{font-size:2.5rem;width:80px;height:80px;border-radius:16px;background:var(--glass-bg);border:2px solid var(--glass-border);cursor:pointer;transition:transform .15s}
+.rps-btn:hover{transform:scale(1.1);border-color:var(--accent)}
+.rps-btn:active{transform:scale(.9)}
+.rps-result{font-size:1.2rem;font-weight:600;margin:.3rem 0;min-height:2rem}
+.rps-vs{font-size:2rem;display:flex;align-items:center;justify-content:center;gap:1rem;min-height:4rem;margin:.3rem 0}
+.rps-vs .rp{animation:rpsPop .3s ease}
+.rps-vs .rp:nth-child(3){animation-delay:.15s}
+@keyframes rpsPop{0%{transform:scale(0) rotate(-90deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
+.rps-score{font-size:.8rem;color:var(--text-dim);margin-top:.3rem}
+
+/* ── Random Văn ── */
+.van-wrap{text-align:center;padding:1.5rem}
+.van-icon{font-size:3rem;margin-bottom:.3rem}
+.van-text{font-size:1.05rem;font-weight:600;line-height:1.5;margin:.5rem 0;min-height:4rem;padding:0 .5rem}
+.van-author{font-size:.8rem;color:var(--text-dim)}
+.van-vi{font-size:.85rem;color:var(--accent);margin-top:.3rem;opacity:.8}
+
+/* ── BMI ── */
+.bmi-wrap{padding:1rem}
+.bmi-inputs{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:.5rem}
+.bmi-inputs label{font-size:.8rem;color:var(--text-dim);display:flex;flex-direction:column;align-items:center;gap:.2rem}
+.bmi-inputs input{width:100px;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:.4rem;font-size:1rem;text-align:center}
+.bmi-val{font-size:3rem;font-weight:800;text-align:center;line-height:1.1;margin:.3rem 0}
+.bmi-cat{font-size:1rem;text-align:center;font-weight:600}
+
+/* ── Tarot ── */
+.tarot-wrap{text-align:center;padding:1rem}
+.tarot-card{width:150px;height:220px;margin:.5rem auto;border-radius:10px;position:relative;cursor:pointer;perspective:600px}
+.tarot-inner{width:100%;height:100%;border-radius:10px;transition:transform .35s;transform-style:preserve-3d;position:relative}
+.tarot-card.flip .tarot-inner{transform:rotateY(180deg)}
+.tarot-back,.tarot-front{position:absolute;inset:0;border-radius:10px;backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.tarot-back{background:repeating-linear-gradient(45deg,#4a1942,#4a1942 10px,#381430 10px,#381430 20px);border:2px solid #c9a84c}
+.tarot-back .tb-star{font-size:2.5rem}
+.tarot-front{background:linear-gradient(135deg,#1a1a2e,#16213e);transform:rotateY(180deg);border:2px solid #c9a84c;padding:.4rem}
+.tarot-front .tf-emoji{font-size:2rem;margin-bottom:.2rem}
+.tarot-front .tf-name{font-size:.65rem;font-weight:600;color:var(--text);line-height:1.2;text-align:center}
+.tarot-front .tf-vi{font-size:.58rem;color:var(--text-dim);margin-top:2px}
+.tarot-meaning{font-size:.85rem;color:var(--text-dim);line-height:1.5;margin-top:.5rem;min-height:2rem;text-align:center;padding:0 .5rem}
+
+/* ── Lịch tháng ── */
+.cal-wrap{padding:.5rem;text-align:center}
+.cal-hdr{display:flex;align-items:center;justify-content:center;gap:.5rem;margin-bottom:.5rem}
+.cal-hdr h3{font-size:1rem;font-weight:600;min-width:140px}
+.cal-hdr button{background:none;border:1px solid var(--glass-border);color:var(--text-dim);border-radius:6px;padding:.2rem .5rem;cursor:pointer;font-size:.8rem;transition:.1s}
+.cal-hdr button:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;max-width:280px;margin:.3rem auto}
+.cal-cell{padding:.3rem .2rem;font-size:.72rem;border-radius:4px;text-align:center}
+.cal-cell.today{background:var(--accent);color:#fff;font-weight:700;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;margin:auto}
+.cal-cell.om{color:var(--text-dim);opacity:.35}
+.cal-cell.hd{font-weight:600;color:var(--text-dim);font-size:.62rem;padding:.25rem 0}
+
+/* ── Đoán số ── */
+.guess-wrap{text-align:center;padding:1rem}
+.guess-inp{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin:.5rem 0}
+.guess-inp input{width:110px;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:.35rem;font-size:1.1rem;text-align:center}
+.guess-hint{font-size:1.3rem;font-weight:600;margin:.3rem 0;min-height:2.5rem}
+.guess-stat{font-size:.8rem;color:var(--text-dim);margin-top:.3rem}
+
+/* ── Counter ── */
+.cnt-wrap{padding:.5rem;text-align:center}
+.cnt-nm{background:var(--surface-2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:.3rem .5rem;font-size:.85rem;text-align:center;margin-bottom:.5rem;width:180px}
+.cnt-val{font-size:3.5rem;font-weight:800;line-height:1;margin:.3rem 0;font-variant-numeric:tabular-nums}
+.cnt-act{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap}
+.cnt-act button{width:44px;height:44px;border-radius:10px;border:1px solid var(--glass-border);background:var(--glass-bg);color:var(--text);font-size:1.2rem;cursor:pointer;transition:.1s}
+.cnt-act button:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.cnt-step{display:flex;gap:.4rem;align-items:center;justify-content:center;margin-top:.5rem;font-size:.78rem;color:var(--text-dim)}
+.cnt-step input{width:40px;background:var(--surface-2);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:.15rem;text-align:center;font-size:.8rem}
+
+/* ── Unit Converter ── */
+.uc-wrap{padding:1rem;text-align:center}
+.uc-rows{display:flex;flex-direction:column;gap:.5rem;align-items:center}
+.uc-row{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;justify-content:center}
+.uc-row input{width:110px;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:.35rem;font-size:.9rem;text-align:center}
+.uc-row select{background:var(--surface-2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:.3rem;font-size:.78rem;cursor:pointer}
+.uc-row label{font-size:.6rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px;display:flex;flex-direction:column;align-items:center;gap:2px}
+.uc-eq{font-size:.8rem;opacity:.4}
+.uc-res{font-size:1.3rem;font-weight:600;margin-top:.3rem;min-height:1.8rem}
+
+/* ── Idea Generator ── */
+.idea-wrap{text-align:center;padding:1.5rem}
+.idea-icon{font-size:3rem;margin-bottom:.3rem}
+.idea-text{font-size:1rem;line-height:1.5;margin:.5rem 0;min-height:5rem;padding:0 .5rem;max-width:480px;margin-left:auto;margin-right:auto}
+.idea-tag{display:inline-block;font-size:.55rem;padding:.12rem .5rem;border-radius:10px;color:#fff}
+
+/* ── Mood Tracker ── */
+.mood-wrap{text-align:center;padding:1rem}
+.mood-opts{display:flex;gap:.4rem;justify-content:center;flex-wrap:wrap;margin:.5rem 0}
+.mood-btn{font-size:1.8rem;width:50px;height:50px;border-radius:10px;border:2px solid transparent;background:var(--glass-bg);cursor:pointer;transition:.15s}
+.mood-btn:hover{transform:scale(1.12);border-color:var(--accent)}
+.mood-btn.on{border-color:var(--accent);background:rgba(99,102,241,.12)}
+.mood-txt{font-size:.85rem;color:var(--text-dim);margin-bottom:.3rem;min-height:1.2rem}
+.mood-hist{display:flex;gap:4px;justify-content:center;flex-wrap:wrap;margin-top:.6rem}
+.mood-hd{display:flex;flex-direction:column;align-items:center;gap:2px}
+.mood-hd .mh-lb{font-size:.5rem;color:var(--text-dim);text-transform:uppercase}
+.mood-hd .mh-dot{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem}
+.mood-hd .mh-non{width:24px;height:24px;border-radius:50%;background:var(--surface-2)}
+
 /* ── Shared ── */
 .empty-state{padding:2rem 1rem;text-align:center;color:var(--text-dim)}
 .empty-state .icon{font-size:3rem;margin-bottom:.5rem}
@@ -586,6 +686,151 @@
         </div>
       </div>
 
+      <!-- Oẳn tù tì -->
+      <div class="widget-panel" id="panel-rps">
+        <div class="rps-wrap">
+          <div class="rps-choices">
+            <button class="rps-btn" onclick="rpsPlay('rock')">🪨</button>
+            <button class="rps-btn" onclick="rpsPlay('paper')">📄</button>
+            <button class="rps-btn" onclick="rpsPlay('scissors')">✂️</button>
+          </div>
+          <div class="rps-vs" id="rps-vs"><span>🪨</span><span style="font-size:1rem;opacity:.5">vs</span><span>✂️</span></div>
+          <div class="rps-result" id="rps-result">Chọn 1 ô bên trên</div>
+          <div class="rps-score" id="rps-score">🧑 0 — 0 🤖</div>
+        </div>
+      </div>
+
+      <!-- Random Văn -->
+      <div class="widget-panel" id="panel-van">
+        <div class="van-wrap">
+          <div class="van-icon" id="van-icon">💬</div>
+          <div class="van-text" id="van-text">The only way to do great work is to love what you do.</div>
+          <div class="van-author" id="van-author">— Steve Jobs</div>
+          <div class="van-vi" id="van-vi">Cách duy nhất để làm việc vĩ đại là yêu việc bạn làm</div>
+          <div class="rand-btn-group" style="justify-content:center;margin-top:.6rem">
+            <button class="primary" onclick="showVan('quote')"><i class="fas fa-quote-left"></i> Câu nói</button>
+            <button onclick="showVan('joke')"><i class="fas fa-laugh"></i> Chuyện vui</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- BMI -->
+      <div class="widget-panel" id="panel-bmi">
+        <div class="bmi-wrap">
+          <div class="bmi-inputs">
+            <label>Cân nặng (kg)<input type="number" id="bmi-w" value="70" min="20" max="250" step="0.1"></label>
+            <label>Chiều cao (cm)<input type="number" id="bmi-h" value="170" min="80" max="250" step="0.5"></label>
+          </div>
+          <button class="wid-btn primary" onclick="calcBMI()" style="margin-bottom:.5rem"><i class="fas fa-calculator"></i> Tính BMI</button>
+          <div class="bmi-val" id="bmi-val">24.2</div>
+          <div class="bmi-cat" id="bmi-cat" style="color:#22c55e">Bình thường</div>
+        </div>
+      </div>
+
+      <!-- Tarot -->
+      <div class="widget-panel" id="panel-tarot">
+        <div class="tarot-wrap">
+          <div style="font-size:.75rem;color:var(--text-dim);margin-bottom:.3rem" id="tarot-hint">👆 Bấm lật bài</div>
+          <div class="tarot-card" id="tarot-card" onclick="tarotFlip()">
+            <div class="tarot-inner">
+              <div class="tarot-back"><span class="tb-star">⭐</span></div>
+              <div class="tarot-front">
+                <span class="tf-emoji" id="tf-emoji">🤡</span>
+                <div class="tf-name" id="tf-name">The Fool</div>
+                <div class="tf-vi" id="tf-vi">Kẻ Ngốc</div>
+              </div>
+            </div>
+          </div>
+          <div class="tarot-meaning" id="tarot-meaning">Bấm vào lá bài để lật ☝️</div>
+          <button class="wid-btn primary" onclick="tarotNew()" style="margin-top:.5rem"><i class="fas fa-dice"></i> Rút lá khác</button>
+        </div>
+      </div>
+
+      <!-- Lịch tháng -->
+      <div class="widget-panel" id="panel-calendar">
+        <div class="cal-wrap">
+          <div class="cal-hdr">
+            <button onclick="calMove(-1)"><i class="fas fa-chevron-left"></i></button>
+            <h3 id="cal-title">Tháng 7, 2026</h3>
+            <button onclick="calMove(1)"><i class="fas fa-chevron-right"></i></button>
+          </div>
+          <div class="cal-grid" id="cal-grid"></div>
+        </div>
+      </div>
+
+      <!-- Đoán số -->
+      <div class="widget-panel" id="panel-guess">
+        <div class="guess-wrap">
+          <div style="font-size:.8rem;color:var(--text-dim);margin-bottom:.3rem">Đoán số từ 1 đến 100</div>
+          <div class="guess-inp">
+            <input type="number" id="guess-inp" min="1" max="100" placeholder="?" onkeydown="if(event.key==='Enter')guessCheck()">
+            <button class="wid-btn primary" onclick="guessCheck()"><i class="fas fa-check"></i> Đoán</button>
+          </div>
+          <div class="guess-hint" id="guess-hint">🎯 Nhập số và bấm Đoán</div>
+          <div class="guess-stat" id="guess-stat">Lần: 0 | Thắng: 0</div>
+          <button class="wid-btn" onclick="guessNew()" style="margin-top:.3rem"><i class="fas fa-redo"></i> Chơi lại</button>
+        </div>
+      </div>
+
+      <!-- Counter -->
+      <div class="widget-panel" id="panel-counter">
+        <div class="cnt-wrap">
+          <input class="cnt-nm" id="cnt-name" value="Counter" oninput="cntSave()">
+          <div class="cnt-val" id="cnt-val">0</div>
+          <div class="cnt-act">
+            <button onclick="cntAdd(-1)"><i class="fas fa-minus"></i></button>
+            <button onclick="cntAdd(1)"><i class="fas fa-plus"></i></button>
+          </div>
+          <div class="cnt-step">
+            <label>Bước: <input type="number" id="cnt-step" value="1" min="1" max="999" onchange="cntSave()"></label>
+            <button class="wid-btn" onclick="cntAdd(10)" style="font-size:.7rem;padding:.2rem .5rem">+10</button>
+            <button class="wid-btn" onclick="cntAdd(100)" style="font-size:.7rem;padding:.2rem .5rem">+100</button>
+            <span style="cursor:pointer;color:var(--text-dim);font-size:.75rem;margin-left:.5rem" onclick="cntReset()">↺ Reset</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Unit Converter -->
+      <div class="widget-panel" id="panel-convert">
+        <div class="uc-wrap">
+          <div class="uc-rows">
+            <div class="uc-row">
+              <label>Từ<input type="number" id="uc-in" value="1" oninput="ucConvert()"></label>
+              <select id="uc-type" onchange="ucConvert()">
+                <option value="temp">🌡️ Nhiệt độ</option>
+                <option value="length">📏 Độ dài</option>
+                <option value="weight">⚖️ Cân nặng</option>
+              </select>
+            </div>
+            <div class="uc-row">
+              <label>Gốc<select id="uc-from" onchange="ucConvert()"></select></label>
+              <span class="uc-eq">→</span>
+              <label>Đích<select id="uc-to" onchange="ucConvert()"></select></label>
+            </div>
+          </div>
+          <div class="uc-res" id="uc-res">1.00</div>
+        </div>
+      </div>
+
+      <!-- Idea Generator -->
+      <div class="widget-panel" id="panel-idea">
+        <div class="idea-wrap">
+          <div class="idea-icon" id="idea-icon">💡</div>
+          <div class="idea-text" id="idea-text" style="text-align:center">Bấm để nhận ý tưởng ngẫu nhiên</div>
+          <div><span class="idea-tag" id="idea-tag" style="background:#818cf8">  </span></div>
+          <button class="wid-btn primary" onclick="genIdea()" style="margin-top:.8rem"><i class="fas fa-lightbulb"></i> Ý tưởng</button>
+        </div>
+      </div>
+
+      <!-- Mood Tracker -->
+      <div class="widget-panel" id="panel-mood">
+        <div class="mood-wrap">
+          <div class="mood-opts" id="mood-opts"></div>
+          <div class="mood-txt" id="mood-txt">Hôm nay bạn thế nào?</div>
+          <div class="mood-hist" id="mood-hist"></div>
+        </div>
+      </div>
+
     </div>
   </div>
 </main>
@@ -617,6 +862,17 @@ const WIDGETS = [
   { id:'history',    icon:'📜', title:'Hôm nay trong lịch sử',desc:'Sự kiện lịch sử theo ngày — Việt Nam & thế giới',        cat:'Học tập',    color:'#b45309' },
   { id:'workout',    icon:'🏋️', title:'Workout Random',      desc:'Random bài tập kèm reps, target nhóm cơ',              cat:'Đời sống',   color:'#059669' },
   { id:'countdown',  icon:'⏰', title:'Countdown',           desc:'Đếm ngược tới ngày tự chọn — Tết, sinh nhật...',        cat:'Tiện ích',   color:'#0ea5e9' },
+  // batch 2
+  { id:'rps',       icon:'🪨', title:'Oẳn tù tì',          desc:'Chơi rock-paper-scissors với máy, đếm điểm',          cat:'Giải trí',   color:'#ec4899' },
+  { id:'van',       icon:'💬', title:'Random Văn',          desc:'Câu nói hay + chuyện vui, TA + VI',                    cat:'Giải trí',   color:'#f97316' },
+  { id:'bmi',       icon:'🧮', title:'BMI Calculator',      desc:'Tính chỉ số cơ thể, phân loại gầy/béo',                cat:'Tiện ích',   color:'#22c55e' },
+  { id:'tarot',     icon:'🎴', title:'Tarot 1 Lá',           desc:'22 lá major arcana, lật bài xem ý nghĩa',              cat:'Giải trí',   color:'#a855f7' },
+  { id:'calendar',  icon:'📅', title:'Lịch Tháng',           desc:'Xem lịch theo tháng, highlight hôm nay',               cat:'Tiện ích',   color:'#0ea5e9' },
+  { id:'guess',     icon:'🎯', title:'Đoán Số',              desc:'Game đoán số 1-100, gợi ý cao/thấp, đếm điểm',        cat:'Giải trí',   color:'#eab308' },
+  { id:'counter',   icon:'🔢', title:'Counter',              desc:'Đếm +/- bước tuỳ chỉnh, lưu localStorage',            cat:'Tiện ích',   color:'#6366f1' },
+  { id:'convert',   icon:'🌡️', title:'Unit Converter',      desc:'Đổi nhiệt độ, độ dài, cân nặng giữa các đơn vị',      cat:'Tiện ích',   color:'#06b6d4' },
+  { id:'idea',      icon:'💡', title:'Idea Generator',       desc:'Ý tưởng sáng tạo ngẫu nhiên cho lúc bí',              cat:'Sáng tạo',   color:'#8b5cf6' },
+  { id:'mood',      icon:'😊', title:'Mood Tracker',         desc:'Ghi tâm trạng mỗi ngày, xem lịch sử 7 ngày',          cat:'Đời sống',   color:'#f472b6' },
 ];
 
 // ══════════════════════════════════════════════
@@ -654,6 +910,16 @@ function showDetail(id){
   if(id==='textgen')genText();
   if(id==='history')showHistory('today');
   if(id==='workout')randomWorkout();
+  if(id==='rps'){rpsP=0;rpsC=0;document.getElementById('rps-score').textContent='🧑 0 — 0 🤖';}
+  if(id==='van')showVan('quote');
+  if(id==='bmi')calcBMI();
+  if(id==='tarot')tarotNew();
+  if(id==='calendar')calRender();
+  if(id==='guess')guessNew();
+  if(id==='counter')cntLoad();
+  if(id==='convert')ucConvert();
+  if(id==='idea')genIdea();
+  if(id==='mood')moodRender();
 }
 function openWidget(id){
   window.location.hash = id;
@@ -1178,6 +1444,239 @@ function pomoReset(){
 }
 // Save sessions on change
 setInterval(()=>{try{localStorage.setItem('pomo-sessions',_pomoToday)}catch(_){}},5000);
+
+// ══════════════════════════════════════════════
+// NEW WIDGETS BATCH 2
+// ══════════════════════════════════════════════
+
+// ── 1. Oẳn tù tì ──
+const RPS_MAP={rock:'🪨',paper:'📄',scissors:'✂️'},RPS_WIN={rock:'scissors',scissors:'paper',paper:'rock'};
+let rpsP=0,rpsC=0;
+function rpsPlay(id){
+  const c=['rock','paper','scissors'][Math.floor(Math.random()*3)],v=document.getElementById('rps-vs');
+  v.innerHTML='<span class="rp">'+RPS_MAP[id]+'</span><span style="font-size:1rem;opacity:.5">vs</span><span class="rp">'+RPS_MAP[c]+'</span>';
+  const r=document.getElementById('rps-result');
+  if(id===c)r.textContent='🤝 Hoà!';
+  else if(RPS_WIN[id]===c){r.textContent='✅ Thắng!';rpsP++}else{r.textContent='❌ Thua!';rpsC++}
+  document.getElementById('rps-score').textContent='🧑 '+rpsP+' — '+rpsC+' 🤖';
+}
+
+// ── 2. Random Văn ──
+const QUOTES=[
+  {t:'The only way to do great work is to love what you do.',a:'Steve Jobs',vi:'Cách duy nhất làm việc vĩ đại là yêu việc bạn làm'},
+  {t:'Stay hungry, stay foolish.',a:'Steve Jobs',vi:'Hãy khao khát, hãy dại khờ'},
+  {t:'Be yourself; everyone else is already taken.',a:'Oscar Wilde',vi:'Là chính mình — người khác đã có người khác làm rồi'},
+  {t:'Two things are infinite: the universe and human stupidity.',a:'Einstein',vi:'Hai thứ vô hạn: vũ trụ và sự ngu ngốc con người'},
+  {t:'In the middle of difficulty lies opportunity.',a:'Einstein',vi:'Trong khó khăn tiềm ẩn cơ hội'},
+  {t:'The best time to plant a tree was 20 years ago. The second best is now.',a:'Tục ngữ',vi:'Thời điểm tốt nhất trồng cây là 20 năm trước. Tốt thứ nhì là hôm nay.'},
+  {t:'It does not matter how slowly you go as long as you do not stop.',a:'Confucius',vi:'Không quan trọng bạn đi chậm thế nào, miễn là bạn không dừng lại'},
+  {t:'The only impossible journey is the one you never begin.',a:'Tony Robbins',vi:'Hành trình bất khả duy nhất là hành trình bạn không bao giờ bắt đầu'},
+  {t:'Everything you want is on the other side of fear.',a:'George Addair',vi:'Mọi thứ bạn muốn đều ở phía bên kia nỗi sợ'},
+  {t:'Success is not final, failure is not fatal: it is the courage to continue that counts.',a:'Churchill',vi:'Thành công không vĩnh viễn, thất bại không chết người — can đảm tiếp tục mới quan trọng'},
+  {t:'Học, học nữa, học mãi.',a:'Lenin',vi:'Học, học nữa, học mãi'},
+  {t:'Có công mài sắt, có ngày nên kim.',a:'Tục ngữ',vi:'Có công mài sắt, có ngày nên kim'},
+  {t:'Thất bại là mẹ thành công.',a:'Tục ngữ',vi:'Thất bại là mẹ thành công'},
+  {t:'Đi một ngày đàng, học một sàng khôn.',a:'Tục ngữ',vi:'Đi một ngày đàng, học một sàng khôn'},
+  {t:'Knowledge is power.',a:'Francis Bacon',vi:'Tri thức là sức mạnh'},
+  {t:'Simplicity is the ultimate sophistication.',a:'da Vinci',vi:'Đơn giản là sự tinh tế tột cùng'},
+  {t:'The journey of a thousand miles begins with one step.',a:'Lao Tzu',vi:'Hành trình ngàn dặm bắt đầu bằng một bước chân'},
+  {t:'Life is what happens when you are busy making other plans.',a:'John Lennon',vi:'Cuộc sống là những gì xảy ra khi bạn đang bận lập kế hoạch'},
+  {t:'Imagination is more important than knowledge.',a:'Einstein',vi:'Trí tưởng tượng quan trọng hơn kiến thức'},
+  {t:'The only thing we have to fear is fear itself.',a:'FDR',vi:'Điều duy nhất ta phải sợ là chính nỗi sợ'},
+  {t:'Cách tốt nhất để dự đoán tương lai là tạo ra nó.',a:'Peter Drucker',vi:'Cách tốt nhất để dự đoán tương lai là tạo ra nó'},
+  {t:'Trên bước đường thành công không có dấu chân của kẻ lười biếng.',a:'Khuyết danh',vi:'Trên bước đường thành công không có dấu chân của kẻ lười biếng'},
+];
+const JOKES=[
+  'Sao dev ghét thiên nhiên? Vì có quá nhiều bugs.',
+  'Oct 31 == Dec 25 — lý do dev nhầm Halloween với Christmas.',
+  '10 loại người: loại hiểu binary và loại không.',
+  '"Chạy máy em ổn" — câu nói nguy hiểm nhất làng dev.',
+  'QA tìm bug, dev bảo "đó là tính năng". Cả 2 đều đúng.',
+  'Chạy code lần đầu thành công? Chắc chắn có bug.',
+  'Deploy chiều thứ 6 — chúc may mắn.',
+  'Debug = nhảy vào thùng rác tìm bug.',
+  '"App nhỏ thôi" → 47 files, 3 DB, 2 microservices.',
+  'Code cũ = code mình viết 6 tháng trước.',
+  '"Push đi, chạy ổn mà" — điều ước.',
+  'Học code 1 năm, fix bug 10 năm.',
+  'Bug hài nhất: quên dấu ";" — 30 phút ngồi tìm.',
+  'Khi sếp bảo "nhanh" = "tối qua cần rồi".',
+  'Git messages: "fix", "cuoi cung", "that su cuoi cung".',
+  'Học Python dễ? 2 tháng sau: list comprehension + decorator.',
+  'Thứ chạy nhanh nhất = bug mới.',
+  'Sao app chậm? "Chắc do internet" — cả 2 biết do code.',
+  'Monday: 42 bugs. Tuesday: 43 bugs (1 fixed, 2 new).',
+  'Life is short. Use Python. (C++ làm cuộc đời ngắn hơn.)',
+];
+function showVan(t){
+  if(t==='quote'){const q=QUOTES[Math.floor(Math.random()*QUOTES.length)];
+    document.getElementById('van-icon').textContent='💬';document.getElementById('van-text').textContent=q.t;
+    document.getElementById('van-author').textContent='— '+q.a;document.getElementById('van-vi').textContent='↳ '+q.vi;
+  }else{const j=JOKES[Math.floor(Math.random()*JOKES.length)];
+    document.getElementById('van-icon').textContent='😂';document.getElementById('van-text').textContent=j;
+    document.getElementById('van-author').textContent='';document.getElementById('van-vi').textContent='';
+  }
+}
+
+// ── 3. BMI ──
+function calcBMI(){
+  const w=parseFloat(document.getElementById('bmi-w').value)||0,h=parseFloat(document.getElementById('bmi-h').value)||0;
+  if(!w||!h||h<50)return;
+  const bmi=w/((h/100)*(h/100)),el=document.getElementById('bmi-cat');
+  document.getElementById('bmi-val').textContent=bmi.toFixed(1);
+  if(bmi<18.5){el.textContent='Gầy';el.style.color='#f59e0b'}
+  else if(bmi<25){el.textContent='Bình thường';el.style.color='#22c55e'}
+  else if(bmi<30){el.textContent='Thừa cân';el.style.color='#f59e0b'}
+  else if(bmi<35){el.textContent='Béo phì độ I';el.style.color='#ef4444'}
+  else if(bmi<40){el.textContent='Béo phì độ II';el.style.color='#ef4444'}
+  else{el.textContent='Béo phì độ III';el.style.color='#dc2626'}
+}
+
+// ── 4. Tarot ──
+const TAROT=[
+  {n:'The Fool',e:'🤡',v:'Kẻ Ngốc',m:'Khởi đầu mới, cơ hội, hãy mạo hiểm!'},
+  {n:'The Magician',e:'🪄',v:'Pháp Sư',m:'Sức mạnh, tài năng, tập trung ý chí.'},
+  {n:'The High Priestess',e:'🔮',v:'Nữ Tư Tế',m:'Trực giác, bí ẩn, lắng nghe nội tâm.'},
+  {n:'The Empress',e:'👑',v:'Nữ Hoàng',m:'Phì nhiêu, thiên nhiên, sự sống mới.'},
+  {n:'The Emperor',e:'⚔️',v:'Hoàng Đế',m:'Quyền lực, trật tự, kỷ luật.'},
+  {n:'The Hierophant',e:'🙏',v:'Giáo Hoàng',m:'Truyền thống, tri thức, cố vấn.'},
+  {n:'The Lovers',e:'💑',v:'Tình Nhân',m:'Tình yêu, lựa chọn, hòa hợp.'},
+  {n:'The Chariot',e:'🏎️',v:'Xe Ngựa',m:'Chiến thắng, ý chí, vượt thử thách.'},
+  {n:'Strength',e:'🦁',v:'Sức Mạnh',m:'Dũng cảm, kiên nhẫn, chinh phục nội tâm.'},
+  {n:'The Hermit',e:'🏮',v:'Ẩn Sĩ',m:'Cô đơn, chiêm nghiệm, tìm chân lý.'},
+  {n:'Wheel of Fortune',e:'🎡',v:'Bánh Xe',m:'Định mệnh, thay đổi, chu kỳ mới.'},
+  {n:'Justice',e:'⚖️',v:'Công Lý',m:'Công bằng, nhân quả, sự thật.'},
+  {n:'The Hanged Man',e:'😵',v:'Người Treo',m:'Hy sinh, nhìn khác đi.'},
+  {n:'Death',e:'💀',v:'Thần Chết',m:'Kết thúc, tái sinh, chuyển mình.'},
+  {n:'Temperance',e:'🍶',v:'Tiết Độ',m:'Cân bằng, hài hòa, kiên nhẫn.'},
+  {n:'The Devil',e:'😈',v:'Ác Quỷ',m:'Cám dỗ, nô lệ, vật chất.'},
+  {n:'The Tower',e:'🗼',v:'Tháp Sét',m:'Sụp đổ, thức tỉnh, đột phá.'},
+  {n:'The Star',e:'⭐',v:'Ngôi Sao',m:'Hy vọng, cảm hứng, chữa lành.'},
+  {n:'The Moon',e:'🌙',v:'Mặt Trăng',m:'Ảo ảnh, vô thức, sợ hãi tiềm ẩn.'},
+  {n:'The Sun',e:'☀️',v:'Mặt Trời',m:'Hạnh phúc, thành công, niềm vui.'},
+  {n:'Judgement',e:'📯',v:'Phán Xét',m:'Tái sinh, sứ mệnh, thức tỉnh.'},
+  {n:'The World',e:'🌍',v:'Thế Giới',m:'Hoàn thành, viên mãn, kết thúc hành trình.'},
+];
+let _tarotI=-1;
+function tarotNew(){
+  _tarotI=Math.floor(Math.random()*TAROT.length);const c=TAROT[_tarotI];
+  document.getElementById('tarot-card').className='tarot-card';
+  document.getElementById('tf-emoji').textContent=c.e;document.getElementById('tf-name').textContent=c.n;
+  document.getElementById('tf-vi').textContent=c.v;document.getElementById('tarot-meaning').textContent='☝️ Bấm lật bài!';
+  document.getElementById('tarot-hint').textContent='👆 Bấm vào lá bài để lật';
+}
+function tarotFlip(){
+  const card=document.getElementById('tarot-card');card.classList.toggle('flip');
+  document.getElementById('tarot-meaning').textContent=card.classList.contains('flip')?TAROT[_tarotI].m:'☝️ Bấm lật bài!';
+  document.getElementById('tarot-hint').textContent=card.classList.contains('flip')?('✨ '+TAROT[_tarotI].n):'👆 Bấm vào lá bài để lật';
+}
+
+// ── 5. Lịch tháng ──
+let _calD=new Date();const CAL_H=['T2','T3','T4','T5','T6','T7','CN'];
+function calRender(){
+  const y=_calD.getFullYear(),m=_calD.getMonth();
+  document.getElementById('cal-title').textContent='Tháng '+(m+1)+', '+y;
+  const fd=(new Date(y,m,1).getDay()+6)%7,days=new Date(y,m+1,0).getDate(),pd=new Date(y,m,0).getDate(),t=new Date();
+  let h=CAL_H.map(d=>'<div class="cal-cell hd">'+d+'</div>').join('');
+  for(let i=fd-1;i>=0;i--)h+='<div class="cal-cell om">'+(pd-i)+'</div>';
+  for(let d=1;d<=days;d++){
+    const isT=d===t.getDate()&&m===t.getMonth()&&y===t.getFullYear();
+    h+='<div class="cal-cell'+(isT?' today':'')+'">'+d+'</div>';
+  }
+  const rem=7-((fd+days)%7);if(rem<7)for(let d=1;d<=rem;d++)h+='<div class="cal-cell om">'+d+'</div>';
+  document.getElementById('cal-grid').innerHTML=h;
+}
+function calMove(n){_calD.setMonth(_calD.getMonth()+n);calRender()}
+
+// ── 6. Đoán số ──
+let _gN=0,_gA=0,_gW=0;
+function guessNew(){_gN=Math.floor(Math.random()*100)+1;_gA=0;
+  document.getElementById('guess-hint').textContent='🎯 Đoán từ 1 đến 100';document.getElementById('guess-stat').textContent='Lần: 0 | Thắng: '+_gW;
+  document.getElementById('guess-inp').value='';document.getElementById('guess-inp').focus()}
+function guessCheck(){
+  const g=parseInt(document.getElementById('guess-inp').value),h=document.getElementById('guess-hint');
+  if(!g||g<1||g>100)return;_gA++;
+  if(g===_gN){_gW++;h.innerHTML='🎉 <strong>Đúng!</strong> Số là '+_gN;guessNew();return}
+  h.textContent=g<_gN?'⬆️ Cao hơn!':'⬇️ Thấp hơn!';document.getElementById('guess-stat').textContent='Lần: '+_gA+' | Thắng: '+_gW;
+  document.getElementById('guess-inp').value='';document.getElementById('guess-inp').focus()
+}
+
+// ── 7. Counter ──
+function cntAdd(n){
+  const s=parseInt(document.getElementById('cnt-step').value)||1;
+  document.getElementById('cnt-val').textContent=parseInt(document.getElementById('cnt-val').textContent)+n*s;cntSave()}
+function cntReset(){if(!confirm('Reset về 0?'))return;document.getElementById('cnt-val').textContent='0';cntSave()}
+function cntSave(){try{localStorage.setItem('cnt-v',document.getElementById('cnt-val').textContent);localStorage.setItem('cnt-n',document.getElementById('cnt-name').value);localStorage.setItem('cnt-s',document.getElementById('cnt-step').value)}catch(_){}}
+function cntLoad(){try{const v=localStorage.getItem('cnt-v');if(v!==null)document.getElementById('cnt-val').textContent=v;const n=localStorage.getItem('cnt-n');if(n!==null)document.getElementById('cnt-name').value=n;const s=localStorage.getItem('cnt-s');if(s!==null)document.getElementById('cnt-step').value=s}catch(_){}}
+
+// ── 8. Unit Converter ──
+const UC={
+  temp:{u:[{i:'c',n:'°C'},{i:'f',n:'°F'},{i:'k',n:'K'}],c:(v,f,t)=>{let c;if(f==='c')c=v;else if(f==='f')c=(v-32)*5/9;else c=v-273.15;if(t==='c')return c;if(t==='f')return c*9/5+32;return c+273.15}},
+  length:{u:[{i:'mm',n:'mm'},{i:'cm',n:'cm'},{i:'m',n:'m'},{i:'km',n:'km'},{i:'in',n:'inch'},{i:'ft',n:'ft'}],c:(v,f,t)=>{const m={mm:.001,cm:.01,m:1,km:1e3,in:.0254,ft:.3048};return v*m[f]/m[t]}},
+  weight:{u:[{i:'g',n:'g'},{i:'kg',n:'kg'},{i:'t',n:'tấn'},{i:'lb',n:'lbs'}],c:(v,f,t)=>{const m={g:1,kg:1e3,t:1e6,lb:453.592};return v*m[f]/m[t]}},
+};
+function ucConvert(){
+  const t=document.getElementById('uc-type').value,d=UC[t];
+  const fs=document.getElementById('uc-from'),ts=document.getElementById('uc-to');
+  if(!fs.options[0]||fs.options[0].value!==d.u[0].i){
+    const b=(s,di)=>{s.innerHTML=d.u.map((u,i)=>'<option value="'+u.i+'"'+(i===di?' selected':'')+'>'+u.n+'</option>').join('')};
+    b(fs,0);b(ts,Math.min(1,d.u.length-1));
+  }
+  const v=parseFloat(document.getElementById('uc-in').value)||0,f=fs.value,tv=ts.value;
+  document.getElementById('uc-res').textContent=d.c(v,f,tv).toFixed(4).replace(/\.?0+$/,'')||'0';
+}
+
+// ── 9. Idea Generator ──
+const IDEAS=[
+  {t:'Viết 1 blog về hành trình học code.',c:'Viết lách',bg:'#818cf8'},
+  {t:'Làm 1 web app nhỏ bằng vanilla JS.',c:'Code',bg:'#22c55e'},
+  {t:'Tối ưu lại 1 đoạn code cũ.',c:'Code',bg:'#22c55e'},
+  {t:'Học 1 framework mới trong 1 tuần.',c:'Code',bg:'#22c55e'},
+  {t:'Vẽ 1 bức tranh bằng CSS thuần.',c:'Sáng tạo',bg:'#f472b6'},
+  {t:'Làm 1 project mã nguồn mở.',c:'Code',bg:'#22c55e'},
+  {t:'Viết 1 bài hát nhảm nhí.',c:'Sáng tạo',bg:'#f472b6'},
+  {t:'Tự động hoá 1 việc nhàm chán.',c:'Code',bg:'#22c55e'},
+  {t:'Thiết kế lại UI 1 trang web bất kỳ.',c:'Sáng tạo',bg:'#f472b6'},
+  {t:'Chụp ảnh theo 1 chủ đề trong 1 ngày.',c:'Nhiếp ảnh',bg:'#f59e0b'},
+  {t:'Viết 1 câu chuyện ngắn 100 từ.',c:'Viết lách',bg:'#818cf8'},
+  {t:'Học nấu 1 món mới.',c:'Đời sống',bg:'#ef4444'},
+  {t:'Sắp xếp lại bàn làm việc.',c:'Đời sống',bg:'#ef4444'},
+  {t:'Làm 1 video timelapse cả ngày.',c:'Sáng tạo',bg:'#f472b6'},
+  {t:'Tạo 1 bộ sưu tập nhạc chủ đề.',c:'Sáng tạo',bg:'#f472b6'},
+  {t:'Viết thư cho bản thân 5 năm sau.',c:'Viết lách',bg:'#818cf8'},
+  {t:'Học 1 câu cửa miệng tiếng Nhật.',c:'Học tập',bg:'#0ea5e9'},
+  {t:'Tìm hiểu 1 chủ đề khoa học.',c:'Học tập',bg:'#0ea5e9'},
+  {t:'Tạo 1 API đơn giản chỉ để học.',c:'Code',bg:'#22c55e'},
+  {t:'Viết review 1 cuốn sách đã đọc.',c:'Viết lách',bg:'#818cf8'},
+  {t:'Tập 1 skill mới: origami/vẽ/đàn.',c:'Sáng tạo',bg:'#f472b6'},
+  {t:'Phân tích log server tìm pattern lạ.',c:'Code',bg:'#22c55e'},
+  {t:'Thiết lập 1 routine buổi sáng.',c:'Đời sống',bg:'#ef4444'},
+  {t:'Xem 1 talk về tech trên YouTube.',c:'Học tập',bg:'#0ea5e9'},
+];
+function genIdea(){const i=IDEAS[Math.floor(Math.random()*IDEAS.length)];
+  document.getElementById('idea-icon').textContent='💡';document.getElementById('idea-text').textContent=i.t;
+  const t=document.getElementById('idea-tag');t.textContent=i.c;t.style.background=i.bg}
+
+// ── 10. Mood Tracker ──
+const MOODS=[{e:'😊',l:'Vui',c:'#22c55e'},{e:'😐',l:'Thường',c:'#f59e0b'},{e:'😢',l:'Buồn',c:'#818cf8'},{e:'😡',l:'Giận',c:'#ef4444'},{e:'😴',l:'Mệt',c:'#a855f7'},{e:'🥰',l:'Yêu',c:'#f472b6'}];
+(function(){document.getElementById('mood-opts').innerHTML=MOODS.map((m,i)=>'<button class="mood-btn" id="mb-'+i+'" onclick="moodSet('+i+')">'+m.e+'</button>').join('')})();
+function moodSet(i){
+  MOODS.forEach((_,j)=>document.getElementById('mb-'+j).classList.toggle('on',j===i));
+  const t=new Date().toISOString().split('T')[0];
+  try{const d=JSON.parse(localStorage.getItem('md')||'{}');d[t]=i;localStorage.setItem('md',JSON.stringify(d))}catch(_){}
+  document.getElementById('mood-txt').textContent='Hôm nay: '+MOODS[i].l;moodRender()}
+function moodRender(){
+  let d={};try{d=JSON.parse(localStorage.getItem('md')||'{}')}catch(_){}
+  const t=new Date(),h=document.getElementById('mood-hist');
+  let html='';
+  for(let i=6;i>=0;i--){const dt=new Date(t);dt.setDate(dt.getDate()-i);
+    const k=dt.toISOString().split('T')[0],di=d[k],wd=['CN','T2','T3','T4','T5','T6','T7'][dt.getDay()];
+    html+='<div class="mood-hd"><div class="mh-lb">'+(i===0?'⭐':wd)+'</div>'+(di!==undefined?'<div class="mh-dot" style="background:'+MOODS[di].c+'">'+MOODS[di].e+'</div>':'<div class="mh-non"></div>')+'</div>'}
+  h.innerHTML=html;
+  // restore today selection
+  const tk=t.toISOString().split('T')[0];
+  if(d[tk]!==undefined){const idx=d[tk];document.getElementById('mood-txt').textContent='Hôm nay: '+MOODS[idx].l;MOODS.forEach((_,j)=>document.getElementById('mb-'+j).classList.toggle('on',j===idx))}
+}
 
 // ── 7. Text Generator ──
 const LOREM='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
