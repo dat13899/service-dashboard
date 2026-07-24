@@ -18,7 +18,7 @@
 .tabs-container .tabs li.is-active a{color:var(--accent);border-bottom-color:var(--accent)}
 .tab-panel{display:none}.tab-panel.active{display:block}
 
-/* Random Discovery */
+/* Random Discovery (existing) */
 .rand-card{background:var(--glass-bg);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:12px;padding:1.5rem;min-height:200px}
 .rand-card .tag{margin-bottom:.5rem}
 .rand-card .title{font-size:1rem;font-weight:600;margin-bottom:.5rem;line-height:1.4}
@@ -34,7 +34,7 @@
 .rand-skel .skel-line:nth-child(4){width:75%}
 .rand-source{font-size:.65rem;color:var(--text-dim);margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.5px}
 
-/* Brain Dump */
+/* Brain Dump (existing) */
 .brain-workspace{position:relative;width:100%;height:70vh;overflow:hidden;background:var(--glass-bg);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid var(--glass-border);border-radius:12px;cursor:crosshair}
 .brain-note{position:absolute;min-width:140px;max-width:260px;padding:.5rem .7rem;background:rgba(79,70,229,.1);border:1px solid var(--glass-border);border-radius:8px;cursor:grab;z-index:10;font-size:.8rem;line-height:1.5;word-wrap:break-word}
 .brain-note .brain-note-text{outline:none;min-height:1.2em;width:100%;background:transparent;border:none;color:var(--text);font-size:.8rem;font-family:inherit;resize:vertical}
@@ -47,6 +47,72 @@
 .brain-hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:.9rem;pointer-events:none;z-index:0}
 .no-notes .brain-note{display:none}
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ── Color Palette ── */
+.palette-grid{display:flex;gap:8px;flex-wrap:wrap;margin:.5rem 0 1rem}
+.palette-swatch{flex:1;min-width:100px;height:120px;border-radius:10px;cursor:pointer;position:relative;transition:transform .2s,box-shadow .2s}
+.palette-swatch:hover{transform:scale(1.06);z-index:2;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.palette-hex{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.55);color:#fff;padding:3px 10px;border-radius:6px;font-size:.75rem;font-family:monospace;backdrop-filter:blur(4px);letter-spacing:.5px}
+.palette-label{font-size:.7rem;color:var(--text-dim);margin-bottom:.3rem}
+
+/* ── Food Picker ── */
+.wid-card{background:var(--glass-bg);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:12px;padding:2rem;min-height:200px;text-align:center}
+.wid-emoji{font-size:4rem;margin-bottom:.5rem;line-height:1.2}
+.wid-name{font-size:1.3rem;font-weight:600;margin-bottom:.4rem}
+.wid-cat{display:inline-block;background:var(--accent);color:#fff;padding:.2rem .8rem;border-radius:20px;font-size:.7rem;font-weight:500}
+.wid-desc{color:var(--text-dim);font-size:.85rem;margin-top:.6rem;line-height:1.5}
+
+/* ── Mini Games ── */
+.games-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem}
+.game-box{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:12px;padding:1.5rem;text-align:center}
+.game-box h3{font-size:.85rem;color:var(--text-dim);margin-bottom:.5rem;font-weight:500}
+.game-result{font-size:3.5rem;margin:.5rem 0;min-height:4rem;transition:transform .3s}
+.game-roll{animation:diceShake .3s ease}
+@keyframes diceShake{0%{transform:rotate(0) scale(1)}25%{transform:rotate(90deg) scale(1.3)}50%{transform:rotate(180deg) scale(.9)}75%{transform:rotate(270deg) scale(1.2)}100%{transform:rotate(360deg) scale(1)}}
+.coin-flip{animation:coinFlip .4s ease}
+@keyframes coinFlip{0%{transform:rotateY(0)}50%{transform:rotateY(720deg)}100%{transform:rotateY(0)}}
+.game-box button,.wid-btn{border:1px solid var(--glass-border);background:rgba(255,255,255,.05);color:var(--text);padding:.4rem .8rem;border-radius:8px;font-size:.8rem;cursor:pointer;transition:.15s}
+.game-box button:hover,.wid-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.game-box .primary,.wid-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600}
+.game-box .primary:hover,.wid-btn.primary:hover{background:var(--accent-hover)}
+.game-range{display:flex;gap:.5rem;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:.5rem}
+.game-range label{font-size:.8rem;color:var(--text-dim)}
+.game-range input{width:70px;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;padding:.3rem;color:var(--text);text-align:center;font-size:.85rem}
+.game-range .num-result{font-size:2.5rem;font-weight:700;margin-top:.5rem;color:var(--accent)}
+
+/* ── Password Generator ── */
+.pw-card{background:var(--glass-bg);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:12px;padding:1.5rem}
+.pw-display{font-family:monospace;font-size:1.2rem;padding:.8rem;background:var(--surface-2);border-radius:8px;border:1px solid var(--border);text-align:center;word-break:break-all;min-height:3.2rem;display:flex;align-items:center;justify-content:center;user-select:all}
+.pw-options{display:flex;gap:1rem;flex-wrap:wrap;margin-top:1rem}
+.pw-opt{display:flex;align-items:center;gap:.4rem;font-size:.85rem;color:var(--text-dim);cursor:pointer}
+.pw-opt input{accent-color:var(--accent);width:16px;height:16px;cursor:pointer}
+.pw-length{display:flex;align-items:center;gap:.5rem;margin-top:.8rem;flex-wrap:wrap}
+.pw-length label{font-size:.85rem;color:var(--text-dim)}
+.pw-length input[type=range]{flex:1;max-width:240px;accent-color:var(--accent);height:4px;cursor:pointer}
+.pw-len-val{font-size:.85rem;color:var(--accent);font-weight:600;min-width:1.5rem;text-align:center}
+.pw-strength{margin-top:.6rem}
+.pw-strength-bar{height:6px;background:var(--surface-2);border-radius:3px;overflow:hidden}
+.pw-strength-bar div{height:100%;border-radius:3px;transition:width .3s,background .3s;width:0}
+.pw-strength-label{font-size:.65rem;color:var(--text-dim);margin-top:.2rem}
+
+/* ── Activities ── */
+.act-card{text-align:center;padding:2rem}
+.act-icon{font-size:3rem;margin-bottom:.5rem}
+.act-title{font-size:1.2rem;font-weight:600;margin-bottom:.4rem}
+.act-cat{display:inline-block;padding:.2rem .8rem;border-radius:20px;font-size:.7rem;color:#fff;font-weight:500}
+.act-cat.sang-tao{background:#818cf8}.act-cat.thu-gian{background:#22c55e}.act-cat.hoc-tap{background:#f59e0b}.act-cat.van-dong{background:#ef4444}.act-cat.xa-hoi{background:#06b6d4}
+
+/* ── Gradient Generator ── */
+.grad-preview{height:200px;border-radius:12px;border:1px solid var(--glass-border);margin-bottom:.8rem;transition:background .3s}
+.grad-code{background:var(--surface-2);padding:.8rem;border-radius:8px;font-family:monospace;font-size:.8rem;border:1px solid var(--border);word-break:break-all;user-select:all}
+.grad-options{display:flex;gap:1rem;flex-wrap:wrap;margin-top:.8rem;align-items:center}
+.grad-options select{background:var(--surface-2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:.35rem .6rem;font-size:.85rem;cursor:pointer}
+.grad-options select:focus{outline:none;border-color:var(--accent)}
+
+/* ── Empty state ── */
+.empty-state{padding:2rem 1rem;text-align:center;color:var(--text-dim)}
+.empty-state .icon{font-size:3rem;margin-bottom:.5rem}
+.empty-state p{font-size:.9rem}
 </style>
 </head>
 <body>
@@ -73,9 +139,15 @@
 <main class="section">
   <div class="container">
     <div class="tabs-container">
-      <div class="tabs is-medium">
+      <div class="tabs is-small">
         <ul>
-          <li class="is-active" data-tab="random"><a onclick="switchTab('random')">🎲 Khám phá ngẫu nhiên</a></li>
+          <li class="is-active" data-tab="random"><a onclick="switchTab('random')">🎲 Khám phá</a></li>
+          <li data-tab="colors"><a onclick="switchTab('colors')">🎨 Màu sắc</a></li>
+          <li data-tab="food"><a onclick="switchTab('food')">🍜 Đồ ăn</a></li>
+          <li data-tab="games"><a onclick="switchTab('games')">🎲 Mini Game</a></li>
+          <li data-tab="password"><a onclick="switchTab('password')">🔐 Mật khẩu</a></li>
+          <li data-tab="activities"><a onclick="switchTab('activities')">💭 Hoạt động</a></li>
+          <li data-tab="gradient"><a onclick="switchTab('gradient')">🌈 Gradient</a></li>
           <li data-tab="brain"><a onclick="switchTab('brain')">🧠 Brain Dump</a></li>
         </ul>
       </div>
@@ -106,6 +178,116 @@
       </div>
     </div>
 
+    <!-- Tab: Color Palette -->
+    <div class="tab-panel" id="tab-colors">
+      <div class="wid-card" style="cursor:default">
+        <div style="text-align:left;margin-bottom:.5rem">
+          <span class="wid-cat" style="background:var(--accent)">HSL Golden Ratio</span>
+        </div>
+        <div class="palette-label">Click vào màu để copy mã hex</div>
+        <div class="palette-grid" id="palette-grid"></div>
+        <button class="wid-btn primary" onclick="genPalette()"><i class="fas fa-dice"></i> Random màu</button>
+        <button class="wid-btn" onclick="copyPalette()"><i class="fas fa-copy"></i> Copy tất cả</button>
+      </div>
+    </div>
+
+    <!-- Tab: Food Picker -->
+    <div class="tab-panel" id="tab-food">
+      <div class="wid-card" id="food-card">
+        <div class="empty-state" id="food-empty">
+          <div class="icon">🍜</div>
+          <p>Bấm để tìm món ăn ngẫu nhiên</p>
+        </div>
+        <div id="food-result" class="wid-card" style="display:none;border:none;padding:0;min-height:auto;box-shadow:none">
+          <div class="wid-emoji" id="food-emoji"></div>
+          <div class="wid-name" id="food-name"></div>
+          <div class="wid-cat" id="food-cat"></div>
+          <div class="wid-desc" id="food-desc"></div>
+        </div>
+        <button class="wid-btn primary" onclick="pickFood()" style="margin-top:1rem"><i class="fas fa-utensils"></i> Ăn gì?</button>
+      </div>
+    </div>
+
+    <!-- Tab: Mini Games -->
+    <div class="tab-panel" id="tab-games">
+      <div class="games-grid">
+        <div class="game-box">
+          <h3>🎲 Xúc xắc</h3>
+          <div class="game-result" id="dice-result">⚀</div>
+          <button class="primary" onclick="rollDice()">Lắc!</button>
+        </div>
+        <div class="game-box">
+          <h3>🪙 Tung đồng xu</h3>
+          <div class="game-result" id="coin-result">👑</div>
+          <button class="primary" onclick="flipCoin()">Tung!</button>
+        </div>
+        <div class="game-box">
+          <h3>🔢 Số ngẫu nhiên</h3>
+          <div class="game-range">
+            <label>Từ</label>
+            <input type="number" id="num-min" value="1" min="-9999" max="9999">
+            <label>đến</label>
+            <input type="number" id="num-max" value="100" min="-9999" max="9999">
+          </div>
+          <div class="num-result" id="num-result">50</div>
+          <button class="primary" onclick="randNum()">Lấy số!</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Password Generator -->
+    <div class="tab-panel" id="tab-password">
+      <div class="pw-card">
+        <div class="pw-display" id="pw-output">D3f@ult_P@ss1</div>
+        <div class="pw-options">
+          <label class="pw-opt"><input type="checkbox" id="pw-upper" checked onchange="genPassword()"> A-Z</label>
+          <label class="pw-opt"><input type="checkbox" id="pw-lower" checked onchange="genPassword()"> a-z</label>
+          <label class="pw-opt"><input type="checkbox" id="pw-nums" checked onchange="genPassword()"> 0-9</label>
+          <label class="pw-opt"><input type="checkbox" id="pw-syms" onchange="genPassword()"> !@#$%</label>
+        </div>
+        <div class="pw-length">
+          <label>Độ dài: <span class="pw-len-val" id="pw-len-label">16</span></label>
+          <input type="range" id="pw-len" min="6" max="64" value="16" oninput="document.getElementById('pw-len-label').textContent=this.value;genPassword()">
+        </div>
+        <div class="pw-strength">
+          <div class="pw-strength-bar"><div id="pw-bar"></div></div>
+          <div class="pw-strength-label" id="pw-strength-txt">Mạnh</div>
+        </div>
+        <div class="pw-btns" style="display:flex;gap:.5rem;margin-top:.8rem">
+          <button class="wid-btn primary" onclick="genPassword()"><i class="fas fa-sync"></i> Tạo mới</button>
+          <button class="wid-btn" onclick="copyText(document.getElementById('pw-output').textContent,'Đã copy mật khẩu')"><i class="fas fa-copy"></i> Copy</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: Activities -->
+    <div class="tab-panel" id="tab-activities">
+      <div class="wid-card">
+        <div id="act-result">
+          <div class="act-icon" id="act-emoji">☕</div>
+          <div class="act-title" id="act-title">Đi pha ly cà phê</div>
+          <div class="act-cat thu-gian" id="act-cat">Thư giãn</div>
+        </div>
+        <button class="wid-btn primary" onclick="pickActivity()" style="margin-top:1rem"><i class="fas fa-lightbulb"></i> Gợi ý khác</button>
+      </div>
+    </div>
+
+    <!-- Tab: Gradient Generator -->
+    <div class="tab-panel" id="tab-gradient">
+      <div class="wid-card" style="cursor:default">
+        <div class="grad-preview" id="grad-preview"></div>
+        <div class="grad-code" id="grad-code">background: linear-gradient(135deg, #667eea, #764ba2);</div>
+        <div class="grad-options">
+          <select id="grad-type">
+            <option value="linear">Linear</option>
+            <option value="radial">Radial</option>
+          </select>
+          <button class="wid-btn primary" onclick="genGradient()"><i class="fas fa-dice"></i> Random</button>
+          <button class="wid-btn" onclick="copyText(document.getElementById('grad-code').textContent,'Đã copy CSS')"><i class="fas fa-copy"></i> Copy CSS</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Tab: Brain Dump -->
     <div class="tab-panel" id="tab-brain">
       <div class="brain-bar">
@@ -122,6 +304,8 @@
   </div>
 </main>
 
+<div id="toast-container" class="toast-container"></div>
+
 <script src="/assets/theme.js?v=2"></script>
 <script>
 // ── Tab switch ──
@@ -130,7 +314,20 @@ function switchTab(id){
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active',p.id==='tab-'+id));
 }
 
-// ── Random Discovery ──
+// ── Toast ──
+function toast(msg,type='success'){
+  const c=document.getElementById('toast-container');
+  const t=document.createElement('div');t.className='toast '+type;
+  t.innerHTML=msg;
+  c.appendChild(t);
+  setTimeout(()=>t.classList.add('removing'),1500);
+  setTimeout(()=>t.remove(),1700);
+}
+function copyText(text,msg){
+  navigator.clipboard.writeText(text).then(()=>toast(msg||'Đã copy!')).catch(()=>toast('Không thể copy','error'));
+}
+
+// ── Random Discovery (existing) ──
 async function discover(type){
   const card=document.getElementById('rand-card'),empty=document.getElementById('rand-empty'),skel=document.getElementById('rand-skel'),res=document.getElementById('rand-result');
   empty.style.display='none';res.style.display='none';skel.style.display='block';
@@ -156,9 +353,203 @@ async function discover(type){
   skel.style.display='none';
 }
 
-// ── Brain Dump ──
-let noteId=0;
+// ── Color Palette ──
+function hslToHex(h,s,l){
+  h/=360;s/=100;l/=100;
+  const a=s*Math.min(l,1-l);
+  const f=n=>{const k=(n+h*12)%12;return l-a*Math.max(Math.min(k-3,9-k,1),-1)};
+  const t=x=>Math.round(255*f(x/3)).toString(16).padStart(2,'0');
+  return '#'+t(0)+t(8)+t(4);
+}
+function randHsl(){return Math.random()*360}
+function genPalette(){
+  const golden=0.618033988749895;
+  let hue=randHsl();
+  const sBase=45+Math.random()*20;
+  const lBase=40+Math.random()*15;
+  const colors=Array.from({length:5},(_,i)=>{
+    const h=(hue+golden*i*360)%360;
+    const s=Math.min(95,Math.max(15,sBase+Math.random()*20-10));
+    const l=Math.min(80,Math.max(20,lBase+Math.random()*20-10));
+    return hslToHex(h,s,l);
+  });
+  document.getElementById('palette-grid').innerHTML=colors.map(c=>
+    '<div class="palette-swatch" style="background:'+c+'" onclick="copyText(\''+c+'\',\'Đã copy '+c+'\')" title="Click copy '+c+'"><span class="palette-hex">'+c+'</span></div>'
+  ).join('');
+  window._palette=colors;
+}
+function copyPalette(){
+  if(!window._palette)return;
+  copyText(window._palette.join(', '),'Đã copy tất cả màu');
+}
 
+// ── Food Picker ──
+const foods=[
+  {n:'Phở bò',e:'🍜',c:'Món mặn',d:'Nước dùng xương bò, bánh phở, thịt bò tái chín, rau thơm'},
+  {n:'Bún chả',e:'🍖',c:'Món mặn',d:'Thịt heo nướng than hoa, bún tươi, nước mắm chua ngọt'},
+  {n:'Bánh mì',e:'🥖',c:'Món mặn',d:'Bánh mì giòn, pate, thịt, đồ chua, rau, sốt'},
+  {n:'Bánh xèo',e:'🥞',c:'Món mặn',d:'Vỏ bánh giòn rụm, tôm thịt, giá đỗ, rau sống, nước chấm'},
+  {n:'Gỏi cuốn',e:'🥟',c:'Món mặn',d:'Tôm, thịt, bún, rau sống cuốn bánh tráng, chấm tương đậu phộng'},
+  {n:'Bún bò Huế',e:'🍜',c:'Món mặn',d:'Nước lèo đậm đà, bún to, thịt bò, chả, rau sống'},
+  {n:'Cơm tấm',e:'🍚',c:'Món mặn',d:'Cơm gạo tấm, sườn nướng, bì, chả trứng, mỡ hành'},
+  {n:'Bún riêu',e:'🍜',c:'Món mặn',d:'Nước dùng cua đồng, riêu cua, đậu phụ, mắm tôm'},
+  {n:'Hủ tiếu',e:'🍜',c:'Món mặn',d:'Sợi hủ tiếu, tôm, thịt heo, giá, hành phi, nước dùng trong'},
+  {n:'Cháo lòng',e:'🥣',c:'Món mặn',d:'Cháo trắng ăn kèm lòng heo luộc, huyết, giò, quẩy'},
+  {n:'Mì Quảng',e:'🍜',c:'Món mặn',d:'Sợi mì vàng, tôm, thịt, trứng cút, đậu phộng, bánh đa'},
+  {n:'Bánh cuốn',e:'🫔',c:'Món mặn',d:'Bánh tráng mỏng, nhân tôm thịt, nước mắm, chả lụa'},
+  {n:'Cơm niêu',e:'🍚',c:'Món mặn',d:'Cơm niêu giòn, sườn non, cá kho, canh nóng'},
+  {n:'Nem rán',e:'🥟',c:'Món mặn',d:'Nem nhân thịt heo, miến, nấm, trứng, chiên vàng giòn'},
+  {n:'Cao lầu',e:'🍜',c:'Món mặn',d:'Sợi mì đặc biệt, thịt heo xá xíu, rau sống, nước dùng đậm đà'},
+  {n:'Bún thịt nướng',e:'🍖',c:'Món mặn',d:'Bún tươi, thịt heo nướng, nem, rau, đậu phộng, nước mắm'},
+  {n:'Lẩu',e:'🥘',c:'Món mặn',d:'Nồi lẩu nghi ngút, thịt, hải sản, rau, bún, chấm nước mắm ớt'},
+  {n:'Bánh tráng trộn',e:'🌯',c:'Món mặn',d:'Bánh tráng cắt sợi, trứng cút, khô bò, xoài, đậu phộng, sốt'},
+  {n:'Chè',e:'🍮',c:'Tráng miệng',d:'Đủ loại: chè đậu xanh, chè thập cẩm, chè bà ba, chè chuối'},
+  {n:'Cà phê sữa đá',e:'☕',c:'Đồ uống',d:'Cà phê phin đậm, sữa đặc, đá, đánh đều — thức uống quốc dân'},
+  {n:'Sinh tố',e:'🥤',c:'Đồ uống',d:'Xoài, bơ, dâu, mãng cầu xay nhuyễn với sữa đặc và đá'},
+  {n:'Trà sữa',e:'🧋',c:'Đồ uống',d:'Trà đen/trà xanh, sữa, trân châu đường đen'},
+  {n:'Bánh dày',e:'🍡',c:'Tráng miệng',d:'Bánh nếp dẻo, nhân đậu xanh, dừa nạo, đường'},
+  {n:'Chả giò',e:'🥟',c:'Món mặn',d:'Thịt băm, tôm, cà rốt, nấm, khoai môn, cuốn bánh tráng chiên'},
+  {n:'Bánh đa cua',e:'🍜',c:'Món mặn',d:'Bánh đa đỏ, cua đồng, thịt, chả, rau sống, nước dùng đậm'},
+  {n:'Cơm gà',e:'🍚',c:'Món mặn',d:'Cơm gà luộc, gà xé, dưa leo, hành phi, muối tiêu chanh'},
+  {n:'Bánh căn',e:'🥞',c:'Món mặn',d:'Bánh căn chén đất, trứng cút, mực, hành phi, chấm nước mắm'},
+  {n:'Bánh bèo',e:'🫓',c:'Món mặn',d:'Bánh bèo chén, tôm khô, hành phi, mỡ, chấm nước mắm ngọt'},
+  {n:'Bánh ướt',e:'🫔',c:'Món mặn',d:'Bánh ướt mỏng, chả lụa, tôm khô, hành phi, nước mắm chua ngọt'},
+  {n:'Chè chuối',e:'🍌',c:'Tráng miệng',d:'Chuối nấu nước cốt dừa, bột báng, đậu phộng, vừng'},
+  {n:'Mít trộn',e:'🥗',c:'Món mặn',d:'Mít non luộc, thịt heo, đậu phộng, rau răm, nước mắm trộn'},
+];
+function pickFood(){
+  const f=foods[Math.floor(Math.random()*foods.length)];
+  document.getElementById('food-empty').style.display='none';
+  const r=document.getElementById('food-result');r.style.display='block';
+  document.getElementById('food-emoji').textContent=f.e;
+  document.getElementById('food-name').textContent=f.n;
+  document.getElementById('food-cat').textContent=f.c;
+  document.getElementById('food-desc').textContent=f.d;
+}
+
+// ── Mini Games ──
+function rollDice(){
+  const r=Math.floor(Math.random()*6)+1;
+  const dice=['⚀','⚁','⚂','⚃','⚄','⚅'];
+  const el=document.getElementById('dice-result');
+  el.className='game-result';
+  void el.offsetWidth;
+  el.className='game-result game-roll';
+  setTimeout(()=>{el.className='game-result';el.textContent=dice[r-1]},300);
+}
+function flipCoin(){
+  const r=Math.random()<0.5;
+  const el=document.getElementById('coin-result');
+  el.className='game-result';
+  void el.offsetWidth;
+  el.className='game-result coin-flip';
+  setTimeout(()=>{el.className='game-result';el.textContent=r?'👑':'🌿'},400);
+}
+function randNum(){
+  const min=parseInt(document.getElementById('num-min').value)||0;
+  const max=parseInt(document.getElementById('num-max').value)||100;
+  if(min>max){toast('Số "từ" phải nhỏ hơn số "đến"','error');return}
+  document.getElementById('num-result').textContent=Math.floor(Math.random()*(max-min+1))+min;
+}
+
+// ── Password Generator ──
+function genPassword(){
+  const len=parseInt(document.getElementById('pw-len').value);
+  const sets={
+    upper:'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+    lower:'abcdefghijklmnopqrstuvwxyz',
+    nums:'0123456789',
+    syms:'!@#$%^&*()_+-=[]{}|;:,.<>?'
+  };
+  let chars='';
+  if(document.getElementById('pw-upper').checked)chars+=sets.upper;
+  if(document.getElementById('pw-lower').checked)chars+=sets.lower;
+  if(document.getElementById('pw-nums').checked)chars+=sets.nums;
+  if(document.getElementById('pw-syms').checked)chars+=sets.syms;
+  if(!chars)chars=sets.lower;
+  let pw='';
+  for(let i=0;i<len;i++)pw+=chars[Math.floor(Math.random()*chars.length)];
+  document.getElementById('pw-output').textContent=pw;
+  let score=0;
+  if(len>=10)score++;if(len>=14)score++;if(len>=20)score++;
+  if(document.getElementById('pw-upper').checked&&document.getElementById('pw-lower').checked)score++;
+  if(document.getElementById('pw-nums').checked)score++;
+  if(document.getElementById('pw-syms').checked)score++;
+  const bar=document.getElementById('pw-bar');
+  const pct=[0,20,35,55,75,100][Math.min(score,5)];
+  bar.style.width=pct+'%';
+  const colors=['#ef4444','#ef4444','#f59e0b','#22c55e','#22c55e','#22c55e'];
+  bar.style.background=colors[Math.min(score,5)];
+  const labels=['Quá yếu','Yếu','Trung bình','Khá','Mạnh','Rất mạnh'];
+  document.getElementById('pw-strength-txt').textContent=labels[Math.min(score,5)];
+}
+
+// ── Activities ──
+const activities=[
+  {t:'Đi pha ly cà phê',e:'☕',c:'thu-gian',l:'Thư giãn'},
+  {t:'Đọc 1 trang sách bất kỳ',e:'📖',c:'hoc-tap',l:'Học tập'},
+  {t:'Tập 5 phút yoga',e:'🧘',c:'van-dong',l:'Vận động'},
+  {t:'Viết vài dòng nhật ký',e:'✍️',c:'sang-tao',l:'Sáng tạo'},
+  {t:'Dọn dẹp bàn làm việc',e:'🧹',c:'hoc-tap',l:'Học tập'},
+  {t:'Nghe 1 bài nhạc',e:'🎵',c:'thu-gian',l:'Thư giãn'},
+  {t:'Nhắn tin hỏi thăm bạn bè',e:'💬',c:'xa-hoi',l:'Xã hội'},
+  {t:'Vẽ nguệch ngoạc 1 thứ gì đó',e:'🎨',c:'sang-tao',l:'Sáng tạo'},
+  {t:'Đi bộ 5 phút',e:'🚶',c:'van-dong',l:'Vận động'},
+  {t:'Học 3 từ vựng tiếng Anh',e:'📚',c:'hoc-tap',l:'Học tập'},
+  {t:'Làm 10 cái squat',e:'🏋️',c:'van-dong',l:'Vận động'},
+  {t:'Uống 1 cốc nước',e:'💧',c:'thu-gian',l:'Thư giãn'},
+  {t:'Tập hít thở sâu 30 giây',e:'🌬️',c:'thu-gian',l:'Thư giãn'},
+  {t:'Xem 1 video ngắn thư giãn',e:'📺',c:'thu-gian',l:'Thư giãn'},
+  {t:'Gấp quần áo',e:'👕',c:'hoc-tap',l:'Học tập'},
+  {t:'Viết 1 câu chuyện ngắn',e:'📝',c:'sang-tao',l:'Sáng tạo'},
+  {t:'Duỗi cổ, vai, gáy',e:'💆',c:'thu-gian',l:'Thư giãn'},
+  {t:'Tưới cây',e:'🌱',c:'thu-gian',l:'Thư giãn'},
+  {t:'Gọi điện cho người thân',e:'📞',c:'xa-hoi',l:'Xã hội'},
+  {t:'Học 1 công thức nấu ăn mới',e:'👨‍🍳',c:'hoc-tap',l:'Học tập'},
+  {t:'Chạy tại chỗ 50 cái',e:'🏃',c:'van-dong',l:'Vận động'},
+  {t:'Sắp xếp lại tủ đồ',e:'👔',c:'hoc-tap',l:'Học tập'},
+  {t:'Ngồi thiền 3 phút',e:'🧘',c:'thu-gian',l:'Thư giãn'},
+  {t:'Xem ảnh kỷ niệm',e:'📸',c:'thu-gian',l:'Thư giãn'},
+  {t:'Viết review cho 1 cuốn sách',e:'📖',c:'sang-tao',l:'Sáng tạo'},
+  {t:'Tập hát 1 bài hát',e:'🎤',c:'sang-tao',l:'Sáng tạo'},
+  {t:'Lên kế hoạch cho ngày mai',e:'📋',c:'hoc-tap',l:'Học tập'},
+  {t:'Đi siêu thị mua đồ',e:'🛒',c:'van-dong',l:'Vận động'},
+  {t:'Xem hoàng hôn',e:'🌅',c:'thu-gian',l:'Thư giãn'},
+  {t:'Tự nấu 1 bữa ăn',e:'👨‍🍳',c:'hoc-tap',l:'Học tập'},
+];
+let _lastAct=-1;
+function pickActivity(){
+  let i;
+  do{i=Math.floor(Math.random()*activities.length)}while(i===_lastAct&&activities.length>1);
+  _lastAct=i;
+  const a=activities[i];
+  document.getElementById('act-emoji').textContent=a.e;
+  document.getElementById('act-title').textContent=a.t;
+  const cat=document.getElementById('act-cat');
+  cat.className='act-cat '+a.c;
+  cat.textContent=a.l;
+}
+
+// ── Gradient Generator ──
+function randColor(){
+  return '#'+Math.floor(Math.random()*0xFFFFFF).toString(16).padStart(6,'0');
+}
+function genGradient(){
+  const type=document.getElementById('grad-type').value;
+  const c1=randColor(),c2=randColor();
+  let css;
+  if(type==='linear'){
+    const angle=Math.floor(Math.random()*360);
+    css='linear-gradient('+angle+'deg, '+c1+', '+c2+')';
+  }else{
+    css='radial-gradient(circle, '+c1+', '+c2+')';
+  }
+  document.getElementById('grad-preview').style.background=css;
+  document.getElementById('grad-code').textContent='background: '+css+';';
+}
+
+// ── Brain Dump (existing) ──
+let noteId=0;
 function brainAdd(e){
   if(e.target!==document.getElementById('brain-ws')&&!e.target.closest('.brain-hint'))return;
   const ws=document.getElementById('brain-ws');
@@ -175,12 +566,10 @@ function brainAdd(e){
   makeDraggable(div);
   brainSave();
 }
-
 function brainRemove(id){
   const el=document.getElementById(id);if(!el)return;
   el.remove();brainSave();
 }
-
 function brainSave(){
   const notes=[];
   document.querySelectorAll('.brain-note').forEach(n=>{
@@ -191,12 +580,10 @@ function brainSave(){
   document.getElementById('brain-hint').style.display=notes.length?'none':'block';
   document.getElementById('brain-status').textContent=notes.length+' notes';
 }
-
 function brainLoad(){
   try{
     const data=JSON.parse(localStorage.getItem('brain-dump'))||[];
     const ws=document.getElementById('brain-ws');
-    // Remove default hint notes if any
     data.forEach(n=>{
       const id=++noteId;
       const div=document.createElement('div');
@@ -209,7 +596,6 @@ function brainLoad(){
     brainSave();
   }catch(_){}
 }
-
 function brainExport(fmt){
   const notes=JSON.parse(localStorage.getItem('brain-dump'))||[];
   if(!notes.length)return toast('Không có note để export','info');
@@ -224,13 +610,11 @@ function brainExport(fmt){
   a.download='brain-dump.'+(fmt==='md'?'md':'json');
   a.click();
 }
-
 function brainClear(){
   if(!confirm('Xoá tất cả notes?'))return;
   document.querySelectorAll('.brain-note').forEach(n=>n.remove());
   brainSave();
 }
-
 function makeDraggable(el){
   let offX=0,offY=0,startX=0,startY=0,down=false;
   el.addEventListener('mousedown',e=>{
@@ -252,6 +636,11 @@ function makeDraggable(el){
   });
 }
 
+// ── Init ──
+genPalette();
+genGradient();
+genPassword();
+pickActivity();
 brainLoad();
 </script>
 </body>
