@@ -24,13 +24,13 @@ body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;backgroun
 html,body{height:100%;margin:0}
 h1,h2,h3{color:var(--text-strong)}
 a{color:var(--accent)}a:hover{color:var(--accent-hover)}
-.top-bar,.doc-toolbar,nav.top-bar{display:flex;align-items:center;gap:.5rem;padding:.5rem .8rem;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--glass-bg);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);transition:background .3s,border .3s}
+.top-bar,nav.top-bar{display:flex;align-items:center;gap:.5rem;padding:.5rem .8rem;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--glass-bg);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);transition:background .3s,border .3s}
 .top-bar .brand{font-weight:700;font-size:.95rem;color:var(--text-strong);text-decoration:none}
 .top-bar .brand small{font-weight:400;color:var(--text-dim)}
-.top-bar .spacer,.doc-toolbar .spacer{flex:1}
-.top-bar .btn,.doc-toolbar .btn{background:var(--accent);color:#fff;border:none;padding:.3rem .7rem;border-radius:6px;font-size:.8rem;cursor:pointer;font-weight:600}
-.top-bar .btn:hover,.doc-toolbar .btn:hover{opacity:.9}
-.layout{display:flex;min-height:0;height:calc(100vh - 96px)}
+.top-bar .spacer{flex:1}
+.top-bar .btn{background:var(--accent);color:#fff;border:none;padding:.3rem .7rem;border-radius:6px;font-size:.8rem;cursor:pointer;font-weight:600}
+.top-bar .btn:hover{opacity:.9}
+.layout{display:flex;min-height:0;height:calc(100vh - 52px)}
 .sidebar{width:280px;flex-shrink:0;border-right:1px solid var(--border);display:flex;flex-direction:column;background:var(--glass-bg);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);min-height:0;height:100%;transition:width .2s,margin .2s}
 .sidebar.collapsed{width:0;overflow:hidden;border-right:none;margin-left:-1px}
 .sidebar .search-wrap{padding:.5rem;border-bottom:1px solid var(--border);position:relative;white-space:nowrap}
@@ -142,20 +142,16 @@ fetch('/navbar.html').then(r=>r.text()).then(t=>{
 });
 </script>
 <div class="navbar-spacer"></div>
-<nav class="doc-toolbar" aria-label="Document tools">
-  <button id="toggle-sidebar" onclick="toggleSidebar()" style="background:none;border:none;color:var(--text-dim);font-size:.9rem;cursor:pointer;padding:0" title="Toggle sidebar">☰</button>
-  <div class="font-controls">
-    <button onclick="fontSize(-1)" title="Smaller">A−</button>
-    <button onclick="fontSize(1)" title="Larger">A+</button>
-  </div>
-  <div class="spacer"></div>
-  <button class="btn" onclick="openNew()"><i class="fas fa-plus"></i>&ensp;New</button>
-  <button class="btn" style="background:var(--green)" onclick="openUpload()"><i class="fas fa-upload"></i>&ensp;Upload</button>
-  <input type="file" id="upload-input" accept=".docx" style="display:none" onchange="uploadFile(this)">
-</nav>
+<input type="file" id="upload-input" accept=".docx" style="display:none" onchange="uploadFile(this)">
 
 <div class="layout">
   <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <button id="toggle-sidebar" onclick="toggleSidebar()" style="background:none;border:none;color:var(--text-dim);font-size:.9rem;cursor:pointer;padding:0" title="Toggle sidebar">☰</button>
+      <span style="font-size:.8rem;font-weight:600;flex:1;color:var(--text-strong);margin-left:.3rem">Documents</span>
+      <button class="btn-sm" onclick="openNew()" style="background:var(--accent);color:#fff;border:none;padding:.2rem .45rem;border-radius:4px;font-size:.7rem;cursor:pointer" title="New"><i class="fas fa-plus"></i></button>
+      <button class="btn-sm" onclick="openUpload()" style="background:var(--green);color:#fff;border:none;padding:.2rem .45rem;border-radius:4px;font-size:.7rem;cursor:pointer" title="Upload"><i class="fas fa-upload"></i></button>
+    </div>
     <div class="search-wrap">
       <input id="search-input" placeholder="🔍 Search..." oninput="onSearchInput()" onfocus="showSearchHistory()">
       <div class="search-history" id="search-history"></div>
@@ -193,6 +189,10 @@ fetch('/navbar.html').then(r=>r.text()).then(t=>{
         <span class="title" id="doc-title" ondblclick="renameStart()" title="Double-click to rename"></span>
         <input class="title-input" id="doc-title-input" style="display:none" onkeydown="if(event.key==='Enter')renameSave();if(event.key==='Escape')renameCancel()" onblur="renameSave()">
         <span class="meta" id="doc-meta"></span>
+        <span class="font-controls" style="margin-left:.3rem;display:inline-flex;gap:2px;font-size:.7rem">
+          <button onclick="fontSize(-1)" style="background:none;border:1px solid var(--border);border-radius:3px;color:var(--text-dim);cursor:pointer;padding:0 .3rem" title="Smaller">A−</button>
+          <button onclick="fontSize(1)" style="background:none;border:1px solid var(--border);border-radius:3px;color:var(--text-dim);cursor:pointer;padding:0 .3rem" title="Larger">A+</button>
+        </span>
         <div class="toc-btn">
           <button onclick="toggleToc()" title="Table of Contents"><i class="fas fa-list"></i></button>
           <div class="toc-drop" id="toc-drop"></div>
