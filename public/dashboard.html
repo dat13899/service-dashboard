@@ -90,14 +90,15 @@
 
 <main id="dash-main">
 <div class="level col-header">
-  <div class="level-left"><span id="running-count" class="tag is-success is-light"><span class="sc-dot running m-0"></span> 0</span> <span id="stopped-count" class="tag"><span class="sc-dot stopped m-0"></span> 0</span></div>
+  <div class="level-left">
+    <h2 class="title is-5">📦 Services</h2>
+    <span style="margin-left:.5rem" id="running-count" class="tag is-success is-light"><span class="sc-dot running m-0"></span> 0</span>
+    <span id="stopped-count" class="tag"><span class="sc-dot stopped m-0"></span> 0</span>
+  </div>
+  <div class="level-right"><button class="button is-small" onclick="toggleLayout()" title="Toggle layout">⊞</button></div>
 </div>
 <div class="dash-layout">
   <div class="dash-services" id="dash-services">
-    <div class="level col-header">
-      <div class="level-left"><h2 class="title is-5">📦 Services</h2></div>
-      <div class="level-right"><button class="button is-small" onclick="toggleLayout()" title="Toggle layout">⊞</button></div>
-    </div>
     <div class="tab-bar">
       <button class="active" onclick="switchTab('svc')" data-tab="svc">Services</button>
       <button onclick="switchTab('res')" data-tab="res">⚡ Resources</button>
