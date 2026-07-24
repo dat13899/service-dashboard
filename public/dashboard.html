@@ -68,6 +68,14 @@
 .files-entry{padding:.2rem .5rem;font-size:.75rem;display:flex;gap:.5rem;align-items:center;cursor:pointer;border-radius:3px}
 .files-entry:hover{background:var(--surface-2)}
 .files-entry .icon{width:1.2rem;text-align:center}
+.mt-1{margin-top:.25rem}
+.mt-2{margin-top:4px}
+.ml-1{margin-left:6px}
+.m-0{margin:0}
+.flex-1{flex:1}
+.tab-desc{font-size:.75rem;margin-bottom:.3rem}
+.col-header{margin-bottom:.3rem}
+.dashed-btn{border-style:dashed;flex:1}
 </style>
 </head>
 <body>
@@ -81,12 +89,12 @@
 <div class="navbar-spacer"></div>
 
 <main id="dash-main">
-<div class="level" style="margin-bottom:.5rem;flex-wrap:wrap;gap:.3rem;padding:0 .75rem">
-  <div class="level-left"><span id="running-count" class="tag is-success is-light"><span class="sc-dot running" style="margin:0"></span> 0</span> <span id="stopped-count" class="tag"><span class="sc-dot stopped" style="margin:0"></span> 0</span></div>
+<div class="level col-header">
+  <div class="level-left"><span id="running-count" class="tag is-success is-light"><span class="sc-dot running m-0"></span> 0</span> <span id="stopped-count" class="tag"><span class="sc-dot stopped m-0"></span> 0</span></div>
 </div>
 <div class="dash-layout">
   <div class="dash-services" id="dash-services">
-    <div class="level" style="margin-bottom:.3rem">
+    <div class="level col-header">
       <div class="level-left"><h2 class="title is-5">📦 Services</h2></div>
       <div class="level-right"><button class="button is-small" onclick="toggleLayout()" title="Toggle layout">⊞</button></div>
     </div>
@@ -104,15 +112,15 @@
       <div style="display:flex;gap:.3rem;margin-top:.3rem">
         <button class="button is-small" onclick="bulkStart()">▶ Start All</button>
         <button class="button is-small" onclick="bulkStop()">■ Stop All</button>
-        <button class="button is-small is-dashed" onclick="openAddModal()" style="border-style:dashed;flex:1">＋ Thêm service</button>
+        <button class="button is-small is-dashed flex-1" onclick="openAddModal()">＋ Thêm service</button>
       </div>
     </div>
     <div id="tab-res" class="panel">
-      <div style="font-size:.75rem;margin-bottom:.3rem">Click service row to see uptime chart (72h)</div>
+      <div class="tab-desc">Click service row to see uptime chart (72h)</div>
       <div id="res-list"><span class="has-text-grey-light">Loading...</span></div>
     </div>
     <div id="tab-ports" class="panel">
-      <div style="font-size:.75rem;margin-bottom:.3rem">Unknown ports currently listening</div>
+      <div class="tab-desc">Unknown ports currently listening</div>
       <div id="ports-list"><span class="has-text-grey-light">Loading...</span></div>
     </div>
     <div id="tab-files" class="panel">
@@ -298,19 +306,19 @@ function render(svcs){
     return `<div class="card glass-card card-hover card-expandable" data-svc-id="${s.id}">
       <div class="card-content" style="padding:.75rem" onclick="toggleExpand('${s.id}')">
         <div class="level is-mobile">
-          <div class="level-left"><div class="level-item"><span class="sc-dot ${s.status}"></span><strong>${esc(s.name||s.id)}</strong><span id="health-${s.id}" class="health-dot offline" style="margin-left:6px"></span>${arlbl}</div></div>
+          <div class="level-left"><div class="level-item"><span class="sc-dot ${s.status}"></span><strong>${esc(s.name||s.id)}</strong><span id="health-${s.id}" class="health-dot offline ml-1"></span>${arlbl}</div></div>
           <div class="level-right">${s.port>0?`<a class="tag is-info is-light"${lnk}>:${s.port} 🔗</a>`:'<span class="tag">—</span>'}</div>
         </div>
         ${s.uptime>0?`<div class="uptime-bar"><div class="fill" style="width:${upPct}%"></div></div>`:''}
-        <p class="is-size-7 has-text-grey-light" style="margin-top:.25rem">${esc(s.description||'—')}</p>
-        <p class="is-size-7 has-text-grey" style="margin-top:.25rem;font-family:monospace">${s.pid?'PID '+s.pid+' ':''}${up?'⏱ '+up+' ':''}${s.status==='running'?'🟢 Running':s.status==='error'?'🔴 Error':'⚪ Stopped'}</p>
+        <p class="is-size-7 has-text-grey-light mt-1">${esc(s.description||'—')}</p>
+        <p class="is-size-7 has-text-grey mt-1" style="font-family:monospace">${s.pid?'PID '+s.pid+' ':''}${up?'⏱ '+up+' ':''}${s.status==='running'?'🟢 Running':s.status==='error'?'🔴 Error':'⚪ Stopped'}</p>
       </div>
       <div class="card-expanded-body" id="exp-${s.id}">
         <div class="health-row"><span>Status:</span><span class="tag ${s.status==='running'?'is-success':s.status==='error'?'is-danger':'is-light'}">${s.status}</span>${s.port?`<span>Port:</span><code>${s.port}</code>`:''}${s.pid?`<span>PID:</span><code>${s.pid}</code>`:''}</div>
-        ${s.uptime>0?`<p style="margin-top:4px">⏱ Uptime: <strong>${fmt(s.uptime)}</strong></p>`:''}
-        ${s.port?`<p style="margin-top:4px"><a href="/proxy/${s.port}/" target="_blank" rel="noopener">🔗 Open service →</a></p>`:''}
+        ${s.uptime>0?`<p class="mt-2">⏱ Uptime: <strong>${fmt(s.uptime)}</strong></p>`:''}
+        ${s.port?`<p class="mt-2"><a href="/proxy/${s.port}/" target="_blank" rel="noopener">🔗 Open service →</a></p>`:''}
         <div id="chart-${s.id}" class="chart-bar" style="margin-top:4px"><span class="has-text-grey-light is-size-7">${s.status==='running'?'Uptime chart':''}</span></div>
-        <button class="button is-small is-fullwidth" style="margin-top:4px;font-size:.65rem" onclick="editSvc('${s.id}')">⚙️ Configure</button>
+        <button class="button is-small is-fullwidth mt-2" style="font-size:.65rem" onclick="editSvc('${s.id}')">⚙️ Configure</button>
       </div>
       <div class="card-footer" style="font-size:.75rem">
         <button class="card-footer-item button is-small" onclick="act('${s.id}','start')" ${s.status==='running'?'disabled':''}>▶ Start</button>
@@ -321,8 +329,8 @@ function render(svcs){
       </div>
     </div>`;
   }).join('');
-  $('running-count').innerHTML='<span class="sc-dot running" style="margin:0"></span> '+run;
-  $('stopped-count').innerHTML='<span class="sc-dot stopped" style="margin:0"></span> '+stop;
+  $('running-count').innerHTML='<span class="sc-dot running m-0"></span> '+run;
+  $('stopped-count').innerHTML='<span class="sc-dot stopped m-0"></span> '+stop;
   svcs.forEach(s=>{if(s.port)setTimeout(()=>pingHealth(s.id,s.port,$('health-'+s.id)),svcs.indexOf(s)*300)});
   // Load timeline charts
   setTimeout(()=>svcs.forEach(s=>loadChart(s.id)),500);

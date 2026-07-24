@@ -41,6 +41,9 @@
 .svc-inline-actions button{background:var(--glass-bg);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid var(--glass-border);border-radius:5px;color:var(--text-dim);padding:.2rem .5rem;font-size:.7rem;cursor:pointer;transition:all .15s}
 .svc-inline-actions button:hover{border-color:var(--accent);color:var(--accent);background:rgba(129,140,248,.1)}
 .svc-inline-actions button:disabled{opacity:.3;cursor:not-allowed}
+.tag.accent{background:var(--accent);color:#fff}
+.icon-spacer{display:inline-block;width:8px}
+.skel-box{height:80px}
 </style>
 </head>
 <body>
@@ -58,11 +61,11 @@
     <p class="subtitle is-5 has-text-grey-light max-w-hero reveal sd-2" id="hero-tagline"></p>
     <p class="has-text-grey max-w-hero reveal sd-3" style="margin-bottom:1.5rem">Minecraft server, AI tool, và các self-hosted service chạy 24/7.</p>
     <div class="gap-sm text-center reveal sd-4" style="margin-bottom:1.5rem;display:flex;flex-wrap:wrap;justify-content:center">
-      <span class="tag" style="background:var(--accent);color:#fff">Node.js</span>
-      <span class="tag" style="background:var(--accent);color:#fff">Cloudflare</span>
-      <span class="tag" style="background:var(--accent);color:#fff">Minecraft</span>
-      <span class="tag" style="background:var(--accent);color:#fff">RAG</span>
-      <span class="tag" style="background:var(--accent);color:#fff">AI</span>
+      <span class="tag accent">Node.js</span>
+      <span class="tag accent">Cloudflare</span>
+      <span class="tag accent">Minecraft</span>
+      <span class="tag accent">RAG</span>
+      <span class="tag accent">AI</span>
     </div>
     <a class="button is-link is-medium reveal sd-5" href="/dashboard">Dashboard <span style="margin-left:6px">→</span></a>
   </div>
@@ -76,7 +79,7 @@
 
 <section class="section" id="services">
   <div class="container">
-    <h2 class="title is-4 reveal"><span style="margin-right:8px">📦</span> Services</h2>
+    <h2 class="title is-4 reveal"><span class="icon-spacer">📦</span> Services</h2>
     <p class="subtitle is-6 has-text-grey-light reveal sd-1" id="svc-subtitle">Đang tải...</p>
     <div class="status-bar reveal sd-2" id="status-bar" role="status" aria-live="polite">
       <div class="stat"><span class="sc-dot running"></span><span class="num" id="stat-running">0</span> running</div>
@@ -84,15 +87,15 @@
       <div class="stat">🟢 <span id="stat-uptime">—</span> uptime</div>
     </div>
     <div id="services-grid">
-      <div class="card glass-card"><div class="card-content skeleton skel-d1" style="height:80px"></div></div>
-      <div class="card glass-card"><div class="card-content skeleton skel-d2" style="height:80px"></div></div>
+      <div class="card glass-card"><div class="card-content skeleton skel-d1 skel-box"></div></div>
+      <div class="card glass-card"><div class="card-content skeleton skel-d2 skel-box"></div></div>
     </div>
   </div>
 </section>
 
 <section class="section" id="stack">
   <div class="container has-text-centered">
-    <h2 class="title is-4 reveal" style="margin-bottom:1rem"><span style="margin-right:8px">🛠</span> Tech Stack</h2>
+    <h2 class="title is-4 reveal" style="margin-bottom:1rem"><span class="icon-spacer">🛠</span> Tech Stack</h2>
     <div class="tech-cloud reveal sd-1">
       <a class="badge" href="https://www.cloudflare.com" target="_blank" rel="noopener">Cloudflare DNS · CDN · Tunnel</a>
       <a class="badge" href="https://nodejs.org" target="_blank" rel="noopener">Node.js 24</a>
@@ -109,7 +112,7 @@
 
 <section class="section" id="contact">
   <div class="container">
-    <h2 class="title is-4 reveal"><span style="margin-right:8px">📫</span> Contact</h2>
+    <h2 class="title is-4 reveal"><span class="icon-spacer">📫</span> Contact</h2>
     <div class="card glass-card reveal sd-1">
       <div class="card-content has-text-centered footer-links">
         <a href="https://github.com/btdat" aria-label="GitHub"><i class="fab fa-github"></i></a>

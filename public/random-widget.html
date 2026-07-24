@@ -77,6 +77,26 @@
 .wid-desc{color:var(--text-dim);font-size:.85rem;margin-top:.6rem;line-height:1.5}
 .wid-btn{border:1px solid var(--glass-border);background:rgba(255,255,255,.05);color:var(--text);padding:.4rem .8rem;border-radius:8px;font-size:.8rem;cursor:pointer;transition:.15s}
 .wid-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+/* page utility classes */
+.mt-1{margin-top:.3rem}
+.mt-2{margin-top:.5rem}
+.mt-3{margin-top:.8rem}
+.mb-1{margin-bottom:.3rem}
+.mb-2{margin-bottom:.5rem}
+.tc{text-align:center}
+.tl{text-align:left}
+.fs-sm{font-size:.75rem;color:var(--text-dim)}
+.fs-xs{font-size:.7rem;color:var(--text-dim)}
+.fs-muted{font-size:.8rem;color:var(--text-dim)}
+.op-5{opacity:.5}
+.cursor-dflt{cursor:default}
+.dn{display:none}
+.fw-400{font-weight:400;color:var(--text-dim)}
+.jcc{justify-content:center}
+.jcc-mt{justify-content:center;margin-top:.6rem}
+.bg-red{background:#ef4444}
+.bg-green{background:#22c55e}
+
 .wid-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600}
 .wid-btn.primary:hover{background:var(--accent-hover)}
 
@@ -383,10 +403,10 @@
             <div class="icon">🎲</div>
             <p>Mỗi lần bấm ra 1 thứ ngẫu nhiên: Wikipedia, fact, YouTube</p>
           </div>
-          <div id="rand-skel" class="rand-skel" style="display:none">
+          <div id="rand-skel" class="rand-skel" class="dn">
             <div class="skel-line"></div><div class="skel-line"></div><div class="skel-line"></div><div class="skel-line"></div>
           </div>
-          <div id="rand-result" style="display:none">
+          <div id="rand-result" class="dn">
             <div class="rand-source" id="r-source"></div>
             <div class="title" id="r-title"></div>
             <div class="extract" id="r-extract"></div>
@@ -402,8 +422,8 @@
 
       <!-- Color Palette -->
       <div class="widget-panel" id="panel-colors">
-        <div class="wid-card" style="cursor:default">
-          <div style="text-align:left;margin-bottom:.5rem">
+        <div class="wid-card" class="cursor-dflt">
+          <div class="tl mb-2">
             <span class="wid-cat" style="background:#a855f7">HSL Golden Ratio</span>
           </div>
           <div class="palette-label">Click vào màu để copy mã hex</div>
@@ -426,7 +446,7 @@
             <div class="wid-cat" id="food-cat"></div>
             <div class="wid-desc" id="food-desc"></div>
           </div>
-          <button class="wid-btn primary" onclick="pickFood()" style="margin-top:1rem"><i class="fas fa-utensils"></i> Ăn gì?</button>
+          <button class="wid-btn primary" onclick="pickFood()" class="mt-2"><i class="fas fa-utensils"></i> Ăn gì?</button>
         </div>
       </div>
 
@@ -490,13 +510,13 @@
             <div class="act-title" id="act-title">Đi pha ly cà phê</div>
             <div class="act-cat thu-gian" id="act-cat">Thư giãn</div>
           </div>
-          <button class="wid-btn primary" onclick="pickActivity()" style="margin-top:1rem"><i class="fas fa-lightbulb"></i> Gợi ý khác</button>
+          <button class="wid-btn primary" onclick="pickActivity()" class="mt-2"><i class="fas fa-lightbulb"></i> Gợi ý khác</button>
         </div>
       </div>
 
       <!-- Gradient Generator -->
       <div class="widget-panel" id="panel-gradient">
-        <div class="wid-card" style="cursor:default">
+        <div class="wid-card" class="cursor-dflt">
           <div class="grad-preview" id="grad-preview"></div>
           <div class="grad-code" id="grad-code">background: linear-gradient(135deg, #667eea, #764ba2);</div>
           <div class="grad-options">
@@ -513,10 +533,10 @@
       <!-- Brain Dump -->
       <div class="widget-panel" id="panel-brain">
         <div class="brain-bar">
-          <span style="font-size:.8rem;color:var(--text-dim)">Click để thêm note, kéo để di chuyển</span>
+          <span class="fs-muted">Click để thêm note, kéo để di chuyển</span>
           <button onclick="brainExport('md')"><i class="fas fa-download"></i> Markdown</button>
           <button onclick="brainExport('json')"><i class="fas fa-code"></i> JSON</button>
-          <button onclick="brainClear()" style="color:var(--red)"><i class="fas fa-trash"></i> Clear</button>
+          <button onclick="brainClear()" class="bg-red"><i class="fas fa-trash"></i> Clear</button>
           <span class="status" id="brain-status">0 notes</span>
         </div>
         <div class="brain-workspace" id="brain-ws" onclick="brainAdd(event)">
@@ -550,7 +570,7 @@
           </div>
           <div class="card-area" id="card-area"><div class="card-back"></div></div>
           <div class="card-countdown" id="card-countdown"></div>
-          <button class="wid-btn primary" onclick="drawCards()" style="margin-top:.3rem"><i class="fas fa-dice"></i> Rút bài</button>
+          <button class="wid-btn primary" onclick="drawCards()" class="mt-1"><i class="fas fa-dice"></i> Rút bài</button>
         </div>
       </div>
 
@@ -573,8 +593,8 @@
           <div class="challenge-filters" id="challenge-filters"></div>
           <div class="challenge-icon" id="challenge-icon">🏋️</div>
           <div class="challenge-text" id="challenge-text">Hít đất 15 cái 💪</div>
-          <div><span class="challenge-badge" id="challenge-badge" style="background:#ef4444">Thể chất</span></div>
-          <button class="wid-btn primary" onclick="randomChallenge()" style="margin-top:.8rem"><i class="fas fa-dice"></i> Thử thách khác</button>
+          <div><span class="challenge-badge" id="challenge-badge" class="bg-red">Thể chất</span></div>
+          <button class="wid-btn primary" onclick="randomChallenge()" class="mt-3"><i class="fas fa-dice"></i> Thử thách khác</button>
         </div>
       </div>
 
@@ -646,7 +666,7 @@
           <div class="hist-year" id="hist-year">—</div>
           <div class="hist-event" id="hist-event">Bấm để khám phá sự kiện trong lịch sử</div>
           <div class="hist-source" id="hist-source"></div>
-          <div class="rand-btn-group" style="justify-content:center">
+          <div class="rand-btn-group" class="jcc">
             <button class="primary" onclick="showHistory('today')"><i class="fas fa-calendar-day"></i> Hôm nay</button>
             <button onclick="showHistory('random')"><i class="fas fa-dice"></i> Ngẫu nhiên</button>
           </div>
@@ -659,8 +679,8 @@
           <div class="wo-emoji" id="wo-emoji">💪</div>
           <div class="wo-name" id="wo-name">Hít đất</div>
           <div class="wo-detail" id="wo-detail">4 × 12 reps</div>
-          <div><span class="wo-target" id="wo-target" style="background:#ef4444">Ngực, tay sau</span></div>
-          <button class="wid-btn primary" onclick="randomWorkout()" style="margin-top:.8rem"><i class="fas fa-dumbbell"></i> Bài tập khác</button>
+          <div><span class="wo-target" id="wo-target" class="bg-red">Ngực, tay sau</span></div>
+          <button class="wid-btn primary" onclick="randomWorkout()" class="mt-3"><i class="fas fa-dumbbell"></i> Bài tập khác</button>
         </div>
       </div>
 
@@ -689,7 +709,7 @@
             <button class="rps-btn" onclick="rpsPlay('paper')">📄</button>
             <button class="rps-btn" onclick="rpsPlay('scissors')">✂️</button>
           </div>
-          <div class="rps-vs" id="rps-vs"><span>🪨</span><span style="font-size:1rem;opacity:.5">vs</span><span>✂️</span></div>
+          <div class="rps-vs" id="rps-vs"><span>🪨</span><span class="fs-sm op-5">vs</span><span>✂️</span></div>
           <div class="rps-result" id="rps-result">Chọn 1 ô bên trên</div>
           <div class="rps-score" id="rps-score">🧑 0 — 0 🤖</div>
         </div>
@@ -702,7 +722,7 @@
           <div class="van-text" id="van-text">The only way to do great work is to love what you do.</div>
           <div class="van-author" id="van-author">— Steve Jobs</div>
           <div class="van-vi" id="van-vi">Cách duy nhất để làm việc vĩ đại là yêu việc bạn làm</div>
-          <div class="rand-btn-group" style="justify-content:center;margin-top:.6rem">
+          <div class="rand-btn-group" class="jcc-mt">
             <button class="primary" onclick="showVan('quote')"><i class="fas fa-quote-left"></i> Câu nói</button>
             <button onclick="showVan('joke')"><i class="fas fa-laugh"></i> Chuyện vui</button>
           </div>
@@ -716,16 +736,16 @@
             <label>Cân nặng (kg)<input type="number" id="bmi-w" value="70" min="20" max="250" step="0.1"></label>
             <label>Chiều cao (cm)<input type="number" id="bmi-h" value="170" min="80" max="250" step="0.5"></label>
           </div>
-          <button class="wid-btn primary" onclick="calcBMI()" style="margin-bottom:.5rem"><i class="fas fa-calculator"></i> Tính BMI</button>
+          <button class="wid-btn primary" onclick="calcBMI()" class="mb-2"><i class="fas fa-calculator"></i> Tính BMI</button>
           <div class="bmi-val" id="bmi-val">24.2</div>
-          <div class="bmi-cat" id="bmi-cat" style="color:#22c55e">Bình thường</div>
+          <div class="bmi-cat" id="bmi-cat" class="bg-green">Bình thường</div>
         </div>
       </div>
 
       <!-- Tarot -->
       <div class="widget-panel" id="panel-tarot">
         <div class="tarot-wrap">
-          <div style="font-size:.75rem;color:var(--text-dim);margin-bottom:.3rem" id="tarot-hint">👆 Bấm lật bài</div>
+          <div class="fs-sm mb-1" id="tarot-hint">👆 Bấm lật bài</div>
           <div class="tarot-card" id="tarot-card" onclick="tarotFlip()">
             <div class="tarot-inner">
               <div class="tarot-back"><span class="tb-star">⭐</span></div>
@@ -737,7 +757,7 @@
             </div>
           </div>
           <div class="tarot-meaning" id="tarot-meaning">Bấm vào lá bài để lật ☝️</div>
-          <button class="wid-btn primary" onclick="tarotNew()" style="margin-top:.5rem"><i class="fas fa-dice"></i> Rút lá khác</button>
+          <button class="wid-btn primary" onclick="tarotNew()" class="mt-2"><i class="fas fa-dice"></i> Rút lá khác</button>
         </div>
       </div>
 
@@ -756,14 +776,14 @@
       <!-- Đoán số -->
       <div class="widget-panel" id="panel-guess">
         <div class="guess-wrap">
-          <div style="font-size:.8rem;color:var(--text-dim);margin-bottom:.3rem">Đoán số từ 1 đến 100</div>
+          <div class="fs-muted mb-1">Đoán số từ 1 đến 100</div>
           <div class="guess-inp">
             <input type="number" id="guess-inp" min="1" max="100" placeholder="?" onkeydown="if(event.key==='Enter')guessCheck()">
             <button class="wid-btn primary" onclick="guessCheck()"><i class="fas fa-check"></i> Đoán</button>
           </div>
           <div class="guess-hint" id="guess-hint">🎯 Nhập số và bấm Đoán</div>
           <div class="guess-stat" id="guess-stat">Lần: 0 | Thắng: 0</div>
-          <button class="wid-btn" onclick="guessNew()" style="margin-top:.3rem"><i class="fas fa-redo"></i> Chơi lại</button>
+          <button class="wid-btn" onclick="guessNew()" class="mt-1"><i class="fas fa-redo"></i> Chơi lại</button>
         </div>
       </div>
 
@@ -778,9 +798,9 @@
           </div>
           <div class="cnt-step">
             <label>Bước: <input type="number" id="cnt-step" value="1" min="1" max="999" onchange="cntSave()"></label>
-            <button class="wid-btn" onclick="cntAdd(10)" style="font-size:.7rem;padding:.2rem .5rem">+10</button>
-            <button class="wid-btn" onclick="cntAdd(100)" style="font-size:.7rem;padding:.2rem .5rem">+100</button>
-            <span style="cursor:pointer;color:var(--text-dim);font-size:.75rem;margin-left:.5rem" onclick="cntReset()">↺ Reset</span>
+            <button class="wid-btn" onclick="cntAdd(10)" class="fs-xs" class="fs-xs">+10</button>
+            <button class="wid-btn" onclick="cntAdd(100)" class="fs-xs" class="fs-xs">+100</button>
+            <span class="fs-xs" style="cursor:pointer;color:var(--text-dim);margin-left:.5rem" onclick="cntReset()">↺ Reset</span>
           </div>
         </div>
       </div>
@@ -811,9 +831,9 @@
       <div class="widget-panel" id="panel-idea">
         <div class="idea-wrap">
           <div class="idea-icon" id="idea-icon">💡</div>
-          <div class="idea-text" id="idea-text" style="text-align:center">Bấm để nhận ý tưởng ngẫu nhiên</div>
+          <div class="idea-text" id="idea-text" class="tc">Bấm để nhận ý tưởng ngẫu nhiên</div>
           <div><span class="idea-tag" id="idea-tag" style="background:#818cf8">  </span></div>
-          <button class="wid-btn primary" onclick="genIdea()" style="margin-top:.8rem"><i class="fas fa-lightbulb"></i> Ý tưởng</button>
+          <button class="wid-btn primary" onclick="genIdea()" class="mt-3"><i class="fas fa-lightbulb"></i> Ý tưởng</button>
         </div>
       </div>
 
@@ -955,12 +975,12 @@ async function discover(type){
     document.getElementById('r-source').textContent=d.type==='wiki'?'📖 Wikipedia':d.type==='fact'?'💡 Fact':'🎬 YouTube';
     if(d.type==='fact'){
       document.getElementById('r-title').textContent='';
-      document.getElementById('r-extract').innerHTML=d.text+(d.source?'<br><br><small style="color:var(--text-dim)">— '+d.source+'</small>':'');
+      document.getElementById('r-extract').innerHTML=d.text+(d.source?'<br><br><small class="fw-400">— '+d.source+'</small>':'');
     }else if(d.type==='wiki'){
-      document.getElementById('r-title').innerHTML=d.title+' <small style="color:var(--text-dim);font-weight:400">— <a href="'+d.url+'" target="_blank" rel="noopener">Đọc thêm ↗</a></small>';
+      document.getElementById('r-title').innerHTML=d.title+' <small class="fw-400">— <a href="'+d.url+'" target="_blank" rel="noopener">Đọc thêm ↗</a></small>';
       document.getElementById('r-extract').innerHTML=(d.thumbnail?'<img src="'+d.thumbnail+'" loading="lazy">':'')+d.extract;
     }else{
-      document.getElementById('r-title').innerHTML=d.title+' <small style="color:var(--text-dim);font-weight:400">— <a href="'+d.url+'" target="_blank" rel="noopener">Xem ↗</a></small>';
+      document.getElementById('r-title').innerHTML=d.title+' <small class="fw-400">— <a href="'+d.url+'" target="_blank" rel="noopener">Xem ↗</a></small>';
       document.getElementById('r-extract').textContent='📺 '+d.channel+(d.duration?' · '+Math.floor(d.duration/60)+'m':'');
     }
     res.style.display='block';
@@ -1262,7 +1282,7 @@ function shakeBall(){
     const a=BALL_ANSWERS[Math.floor(Math.random()*BALL_ANSWERS.length)];
     ans.textContent=a.t;
     ans.className='ball-answer-text show';
-    label.innerHTML='✨ '+a.t+'<br><span style="font-size:.85rem;opacity:.7">→ '+a.v+'</span>';
+    label.innerHTML='✨ '+a.t+'<br><span class="fs-muted op-5">→ '+a.v+'</span>';
     shape.className='ball-shape';
     _balling=false;
   },450);
@@ -1448,7 +1468,7 @@ const RPS_MAP={rock:'🪨',paper:'📄',scissors:'✂️'},RPS_WIN={rock:'scisso
 let rpsP=0,rpsC=0;
 function rpsPlay(id){
   const c=['rock','paper','scissors'][Math.floor(Math.random()*3)],v=document.getElementById('rps-vs');
-  v.innerHTML='<span class="rp">'+RPS_MAP[id]+'</span><span style="font-size:1rem;opacity:.5">vs</span><span class="rp">'+RPS_MAP[c]+'</span>';
+  v.innerHTML='<span class="rp">'+RPS_MAP[id]+'</span><span class="fs-sm op-5">vs</span><span class="rp">'+RPS_MAP[c]+'</span>';
   const r=document.getElementById('rps-result');
   if(id===c)r.textContent='🤝 Hoà!';
   else if(RPS_WIN[id]===c){r.textContent='✅ Thắng!';rpsP++}else{r.textContent='❌ Thua!';rpsC++}
