@@ -1,20 +1,22 @@
 {
-  "iteration": 2,
+  "iteration": 3,
   "phase": "build",
-  "vision": "Cosmic Dreamscape v5 — immersive generative art with hyperspace tunnel mode, gravity wells (hold drag), light bloom overlay, mouse-reactive particle swarm, nebula clouds, deep star field (1200 stars, 4 layers), cosmic web, shooting stars, 6 color palettes, Web Audio ambient, audio-reactive particles. Dual-canvas trails + bloom canvas.",
-  "goal": "Thêm hyperspace tunnel mode (T), gravity well (hold+click drag), light bloom overlay (3rd canvas), gravity burst on release, nâng cấp 1200 stars + 250 particles.",
+  "vision": "Cosmic Dreamscape v6 — 5 scene modes with mode panel UI, Particle Paint mode (brush size + hue sliders), Constellation Mode (enhanced web connections), Nebula Flow Mode (amplified nebula clouds), Hyperspace Tunnel via scene system, per-scene star parallax/nebula/web multipliers, paint-specific trail rendering, mode badge with color-coded classes, keyboard shortcuts (P/C/N), auto-reset from tunnel via mode toggle, improved lerp function, fixed tunnel rotation typo.",
+  "goal": "Thêm Scene Mode system: panel bên trái với 5 chế độ, Particle Paint mode với brush size/hue slider + paint controls bar, Constellation Mode (dây sao dày hơn), Nebula Flow Mode (nebula gấp 2.2x), tích hợp tunnel vào scene system.",
   "built": [
     "v1: 600 stars parallax, 8 nebulas, 60 particles, trails, connections, click explosion",
     "v2: 6 color palettes, Web Audio ambient (4 drone layers + chimes), shooting stars, keyboard controls, palette UI, constellation wander",
     "v3: Audio-reactive particles (size/glow/connection reach via AnalyserNode), hue migration on palette switch, cosmic web background, help overlay, F audio toggle, Z random palette",
     "v4: Dual-canvas (main + trail), particle merging with spark burst, animated panorama noise background, radial gradient bg, galaxy rotation (1000 stars, 4 layers), accent-colored cosmic web, 15 waves of polish",
-    "v5: Hyperspace tunnel mode (T key — 3D star projection, depth warping, rotational drift, colorshift), gravity wells (hold mouse drag — pull/absorb/black-hole-spin particles, burst on release), light bloom canvas overlay (mouse-following soft glow bloom), mode badge, gravity indicator ring, 1200 stars, 250 max particles"
+    "v5: Hyperspace tunnel mode (T key — 3D star projection, depth warping, rotational drift, colorshift), gravity wells (hold mouse drag — pull/absorb/black-hole-spin particles, burst on release), light bloom canvas overlay (mouse-following soft glow bloom), mode badge, gravity indicator ring, 1200 stars, 250 max particles",
+    "v6: Scene Mode system — 5 modes (Cosmic/Hyperspace/Paint/Constellation/Nebula) with slide-in panel, Particle Paint mode with brush size & hue range sliders, clear button, paint particles spawn on drag with glow boost + thicker trails, Constellation mode (2.5x web, 3x particle connections, wider connection range), Nebula Flow mode (2.2x nebula alpha/size), per-scene multipliers, mode-specific badge colors, keyboard shortcuts P/C/N, paint hue influences bloom canvas color, fixed lerp() bug, fixed tunnel rotation typo"
   ],
   "todo": [
-    "Thêm particle text / hình vẽ từ chuột",
-    "Thêm preset scene selector (menu)",
-    "Thêm 3D perspective camera shake",
-    "Thêm mobile touch dual-touch gestures"
+    "Thêm gradient color picker cho paint brush",
+    "Thêm particle text drawing mode (type words -> particles form letters)",
+    "Thêm mode transition animation (swirl effect khi chuyển scene)",
+    "Thêm mobile dual-touch gestures cho các scene modes",
+    "Thêm save/share snapshot của tác phẩm paint"
   ],
   "critic": "",
   "score": null,
