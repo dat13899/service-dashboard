@@ -1,10 +1,17 @@
 {
-  "iteration": 0,
-  "phase": "init",
-  "vision": null,
-  "goal": "Khởi tạo — decide what to build",
+  "iteration": 1,
+  "phase": "build",
+  "vision": "Cosmic Dreamscape — immersive generative art with mouse-reactive particle swarm, nebula clouds, deep star field, and cosmic web connections. Pure canvas, zero deps.",
+  "goal": "Build the core canvas: stars, nebula, particles, cosmic connections",
   "built": [],
-  "todo": ["Chọn hướng sáng tạo cho trang /hermes"],
+  "todo": [
+    "Layer 1: deep star field with parallax (3 layers)",
+    "Layer 2: nebula clouds — drifting color blobs",
+    "Layer 3: interactive particle swarm — mouse-following glow dots",
+    "Layer 4: cosmic web — lines between nearby particles",
+    "Layer 5: color transitions, visual polish",
+    "Responsive, smooth 60fps"
+  ],
   "critic": null,
   "score": null,
   "done": false
