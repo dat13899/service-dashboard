@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>✦ Hermes — Cosmic Dreamscape v7 · Particle Word + Gradient Paint</title>
+<title>✦ Hermes — Cosmic Dreamscape v8 · Config Panel + Scene Transitions</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌀</text></svg>">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -167,12 +167,47 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05060f;font-family:
   backdrop-filter:blur(6px);color:rgba(200,220,255,.5);font-size:12px;letter-spacing:1px;
   opacity:0;transition:opacity .5s;pointer-events:none}
 #snapshot-toast.show{opacity:1}
+
+/* ─── Config Panel ────────────────────────────────────────────────── */
+#mode-config{position:fixed;left:16px;top:50%;transform:translateY(-50%) translateX(-200px);z-index:19;
+  display:flex;flex-direction:column;gap:5px;padding:10px 12px;
+  background:rgba(5,6,15,.7);border:1px solid rgba(120,180,255,.08);
+  border-radius:12px;backdrop-filter:blur(6px);user-select:none;
+  transition:transform .35s cubic-bezier(.4,0,.2,1),opacity .35s;opacity:0;pointer-events:none;min-width:130px}
+#mode-config.open{transform:translateY(-50%) translateX(0);opacity:1;pointer-events:auto}
+#mode-config .cfg-title{font-size:10px;letter-spacing:2px;color:rgba(200,220,255,.3);
+  text-transform:uppercase;margin-bottom:3px;text-align:center}
+#mode-config .cfg-row{display:flex;align-items:center;gap:6px}
+#mode-config .cfg-label{font-size:10px;color:rgba(200,220,255,.4);min-width:50px;letter-spacing:.5px}
+#mode-config .cfg-val{font-size:9px;color:rgba(200,220,255,.3);min-width:22px;text-align:right}
+#mode-config input[type=range]{flex:1;height:2px;-webkit-appearance:none;appearance:none;
+  background:rgba(200,220,255,.12);border-radius:2px;outline:none;cursor:pointer}
+#mode-config input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:10px;height:10px;
+  border-radius:50%;background:#5bc0ff;border:none;cursor:pointer;box-shadow:0 0 4px rgba(91,192,255,.3)}
+#mode-config input[type=range]::-moz-range-thumb{width:10px;height:10px;border-radius:50%;background:#5bc0ff;border:none;cursor:pointer}
+.cfg-toggle{position:relative;width:26px;height:14px;border-radius:7px;background:rgba(200,220,255,.1);
+  cursor:pointer;transition:.3s;flex-shrink:0}
+.cfg-toggle.on{background:rgba(91,192,255,.3)}
+.cfg-toggle::after{content:'';position:absolute;top:2px;left:2px;width:10px;height:10px;
+  border-radius:50%;background:rgba(200,220,255,.3);transition:.3s}
+.cfg-toggle.on::after{left:14px;background:#5bc0ff;box-shadow:0 0 4px rgba(91,192,255,.4)}
+#cfg-btn{position:absolute;bottom:2px;left:2px;width:24px;height:24px;border-radius:6px;
+  background:rgba(5,6,15,.4);border:1px solid rgba(120,180,255,.06);
+  display:flex;align-items:center;justify-content:center;color:rgba(200,220,255,.25);
+  font-size:11px;cursor:pointer;transition:.3s;z-index:22;font-family:system-ui}
+#cfg-btn:hover{background:rgba(5,6,15,.6);border-color:rgba(120,180,255,.15);color:rgba(200,220,255,.5)}
+#cfg-btn.active{background:rgba(91,192,255,.08);border-color:rgba(91,192,255,.2);color:rgba(91,192,255,.5)}
+
+/* ─── Transition Overlay ──────────────────────────────────────────── */
+#trans-overlay{position:fixed;inset:0;z-index:6;pointer-events:none;opacity:0;
+  transition:none}
+#trans-overlay.active{opacity:1}
 </style>
 </head>
 <body>
 <div id="splash"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="rgba(91,192,255,.4)" stroke-width="2" stroke-dasharray="80 30"/><circle cx="50" cy="50" r="20" fill="none" stroke="rgba(255,107,203,.4)" stroke-width="2" stroke-dasharray="40 20"/></svg></div>
-<div id="hint">✦ click explode · hold drag gravity · T tunnel · P paint · C constellation · N nebula · W word · S snapshot · 1-6 palette · ? help ✦</div>
-<div id="title">✦ hermes — cosmic dreamscape v7 ✦</div>
+<div id="hint">✦ click explode · hold drag gravity · T tunnel · P paint · C constellation · N nebula · W word · S snapshot · G settings · 1-6 palette · ? help ✦</div>
+<div id="title">✦ hermes — cosmic dreamscape v8 ✦</div>
 <div id="mode-badge">◆ cosmic drift ◆</div>
 <div id="palette-indicator"></div>
 <div id="constellation">✦ wandering through the cosmos ✦</div>
@@ -218,6 +253,22 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05060f;font-family:
 <!-- Snapshot Toast -->
 <div id="snapshot-toast">📸 snapshot saved</div>
 
+<!-- Scene Transition Overlay -->
+<canvas id="trans-overlay"></canvas>
+
+<!-- Config Panel -->
+<div id="cfg-btn" title="Settings (G)">⚙</div>
+<div id="mode-config">
+  <div class="cfg-title">settings</div>
+  <div class="cfg-row"><span class="cfg-label">Tunnel</span><input type="range" id="cfg-tunnel-speed" min="1" max="10" value="5"><span class="cfg-val" id="cfg-tunnel-val">5</span></div>
+  <div class="cfg-row"><span class="cfg-label">Bloom</span><input type="range" id="cfg-bloom" min="0" max="10" value="5"><span class="cfg-val" id="cfg-bloom-val">5</span></div>
+  <div class="cfg-row"><span class="cfg-label">Nebula</span><input type="range" id="cfg-nebula-speed" min="1" max="10" value="5"><span class="cfg-val" id="cfg-nebula-val">5</span></div>
+  <div class="cfg-row"><span class="cfg-label">Density</span><input type="range" id="cfg-density" min="1" max="10" value="5"><span class="cfg-val" id="cfg-density-val">5</span></div>
+  <div class="cfg-row" style="margin-top:2px"><span class="cfg-label">Reactive</span><div class="cfg-toggle on" id="cfg-reactive"></div></div>
+  <div class="cfg-row"><span class="cfg-label">Trails</span><div class="cfg-toggle on" id="cfg-trails"></div></div>
+  <div class="cfg-row"><span class="cfg-label">HUD</span><div class="cfg-toggle on" id="cfg-hud"></div></div>
+</div>
+
 <div id="hud">
   <span><span class="hud-dot cyan"></span><span id="starsC">0</span> stars</span>
   <span class="hud-div"></span>
@@ -238,7 +289,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05060f;font-family:
 <canvas id="bloom"></canvas>
 
 <div id="help-overlay">
-  <h2>⌘ hermes — controls v7</h2>
+  <h2>⌘ hermes — controls v8</h2>
   <div class="help-row">
     <div class="help-col">
       <div class="help-desc"><span class="help-key">1-6</span> switch palette</div>
@@ -255,6 +306,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05060f;font-family:
       <div class="help-desc"><span class="help-key">N</span> nebula flow mode</div>
       <div class="help-desc"><span class="help-key">W</span> word form mode</div>
       <div class="help-desc"><span class="help-key">S</span> snapshot (PNG)</div>
+      <div class="help-desc"><span class="help-key">G</span> settings panel</div>
       <div class="help-desc"><span class="help-key">H</span> toggle hud</div>
       <div class="help-desc"><span class="help-key">M</span> toggle audio</div>
       <div class="help-desc"><span class="help-key">F</span> audio-reactive</div>
@@ -269,10 +321,11 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05060f;font-family:
 const c=document.getElementById('c'),ctx=c.getContext('2d');
 const tc=document.getElementById('trailCanvas'),tctx=tc.getContext('2d');
 const bc=document.getElementById('bloom'),bctx=bc.getContext('2d');
+const transc=document.getElementById('trans-overlay'),tranctx=transc.getContext('2d');
 let W,H;
 function resize(){
-  W=c.width=tc.width=bc.width=innerWidth;
-  H=c.height=tc.height=bc.height=innerHeight;
+  W=c.width=tc.width=bc.width=transc.width=innerWidth;
+  H=c.height=tc.height=bc.height=transc.height=innerHeight;
 }
 resize();addEventListener('resize',resize);
 
@@ -321,6 +374,18 @@ let paintBrushSize=8;
 let paintHue=200;
 let paintMouseDown=false;
 let paintSpawnTimer=0;
+
+// ─── Config Panel ───────────────────────────────────────────────────
+let cfgPanelOpen=false;
+let showTrails=true;
+let cfgTunnelSpeed=5;
+let cfgBloomIntensity=5;
+let cfgNebulaSpeed=5;
+let cfgDensity=5;
+
+// ─── Scene Transition ───────────────────────────────────────────────
+let sceneTransition={active:false,progress:0,fromMode:'',toMode:'',duration:600};
+let sceneTransStart=0;
 
 // ─── Word Form Mode ──────────────────────────────────────────────────
 let wordMode=false;
@@ -554,6 +619,9 @@ let tunnelTransition=0;
 let tunnelTargetTransition=0;
 const TUNNEL_SPEED=.04;
 let tunnelAngle=0;
+
+// The effective tunnel speed (adjusted by config)
+function getTunnelSpeed(){return .04*(cfgTunnelSpeed/5);}
 
 // ─── Background panorama ────────────────────────────────────────────
 const PANO_SPEED=.00005;
@@ -917,7 +985,7 @@ function drawBloom(){
   if(tunnelTransition>.9){bloom.alpha=lerp(bloom.alpha,0,.05);return}
   bloom.x=lerp(bloom.x,mouse.x,.08);
   bloom.y=lerp(bloom.y,mouse.y,.08);
-  const targetAlpha=paintMode?.25:gravityWell.active?.4:.15+audioLevel*.25;
+  const targetAlpha=paintMode?.25*(cfgBloomIntensity/5):gravityWell.active?.4*(cfgBloomIntensity/5):(.15+audioLevel*.25)*(cfgBloomIntensity/5);
   bloom.alpha=lerp(bloom.alpha,targetAlpha,.03);
   if(bloom.alpha<.01)return;
   const accent=paintMode?[paintHue,60,80]:PALETTES[paletteIdx].accent;
@@ -961,41 +1029,48 @@ function setPalette(idx){
 // ─── Scene Mode Switching ───────────────────────────────────────────
 function setSceneMode(modeId){
   const scene=SCENE_MODES.find(m=>m.id===modeId);
-  if(!scene)return;
+  if(!scene||modeId===currentMode)return;
   const prevMode=currentMode;
-  currentMode=modeId;
-  paintMode=scene.paintMode;
-  wordMode=scene.wordMode;
-  tunnelMode=scene.tunnelDefault;
-  tunnelTargetTransition=scene.tunnelDefault?1:0;
 
-  // If entering word mode, open the modal
-  if(scene.wordMode&&prevMode!=='word'){
-    setTimeout(openWordModal,300);
-  }
+  // Start transition effect
+  sceneTransition.active=true;
+  sceneTransition.progress=0;
+  sceneTransition.fromMode=prevMode;
+  sceneTransition.toMode=modeId;
+  sceneTransition.duration=600;
+  sceneTransStart=performance.now();
 
-  // Update mode badge
-  const badge=document.getElementById('mode-badge');
-  badge.textContent=scene.badge;
-  badge.className='show '+scene.badgeCls;
-  if(scene.tunnelDefault)badge.classList.add('show');
-  else if(!scene.paintMode&&!scene.wordMode&&modeId!=='constellation'&&modeId!=='nebula')badge.classList.add('show');
+  // Switch mode after brief delay (mid-transition)
+  setTimeout(()=>{
+    currentMode=modeId;
+    paintMode=scene.paintMode;
+    wordMode=scene.wordMode;
+    tunnelMode=scene.tunnelDefault;
+    tunnelTargetTransition=scene.tunnelDefault?1:0;
 
-  // Update panel buttons
-  document.querySelectorAll('.mode-btn').forEach(b=>{
-    b.classList.toggle('active',b.dataset.mode===modeId);
-  });
+    // If entering word mode, open the modal
+    if(scene.wordMode&&prevMode!=='word'){
+      setTimeout(openWordModal,300);
+    }
 
-  // Paint controls
-  document.getElementById('paint-controls').classList.toggle('show',scene.paintMode);
+    // Update mode badge
+    const badge=document.getElementById('mode-badge');
+    badge.textContent=scene.badge;
+    badge.className='show '+scene.badgeCls;
+    if(scene.tunnelDefault)badge.classList.add('show');
+    else if(!scene.paintMode&&!scene.wordMode&&modeId!=='constellation'&&modeId!=='nebula')badge.classList.add('show');
 
-  // HUD scene name
-  document.getElementById('scene-name').textContent=scene.icon+' '+scene.label.toUpperCase();
+    // Update panel buttons
+    document.querySelectorAll('.mode-btn').forEach(b=>{
+      b.classList.toggle('active',b.dataset.mode===modeId);
+    });
 
-  // Word form mode — hide regular particles and spawn
-  if(scene.wordMode&&prevMode!=='word'){
-    // Particles stay, word particles take over visual focus
-  }
+    // Paint controls
+    document.getElementById('paint-controls').classList.toggle('show',scene.paintMode);
+
+    // HUD scene name
+    document.getElementById('scene-name').textContent=scene.icon+' '+scene.label.toUpperCase();
+  },300);
 }
 
 // ─── Scene Mode Panel UI ────────────────────────────────────────────
@@ -1105,6 +1180,11 @@ addEventListener('keydown',e=>{
     }
     return;
   }
+  if(k==='g'||k==='G'){
+    e.preventDefault();
+    toggleConfigPanel();
+    return;
+  }
   if(k==='s'||k==='S'){
     e.preventDefault();
     takeSnapshot();
@@ -1113,6 +1193,127 @@ addEventListener('keydown',e=>{
   if(k==='?'||k==='/'){e.preventDefault();document.getElementById('help-overlay').classList.toggle('show');}
 });
 document.getElementById('help-overlay').addEventListener('click',()=>document.getElementById('help-overlay').classList.remove('show'));
+
+// ─── Config Panel ───────────────────────────────────────────────────
+const cfgBtn=document.getElementById('cfg-btn');
+const cfgPanel=document.getElementById('mode-config');
+const cfgTunnelSlider=document.getElementById('cfg-tunnel-speed');
+const cfgTunnelVal=document.getElementById('cfg-tunnel-val');
+const cfgBloomSlider=document.getElementById('cfg-bloom');
+const cfgBloomVal=document.getElementById('cfg-bloom-val');
+const cfgNebulaSlider=document.getElementById('cfg-nebula-speed');
+const cfgNebulaVal=document.getElementById('cfg-nebula-val');
+const cfgDensitySlider=document.getElementById('cfg-density');
+const cfgDensityVal=document.getElementById('cfg-density-val');
+const cfgReactive=document.getElementById('cfg-reactive');
+const cfgTrails=document.getElementById('cfg-trails');
+const cfgHud=document.getElementById('cfg-hud');
+
+function toggleConfigPanel(force){
+  cfgPanelOpen=force!==undefined?force:!cfgPanelOpen;
+  cfgPanel.classList.toggle('open',cfgPanelOpen);
+  cfgBtn.classList.toggle('active',cfgPanelOpen);
+}
+
+cfgBtn.addEventListener('click',()=>toggleConfigPanel());
+
+cfgTunnelSlider.addEventListener('input',()=>{
+  cfgTunnelSpeed=parseFloat(cfgTunnelSlider.value);
+  cfgTunnelVal.textContent=cfgTunnelSpeed;
+});
+
+cfgBloomSlider.addEventListener('input',()=>{
+  cfgBloomIntensity=parseFloat(cfgBloomSlider.value);
+  cfgBloomVal.textContent=cfgBloomIntensity;
+});
+
+cfgNebulaSlider.addEventListener('input',()=>{
+  cfgNebulaSpeed=parseFloat(cfgNebulaSlider.value);
+  cfgNebulaVal.textContent=cfgNebulaSpeed;
+});
+
+cfgDensitySlider.addEventListener('input',()=>{
+  cfgDensity=parseFloat(cfgDensitySlider.value);
+  cfgDensityVal.textContent=cfgDensity;
+});
+
+function toggleCfg(el,prop){
+  el.classList.toggle('on');
+  if(prop==='reactive'){audioReactive=el.classList.contains('on');return}
+  if(prop==='trails'){showTrails=el.classList.contains('on');return}
+  if(prop==='hud'){document.getElementById('hud').classList.toggle('hidden',!el.classList.contains('on'));return}
+}
+
+cfgReactive.addEventListener('click',()=>toggleCfg(cfgReactive,'reactive'));
+cfgTrails.addEventListener('click',()=>toggleCfg(cfgTrails,'trails'));
+cfgHud.addEventListener('click',()=>toggleCfg(cfgHud,'hud'));
+
+// ─── Scene Transition Effect ────────────────────────────────────────
+function drawSceneTransition(time){
+  if(!sceneTransition.active)return;
+  const elapsed=time-sceneTransStart;
+  sceneTransition.progress=Math.min(1,elapsed/sceneTransition.duration);
+
+  const p=sceneTransition.progress;
+  const cx=W/2,cy=H/2;
+  const maxR=Math.sqrt(W*W+H*H)/2+50;
+
+  tranctx.clearRect(0,0,W,H);
+  tranctx.globalAlpha=1;
+
+  if(p<.5){
+    // Phase 1: spiral swirl closing in
+    const t=p*2;
+    const r=t*t*maxR;
+    const angle=t*PI2*2;
+
+    tranctx.fillStyle='rgba(5,6,15,1)';
+    // Draw a spiral swirl mask: fill everything outside the spiral curve
+    tranctx.beginPath();
+    // Heart shape curve decaying
+    for(let a=0;a<PI2*2;a+=.02){
+      const rr=r*(1-a/(PI2*2));
+      const px=cx+Math.cos(angle+a)*rr;
+      const py=cy+Math.sin(angle+a)*rr;
+      if(a===0)tranctx.moveTo(px,py);
+      else tranctx.lineTo(px,py);
+    }
+    tranctx.lineTo(cx+maxR*2,cy+maxR*2);
+    tranctx.lineTo(cx-maxR*2,cy-maxR*2);
+    tranctx.closePath();
+    tranctx.fill();
+  }else{
+    // Phase 2: spiral expanding out
+    const t=(p-.5)*2;
+    const r=(1-t*t)*maxR;
+    if(r<5){sceneTransition.active=false;tranctx.clearRect(0,0,W,H);return}
+
+    // Clear everything first, then draw the opening hole
+    tranctx.fillStyle='rgba(5,6,15,1)';
+    tranctx.fillRect(0,0,W,H);
+
+    // Cut a circular hole expanding
+    tranctx.globalCompositeOperation='destination-out';
+    tranctx.fillStyle='rgba(255,255,255,1)';
+    const holeR=Math.max(.1,(1-t)*maxR);
+    tranctx.beginPath();
+    for(let a=0;a<PI2*2;a+=.02){
+      const rr=holeR*(1-a/(PI2*2)*.3);
+      const px=cx+Math.cos(a)*rr;
+      const py=cy+Math.sin(a)*rr;
+      if(a===0)tranctx.moveTo(px,py);
+      else tranctx.lineTo(px,py);
+    }
+    tranctx.closePath();
+    tranctx.fill();
+    tranctx.globalCompositeOperation='source-over';
+  }
+
+  if(p>=1){
+    sceneTransition.active=false;
+    tranctx.clearRect(0,0,W,H);
+  }
+}
 
 // ─── Gravity Indicator ──────────────────────────────────────────────
 const gravInd=document.getElementById('gravity-indicator');
@@ -1182,7 +1383,7 @@ function drawStars(time){
 
     if(tr>.01){
       const cx=W/2,cy=H/2;
-      s.tz = ((s.tz - TUNNEL_SPEED * tr) % 1 + 1) % 1;
+      s.tz = ((s.tz - getTunnelSpeed() * tr) % 1 + 1) % 1;
       const zDepth = s.tz;
       const angle = s.tAngle + time * .00008 * (1-zDepth) * tr;
       const radial = s.tRadial * Math.max(W,H) * .55 * (1+zDepth*2);
@@ -1225,7 +1426,7 @@ function drawNebulas(time){
   const scene=SCENE_MODES.find(m=>m.id===currentMode);
   const nebulaMul=scene?scene.nebulaMul:1;
   for(const n of nebulas){
-    n.x+=n.vx;n.y+=n.vy;
+    n.x+=n.vx*(cfgNebulaSpeed/5);n.y+=n.vy*(cfgNebulaSpeed/5);
     if(n.x<-n.radius)n.x=W+n.radius;if(n.x>W+n.radius)n.x=-n.radius;
     if(n.y<-n.radius)n.y=H+n.radius;if(n.y>H+n.radius)n.y=-n.radius;
     const pu=1+Math.sin(time*n.pulseSpeed+n.phase)*n.pulse*.5;
@@ -1479,6 +1680,7 @@ function drawParticles(dt){
 
 // ─── Fade trail canvas ─────────────────────────────────────────────
 function fadeTrailCanvas(){
+  if(!showTrails){tctx.clearRect(0,0,W,H);return}
   const p=PALETTES[paletteIdx];
   tctx.fillStyle=`rgba(${p.bg[0]},${p.bg[1]},${p.bg[2]},.035)`;
   tctx.fillRect(0,0,W,H);
@@ -1532,6 +1734,9 @@ function loop(time){
 
   drawVignette();
   drawBloom();
+
+  // Scene transition overlay
+  drawSceneTransition(time);
 
   if(clickBoom){boomTimer-=dt*.001;if(boomTimer<=0){clickBoom=false;boomTimer=0}}
 

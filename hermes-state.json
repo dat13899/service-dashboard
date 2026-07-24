@@ -1,22 +1,23 @@
 {
-  "iteration": 3,
+  "iteration": 7,
   "phase": "build",
-  "vision": "Cosmic Dreamscape v6 — 5 scene modes with mode panel UI, Particle Paint mode (brush size + hue sliders), Constellation Mode (enhanced web connections), Nebula Flow Mode (amplified nebula clouds), Hyperspace Tunnel via scene system, per-scene star parallax/nebula/web multipliers, paint-specific trail rendering, mode badge with color-coded classes, keyboard shortcuts (P/C/N), auto-reset from tunnel via mode toggle, improved lerp function, fixed tunnel rotation typo.",
-  "goal": "Thêm Scene Mode system: panel bên trái với 5 chế độ, Particle Paint mode với brush size/hue slider + paint controls bar, Constellation Mode (dây sao dày hơn), Nebula Flow Mode (nebula gấp 2.2x), tích hợp tunnel vào scene system.",
+  "vision": "Cosmic Dreamscape v7 — 6 scene modes including Word Form (type text → particles assemble into glowing letters), gradient strip color picker for paint brush (click-and-drag across rainbow strip), snapshot export (S key saves combined canvas as PNG), smooth particle letter formation with 800px word canvas, auto-disperse after 8 seconds, word mode modal UI with Enter/Escape support, mode badge for word mode, per-mode scene multiplier for word mode (nebulaMul:0.3, webMul:0, starParallax:0.4), expanded mode panel to 136px wide for 6 buttons.",
+  "goal": "Thêm Particle Word Form Mode (chế độ thứ 6), gradient strip color picker cho paint brush, snapshot export PNG, modal nhập text với animation particles assemble thành chữ sáng.",
   "built": [
     "v1: 600 stars parallax, 8 nebulas, 60 particles, trails, connections, click explosion",
     "v2: 6 color palettes, Web Audio ambient (4 drone layers + chimes), shooting stars, keyboard controls, palette UI, constellation wander",
     "v3: Audio-reactive particles (size/glow/connection reach via AnalyserNode), hue migration on palette switch, cosmic web background, help overlay, F audio toggle, Z random palette",
     "v4: Dual-canvas (main + trail), particle merging with spark burst, animated panorama noise background, radial gradient bg, galaxy rotation (1000 stars, 4 layers), accent-colored cosmic web, 15 waves of polish",
     "v5: Hyperspace tunnel mode (T key — 3D star projection, depth warping, rotational drift, colorshift), gravity wells (hold mouse drag — pull/absorb/black-hole-spin particles, burst on release), light bloom canvas overlay (mouse-following soft glow bloom), mode badge, gravity indicator ring, 1200 stars, 250 max particles",
-    "v6: Scene Mode system — 5 modes (Cosmic/Hyperspace/Paint/Constellation/Nebula) with slide-in panel, Particle Paint mode with brush size & hue range sliders, clear button, paint particles spawn on drag with glow boost + thicker trails, Constellation mode (2.5x web, 3x particle connections, wider connection range), Nebula Flow mode (2.2x nebula alpha/size), per-scene multipliers, mode-specific badge colors, keyboard shortcuts P/C/N, paint hue influences bloom canvas color, fixed lerp() bug, fixed tunnel rotation typo"
+    "v6: Scene Mode system — 5 modes (Cosmic/Hyperspace/Paint/Constellation/Nebula) with slide-in panel, Particle Paint mode with brush size & hue range sliders, clear button, paint particles spawn on drag with glow boost + thicker trails, Constellation mode (2.5x web, 3x particle connections, wider connection range), Nebula Flow mode (2.2x nebula alpha/size), per-scene multipliers, mode-specific badge colors, keyboard shortcuts P/C/N, paint hue influences bloom canvas color, fixed lerp() bug, fixed tunnel rotation typo",
+    "v7: Particle Word Form mode (6th scene — type text, particles assemble into glowing letter shapes from 800px offscreen canvas, auto-disperse after 8s, green-accented badge), interactive gradient strip color picker for paint brush (drag across full rainbow spectrum, highlights hue indicator), snapshot export (S key saves 3-canvas composite as downloadable PNG with filename hermes-{mode}-{timestamp}.png, toast notification), word input modal with Enter submit / Escape dismiss, 3 buttons wide mode panel (136px)"
   ],
   "todo": [
-    "Thêm gradient color picker cho paint brush",
-    "Thêm particle text drawing mode (type words -> particles form letters)",
     "Thêm mode transition animation (swirl effect khi chuyển scene)",
     "Thêm mobile dual-touch gestures cho các scene modes",
-    "Thêm save/share snapshot của tác phẩm paint"
+    "Thêm preset scenes gallery với preview thumbnails",
+    "Thêm MIDI keyboard input cho particle music visualization",
+    "Thêm configuraiton UI trong panel (toggle audio reactive, bloom intensity, tunnel speed)"
   ],
   "critic": "",
   "score": null,
