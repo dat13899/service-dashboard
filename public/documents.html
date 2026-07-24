@@ -31,7 +31,7 @@ a{color:var(--accent)}a:hover{color:var(--accent-hover)}
 .top-bar .btn{background:var(--accent);color:#fff;border:none;padding:.3rem .7rem;border-radius:6px;font-size:.8rem;cursor:pointer;font-weight:600}
 .top-bar .btn:hover{opacity:.9}
 .layout{display:flex;min-height:0;height:calc(100vh - 52px)}
-.sidebar{width:280px;flex-shrink:0;border-right:1px solid var(--border);display:flex;flex-direction:column;background:var(--glass-bg);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);min-height:0;height:100%;transition:width .2s,margin .2s}
+.sidebar{width:280px;flex-shrink:0;border-right:1px solid var(--glass-border);display:flex;flex-direction:column;background:var(--glass-bg);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);min-height:0;height:100%;transition:width .2s,margin .2s}
 .sidebar.collapsed{width:0;overflow:hidden;border-right:none;margin-left:-1px}
 .sidebar .search-wrap{padding:.5rem;border-bottom:1px solid var(--border);position:relative;white-space:nowrap}
 .sidebar .search-wrap input{width:100%;background:var(--glass-bg);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid var(--glass-border);border-radius:6px;color:var(--text);padding:.35rem .6rem;font-size:.75rem;outline:none;box-sizing:border-box}
@@ -66,15 +66,18 @@ a{color:var(--accent)}a:hover{color:var(--accent-hover)}
 .sidebar-footer{padding:.4rem .7rem;border-top:1px solid var(--border);font-size:.65rem;color:var(--text-dim);flex-shrink:0;display:flex;justify-content:space-between;align-items:center;gap:.3rem}
 .sidebar-footer .bulk-del{background:none;border:none;color:var(--red);font-size:.65rem;cursor:pointer;display:none;padding:0}
 .sidebar-footer .bulk-del.show{display:inline}
-.sidebar-header{display:flex;align-items:center;gap:.3rem;padding:.4rem .5rem;border-bottom:1px solid var(--border);flex-shrink:0}
-.sidebar-header .s-btn{background:none;border:1px solid var(--border);border-radius:5px;color:var(--text-dim);padding:.2rem .5rem;font-size:.7rem;cursor:pointer;transition:.15s;line-height:1.4}
-.sidebar-header .s-btn:hover{background:var(--surface-2);color:var(--text);border-color:var(--accent)}
-.sidebar-header .s-btn.accent{background:var(--accent);color:#fff;border-color:var(--accent)}
-.sidebar-header .s-btn.accent:hover{opacity:.9}
-.sidebar-header .s-btn.green{background:var(--green);color:#fff;border-color:var(--green)}
-.sidebar-header .s-btn.green:hover{opacity:.9}
-.font-controls button{background:none;border:1px solid var(--border);border-radius:5px;color:var(--text-dim);padding:.2rem .45rem;font-size:.7rem;cursor:pointer;transition:.15s;line-height:1.4}
-.font-controls button:hover{background:var(--surface-2);color:var(--text);border-color:var(--accent)}
+.sidebar-header{display:flex;align-items:center;gap:.3rem;padding:.4rem .5rem;border-bottom:1px solid var(--glass-border);flex-shrink:0;background:var(--glass-bg);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+.sidebar-header .s-btn{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:5px;color:var(--text-dim);padding:.2rem .5rem;font-size:.7rem;cursor:pointer;transition:.15s;line-height:1.4}
+.sidebar-header .s-btn:hover{background:rgba(255,255,255,.08);color:var(--text);border-color:var(--accent)}
+.sidebar-header .s-btn.icon-only{background:none;border:none;font-size:.9rem;padding:0}
+.sidebar-header .s-btn.icon-only:hover{background:none;color:var(--text)}
+.sidebar-header .s-btn.accent{color:var(--accent);border-color:var(--accent)}
+.sidebar-header .s-btn.accent:hover{background:var(--accent);color:#fff}
+.sidebar-header .s-btn.green{color:var(--green);border-color:var(--green)}
+.sidebar-header .s-btn.green:hover{background:var(--green);color:#fff}
+.font-controls{display:inline-flex;gap:2px}
+.font-controls button{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:5px;color:var(--text-dim);padding:.2rem .45rem;font-size:.7rem;cursor:pointer;transition:.15s;line-height:1.4}
+.font-controls button:hover{background:rgba(255,255,255,.08);color:var(--text);border-color:var(--accent)}
 .reader{display:flex;flex-direction:column;min-height:0;flex:1;overflow:hidden;background:var(--glass-bg);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-left:1px solid var(--glass-border)}
 .reader .empty{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;color:var(--text-dim);text-align:center;padding:2rem}
 .reader .empty .icon{font-size:3rem;margin-bottom:.5rem}
@@ -156,8 +159,8 @@ fetch('/navbar.html').then(r=>r.text()).then(t=>{
 <div class="layout">
   <div class="sidebar" id="sidebar">
     <div class="sidebar-header">
-      <button class="s-btn" style="border:none;background:none;color:var(--text-dim);font-size:.9rem;padding:0" onclick="toggleSidebar()" title="Toggle sidebar">☰</button>
-      <span style="font-size:.8rem;font-weight:600;flex:1;color:var(--text-strong);margin-left:.3rem">Documents</span>
+      <button class="s-btn icon-only" onclick="toggleSidebar()" title="Toggle sidebar">☰</button>
+      <span class="label" style="font-size:.8rem;font-weight:600;flex:1;color:var(--text-strong);margin-left:.3rem">Documents</span>
       <button class="s-btn accent" onclick="openNew()" title="New"><i class="fas fa-plus"></i></button>
       <button class="s-btn green" onclick="openUpload()" title="Upload"><i class="fas fa-upload"></i></button>
     </div>
@@ -198,7 +201,7 @@ fetch('/navbar.html').then(r=>r.text()).then(t=>{
         <span class="title" id="doc-title" ondblclick="renameStart()" title="Double-click to rename"></span>
         <input class="title-input" id="doc-title-input" style="display:none" onkeydown="if(event.key==='Enter')renameSave();if(event.key==='Escape')renameCancel()" onblur="renameSave()">
         <span class="meta" id="doc-meta"></span>
-        <span class="font-controls" style="margin-left:.3rem">
+        <span class="font-controls">
           <button onclick="fontSize(-1)" title="Smaller">A−</button>
           <button onclick="fontSize(1)" title="Larger">A+</button>
         </span>
