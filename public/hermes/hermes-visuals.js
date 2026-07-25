@@ -1368,7 +1368,7 @@ function drawParticles(dt){
     }
 
     p.life-=p.decay*dt;
-    if(p.life<=0){particles.splice(i,1);continue}
+    if(p.life<=0){emitStardust(p.x,p.y,rand(1,3));particles.splice(i,1);continue}
     aliveCt++;
 
     // Boom repulsion (skip in paint mode)
@@ -1973,8 +1973,168 @@ function drawGalaxy(time){
   ctx.restore();
 }
 
-// ─── Cosmic Storm — Lightning + Charged Rain ─────────────────
-let stormMode=false;
+// ─── Comet Shower — Big bright comets with ion tails (works across ALL modes) ──
+  const COMET_INTERVAL=4000;
+  let cometTimer=rand(1000,COMET_INTERVAL);
+  let comets=[];
+  function spawnComet(){
+    const angle=rand(-.5,.2)-Math.PI/1.6;
+    const speed=rand(800,2200);
+    const size=rand(6,18);
+    comets.push({
+      x:rand(0,W),y:rand(-H*.2,0),
+      vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,
+      life:1,decay:rand(.006,.015),
+      width:size,
+      hue:rand(0,360),
+      sat:rand(70,100),
+      lig:rand(80,95),
+      trail:[],maxTrail:rand(15,30),
+      fragments:0,
+      split:false,
+    });
+  }
+  function updateComets(dt){
+    for(let i=comets.length-1;i>=0;i--){
+      const co=comets[i];
+      co.life-=co.decay*dt;
+      co.x+=co.vx*dt*.016;
+      co.y+=co.vy*dt*.016;
+      if(co.life<=0||co.y>H+50||co.x<-200||co.x>W+200){
+        // Fragmentation: spawn 2-3 child comets if not already split & still bright
+        if(!co.split&&co.life>0&&co.width>6){
+          co.split=true;
+          co.life=.15; // quick fade
+          for(let f=0;f<rand(2,4);f++){
+            comets.push({
+              x:co.x+rand(-10,10),y:co.y+rand(-10,10),
+              vx:co.vx+rand(-100,100),vy:co.vy+rand(-100,100),
+              life:.8,decay:rand(.012,.025),
+              width:co.width*rand(.25,.45),
+              hue:co.hue+rand(-30,30),
+              sat:rand(60,90),
+              lig:rand(70,85),
+              trail:[],maxTrail:rand(8,15),
+              fragments:0,
+              split:true,
+            });
+          }
+        }
+        comets.splice(i,1);continue;
+      }
+      co.trail.push({x:co.x,y:co.y});
+      if(co.trail.length>co.maxTrail)co.trail.shift();
+      // Audio-reactive speed flicker
+      const ar=.6+audioLevel*1.2;
+      co.width=lerp(co.width,co.width*(.95+audioLevel*.2),.02);
+    }
+  }
+  function drawComets(time){
+    const ar=audioReactive?1+audioLevel*3:1;
+    for(const co of comets){
+      const len=co.trail.length;
+      if(len<2)continue;
+      // Draw ion tail (gradient from comet hue to complementary)
+      for(let t=1;t<len;t++){
+        const ta=t/len;
+        const alpha=ta*co.life*.12*ar;
+        if(alpha<.005)continue;
+        // Multi-color gradient tail
+        const hueShift=Math.sin(time*.005+t*.1)*40;
+        const tailHue=(co.hue+hueShift+360)%360;
+        tctx.globalAlpha=alpha;
+        tctx.lineWidth=co.width*ta*.3;
+        tctx.strokeStyle=`hsla(${tailHue},${co.sat}%,${co.lig+10}%,${alpha*1.5})`;
+        tctx.beginPath();tctx.moveTo(co.trail[t-1].x,co.trail[t-1].y);
+        tctx.lineTo(co.trail[t].x,co.trail[t].y);
+        tctx.stroke();
+      }
+      // Core glow (on trail canvas for soft effect)
+      tctx.globalAlpha=co.life*.06*ar;
+      const glowR=co.width*2.5;
+      const grd=tctx.createRadialGradient(co.x,co.y,0,co.x,co.y,glowR);
+      grd.addColorStop(0,`hsla(${co.hue},100%,90%,.8)`);
+      grd.addColorStop(.3,`hsla(${(co.hue+40)%360},80%,70%,.3)`);
+      grd.addColorStop(1,'rgba(0,0,0,0)');
+      tctx.fillStyle=grd;
+      tctx.beginPath();tctx.arc(co.x,co.y,glowR,0,PI2);
+      tctx.fill();
+
+      // Bright core dot on main canvas
+      ctx.globalAlpha=co.life*.6*ar;
+      ctx.shadowColor=`hsl(${co.hue},100%,90%)`;
+      ctx.shadowBlur=co.width*2;
+      ctx.fillStyle=`hsla(${co.hue},${co.sat}%,${co.lig}%,${co.life*.7*ar})`;
+      ctx.beginPath();ctx.arc(co.x,co.y,co.width*.5,0,PI2);
+      ctx.fill();
+      ctx.shadowBlur=0;
+
+      // Glow halo
+      ctx.globalAlpha=co.life*.12*ar;
+      ctx.fillStyle=`hsla(${co.hue},100%,85%,${co.life*.15*ar})`;
+      ctx.beginPath();ctx.arc(co.x,co.y,co.width*1.2,0,PI2);
+      ctx.fill();
+    }
+    ctx.globalAlpha=1;tctx.globalAlpha=1;
+  }
+
+  // ─── Stardust Residual — Tiny sparkles left by dead particles ──
+  let stardustMotes=[];
+  const MAX_STARDUST=120;
+  let stardustTimer=0;
+  function emitStardust(x,y,count=1){
+    for(let i=0;i<count;i++){
+      if(stardustMotes.length>=MAX_STARDUST)break;
+      const hue=rand(0,360);
+      stardustMotes.push({
+        x:x+rand(-8,8),y:y+rand(-8,8),
+        vx:rand(-15,15),vy:rand(-25,-2),
+        size:rand(1,4),
+        life:1,decay:rand(.01,.025),
+        hue,
+        sat:rand(50,90),
+        lig:rand(70,95),
+        phase:rand(0,PI2),
+      });
+    }
+  }
+  function updateStardust(dt){
+    stardustTimer+=dt;
+    // Occasional ambient stardust emission in every mode (subtle)
+    if(stardustTimer>1500&&stardustMotes.length<MAX_STARDUST*.4){
+      stardustTimer=0;
+      emitStardust(rand(0,W),rand(0,H),rand(1,3));
+    }
+    for(let i=stardustMotes.length-1;i>=0;i--){
+      const s=stardustMotes[i];
+      s.life-=s.decay*dt;
+      s.x+=s.vx*dt*.016+Math.sin(s.phase+time*.003)*.1;
+      s.y+=s.vy*dt*.016+Math.cos(s.phase+time*.002)*.1;
+      s.vy+=.5*dt*.016; // gentle gravity
+      if(s.life<=0||s.y>H+10){stardustMotes.splice(i,1);continue}
+    }
+  }
+  function drawStardust(){
+    for(const s of stardustMotes){
+      const alpha=s.life*.5*(.5+Math.sin(time*.005+s.phase)*.5);
+      if(alpha<.01)continue;
+      // Twinkle
+      const twinkle=.6+.4*Math.sin(time*.008+s.phase);
+      ctx.globalAlpha=alpha*twinkle;
+      const hueShift=Math.sin(time*.003+s.phase)*30;
+      ctx.shadowColor=`hsl(${(s.hue+hueShift+360)%360},100%,80%)`;
+      ctx.shadowBlur=s.size*3;
+      ctx.fillStyle=`hsla(${(s.hue+hueShift+360)%360},${s.sat}%,${s.lig}%,${alpha*twinkle})`;
+      const sz=s.size*(.5+audioLevel*.8)*twinkle;
+      ctx.beginPath();ctx.arc(s.x,s.y,sz,0,PI2);
+      ctx.fill();
+    }
+    ctx.shadowBlur=0;
+    ctx.globalAlpha=1;
+  }
+
+  // ─── Cosmic Storm — Lightning + Charged Rain ─────────────────
+  let stormMode=false;
 const STORM_CLOUD_COUNT=8;
 const STORM_LIGHTNING_INTERVAL=800;
 const STORM_RAIN_COUNT=250;

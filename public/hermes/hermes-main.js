@@ -43,6 +43,10 @@ function loop(time){
   updateFireflySwarm(dt);
   drawFireflySwarm(time);
   drawCircularVisualizer(time);
+  updateComets(dt);
+  drawComets(time);
+  updateStardust(dt);
+  drawStardust();
   drawParticles(dt);
 
   // Word particles drawn on top
@@ -74,6 +78,14 @@ function loop(time){
   if(constelTimer>8000&&constelTimer<18000){
     constel.classList.add('show');constel.style.left=rand(10,70)+'%';constel.style.top=rand(20,60)+'%';
   }else if(constelTimer>=20000){constel.classList.remove('show');if(constelTimer>25000)constelTimer=0}
+
+  // Comet timer (works in all modes except word/paint/tunnel)
+  cometTimer-=dt;
+  if(cometTimer<=0){
+    const scene=SCENE_MODES.find(m=>m.id===currentMode);
+    if(scene?.id!=='word'&&scene?.id!=='paint')spawnComet();
+    cometTimer=COMET_INTERVAL+rand(-1000,2000);
+  }
 
   document.getElementById('starsC').textContent=STARS_CNT;
   requestAnimationFrame(loop);
