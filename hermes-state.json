@@ -1,8 +1,8 @@
 {
-  "iteration": 11,
+  "iteration": 12,
   "phase": "build",
-  "vision": "Cosmic Dreamscape v11 — Stargate Wormhole scene mode (9th mode). Wormhole: 12 concentric warp rings with 3D perspective tilt (sinusoidal scaleY), audio-reactive glow/pulse, hue-cycling per ring, inner triple-vortex spiral, bright event horizon core, 80 orbiting particle stream. Config slider controls warp speed. O key toggles. Tab/Arrow cycling includes all 9 modes. Resize reinit includes wormhole geometry.",
-  "goal": "Thêm scene Stargate Wormhole (9th mode) — warp-ring 3D portal với event horizon, vortex spiral, particle stream.",
+  "vision": "Cosmic Dreamscape v12 — Galaxy Map scene mode (10th mode). 4000 stars in 4 logarithmic spiral arms with mouse-orbit parallax, auto-rotation (config-tunnel-speed controlled), warm galactic core (radial glow + pulsing bright center), orbit ring indicators. Wormhole cinematic auto-pilot camera (X toggle) — continuous pan/zoom orbit. Y key toggles galaxy map. Tab/Arrow cycling includes all 10 modes. Resize reinit includes galaxy geometry.",
+  "goal": "Thêm scene Galaxy Map (10th mode) — 4-arm spiral galaxy 4000 star, mouse-orbit parallax, core glow, wormhole cinematic camera.",
   "built": [
     "v1: 600 stars parallax, 8 nebulas, 60 particles, trails, connections, click explosion",
     "v2: 6 color palettes, Web Audio ambient (4 drone layers + chimes), shooting stars, keyboard controls, palette UI, constellation wander",
@@ -14,7 +14,8 @@
     "v8: Config panel with real-time sliders (tunnel speed, bloom intensity, nebula drift speed) + 3 toggle switches (audio reactive, trails, HUD), spiral swirl scene transition animation (swirl-closes then opens-to-reveal) when switching scene modes, G key toggles settings panel, settings button (⚙) in mode panel area, trail toggle clears trail canvas instantly, tunnel/nebula speed dynamically adjustable, bloom intensity multiplier follows config slider",
     "v9: Prism Rave scene mode (7th mode, R key) — 8-sector kaleidoscope with 6 concentric polygon layers, hue-cycling, audio-reactive glow and rotation, central mandala dot, 8 rotating laser lines, swirling prism particles. Tab / Arrow key cycling through all 7 scene modes. Mobile dual-touch: pinch to open/close config panel. Density slider actually wires into getEffMaxParticles() — dynamically adjusts spawn cap 150–950 particles across explosions, paint, and natural spawn. Resize handler reinitializes prism geometry.",
     "v10: Aurora Borealis scene mode (8th mode, A key) — 6 flowing aurora curtain bands with sinusoidal wave superposition, additive green/cyan/blue/violet hsla blending, audio-reactive glow multiplier, configurable speed slider (cfgAuroraSpeed). Circular Audio Visualizer ring: 64 radially-spaced frequency bars rotating around center, hue cycles per bar, audioLevel drives height/alpha, central glow pulse. Viz toggle in config panel. Tab/Arrow cycling extended to 8 modes. Resize reinit includes aurora bands.",
-    "v11: Stargate Wormhole scene mode (9th mode, O key) — 12 concentric warp rings with 3D perspective tilt (sinusoidal scaleY), hue-cycling per ring, audio-reactive glow/pulse. Inner triple-vortex spiral (3 intertwined arms), bright event horizon core glow, 80 orbiting particle stream around portal. Config tunnel-speed slider controls warp rotation rate. Resize reinit includes wormhole geometry. Tab/Arrow cycling extended to 9 modes."
+    "v11: Stargate Wormhole scene mode (9th mode, O key) — 12 concentric warp rings with 3D perspective tilt (sinusoidal scaleY), hue-cycling per ring, audio-reactive glow/pulse. Inner triple-vortex spiral (3 intertwined arms), bright event horizon core glow, 80 orbiting particle stream around portal. Config tunnel-speed slider controls warp rotation rate. Resize reinit includes wormhole geometry. Tab/Arrow cycling extended to 9 modes.",
+    "v12: Galaxy Map scene mode (10th mode, Y key) — 4000 stars in 4 logarithmic spiral arms with stellar scatter, mouse-orbit parallax (sky follows pointer), auto-rotation (config-tunnel-speed controlled), warm galactic core glow (radial gradient + pulsing bright center), orbit ring indicators. Wormhole cinematic auto-pilot camera (X toggle) — continuous pan/zoom orbit sweep through the portal. Tab/Arrow cycling extended to 10 modes. Resize reinit includes galaxy geometry."
   ],
   "todo": [
     "Video recording / GIF export with WebGL capture",
@@ -22,8 +23,7 @@
     "Mid-air particle text that follows mouse on a path",
     "Audio visualizer bars wrapped around the kaleidoscope",
     "Export preset scenes as data URL bookmarks (shareable)",
-    "3D perspective tilt parallax dựa trên con trỏ chuột cho wormhole mode",
-    "Thêm cinematic camera fly-through auto-mode cho wormhole"
+    "3D perspective tilt parallax dựa trên con trỏ chuột cho wormhole mode"
   ],
   "critic": "",
   "score": null,

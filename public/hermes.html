@@ -526,7 +526,7 @@ function updateWordParticles(dt){
     const dy=wp.ty-wp.y;
     const dist=Math.sqrt(dx*dx+dy*dy);
     if(dist>.5){
-      const speed=wordFormed?.1:WORD_SETTLE_SPEED*dt;
+      const speed=wordFormed ? .1 : WORD_SETTLE_SPEED*dt;
       const factor=Math.min(1,speed*(1+30/(dist+5)));
       wp.vx=lerp(wp.vx,dx*factor,.12);
       wp.vy=lerp(wp.vy,dy*factor,.12);
@@ -567,7 +567,7 @@ function drawWordParticles(){
     if(wp.life<=0)continue;
     const tw=Math.sin(performance.now()*.003+wp.phase)*.15+.85;
     const pSize=wp.size*tw*(wordFormed?1.2:1);
-    const a=wp.life*(wordFormed?.9:.6);
+    const a=wp.life*(wordFormed ? .9 : .6);
 
     // Trail
     for(let t=1;t<wp.trail.length;t++){
@@ -916,7 +916,7 @@ function drawCosmicWeb(time){
         const arMul=currentMode==='constellation'?2:1;
         ctx.globalAlpha=alpha*arMul*(.5+audioLevel*1.5);
         ctx.strokeStyle=`rgba(${accent[0]},${accent[1]},${accent[2]},${alpha*2*arMul})`;
-        ctx.lineWidth=currentMode==='constellation'?.7:.4;
+        ctx.lineWidth=currentMode==='constellation' ? .7 : .4;
         ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
       }
     }
@@ -1041,7 +1041,7 @@ function drawBloom(){
   if(tunnelTransition>.9){bloom.alpha=lerp(bloom.alpha,0,.05);return}
   bloom.x=lerp(bloom.x,mouse.x,.08);
   bloom.y=lerp(bloom.y,mouse.y,.08);
-  const targetAlpha=paintMode?.25*(cfgBloomIntensity/5):gravityWell.active?.4*(cfgBloomIntensity/5):(.15+audioLevel*.25)*(cfgBloomIntensity/5);
+  const targetAlpha=paintMode ? .25*(cfgBloomIntensity/5) : gravityWell.active ? .4*(cfgBloomIntensity/5) : (.15+audioLevel*.25)*(cfgBloomIntensity/5);
   bloom.alpha=lerp(bloom.alpha,targetAlpha,.03);
   if(bloom.alpha<.01)return;
   const accent=paintMode?[paintHue,60,80]:PALETTES[paletteIdx].accent;
@@ -1815,7 +1815,7 @@ function drawParticles(dt){
   for(let i=particles.length-1;i>=0;i--){if(particles[i].life<=0)particles.splice(i,1);}
 
   // Connections
-  const baseConnMul=isConstellation?3:(isPaint?.5:1);
+  const baseConnMul=isConstellation?3:(isPaint ? .5 : 1);
   const connReach=audioReactive?connDist*(1+audioLevel*2)*(1-tr*.5)*Math.sqrt(baseConnMul):connDist*(1-tr*.5)*Math.sqrt(baseConnMul);
   const cr2=connReach*connReach;
   for(let i=0;i<particles.length;i++){
@@ -1827,7 +1827,7 @@ function drawParticles(dt){
         const alpha=(1-d/cr2)*.3*Math.min(a.life,b.life)*(1-tr*.6)*baseConnMul;
         ctx.globalAlpha=Math.max(0,alpha);
         ctx.strokeStyle=`hsla(${(a.hue+b.hue)/2},70%,70%,${alpha})`;
-        ctx.lineWidth=isConstellation?.8:.5;
+        ctx.lineWidth=isConstellation ? .8 : .5;
         ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
       }
     }
