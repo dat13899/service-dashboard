@@ -77,8 +77,9 @@ export default function useDocuments(toast) {
     } catch {
       toast?.('Lỗi lưu tài liệu', 'error');
       return null;
+    } finally {
+      setSaving(false);
     }
-    setSaving(false);
   }, [toast]);
 
   // ── Debounced save ──
