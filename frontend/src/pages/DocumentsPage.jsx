@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useToastContext } from '../components/shared/Toast';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import useDocuments from '../hooks/useDocuments';
@@ -35,6 +35,18 @@ export default function DocumentsPage() {
 
   const [selectedTags, setSelectedTags] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Compute allTags from docs
+  const allTags = useMemo(() => {
+    const tags = new Set();
+    for (const d of docsCtrl.docs) {
+      if (d.tags) {
+        const tagList = Array.isArray(d.tags) ? d.tags : d.tags.split(',').map(t => t.trim()).filter(Boolean);
+        tagList.forEach(t => tags.add(t));
+      }
+    }
+    return Array.from(tags).sort();
+  }, [docsCtrl.docs]);
   const [editing, setEditing] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [showSidebar, setShowSidebar] = useState(true);
@@ -170,8 +182,8 @@ export default function DocumentsPage() {
               </div>
 
               {/* Tags */}
-              {docsCtrl.allTags.length > 0 && (
-                <DocTags allTags={docsCtrl.allTags} selectedTags={selectedTags} onToggle={toggleTag} />
+              {allTags.length > 0 && (
+                <DocTags allTags={allTags} selectedTags={selectedTags} onToggle={toggleTag} />
               )}
             </div>
 
