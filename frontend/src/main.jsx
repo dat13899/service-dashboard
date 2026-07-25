@@ -10,6 +10,14 @@ import './styles/reset.css';
 import './styles/utilities.css';
 import './styles/components.css';
 
+// Fonts — Geist (Taste Skill standard, replacing Inter)
+import '@fontsource/geist-sans/400.css';
+import '@fontsource/geist-sans/500.css';
+import '@fontsource/geist-sans/600.css';
+import '@fontsource/geist-sans/700.css';
+import '@fontsource/geist-mono/400.css';
+import '@fontsource/geist-mono/500.css';
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <BrowserRouter>
     <ToastProvider>
