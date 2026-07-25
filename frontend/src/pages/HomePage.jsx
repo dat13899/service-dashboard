@@ -2,8 +2,11 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { fetchServices, startService, stopService, fetchServiceHealth } from '../services/api';
 import { useToastContext } from '../components/shared/Toast';
 import ConfirmModal from '../components/ConfirmModal';
+import { LazyMotion, domAnimation } from 'motion/react';
 import HeroSection from './home/HeroSection';
+import AnimatedStatsBanner from './home/AnimatedStatsBanner';
 import ServicesSection from './home/ServicesSection';
+import AISection from './home/AISection';
 import TechStackSection from './home/TechStackSection';
 import ContactSection from './home/ContactSection';
 
@@ -82,10 +85,12 @@ export default function HomePage() {
   const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 
   return (
-    <>
+    <LazyMotion features={domAnimation}>
       <HeroSection displayedText={displayedText} scrollTo={scrollTo} />
+      <AnimatedStatsBanner services={services} />
       <ServicesSection services={services} loading={loading} healthMap={healthMap}
         statusColor={statusColor} uptime={uptime} onToggle={handleToggle} />
+      <AISection />
       <TechStackSection />
       <ContactSection toast={toast} />
 
@@ -94,6 +99,6 @@ export default function HomePage() {
         message={`⚠️ ${confirmAction === 'stop' ? 'Stop' : 'Restart'} service <strong>${confirmSvc?.name || confirmSvc?.id}</strong>?`}
         confirmLabel={confirmAction === 'stop' ? 'Dừng' : 'Restart'} danger
         onConfirm={confirmToggle} onCancel={() => { setConfirmSvc(null); setConfirmAction(null); }} />
-    </>
+    </LazyMotion>
   );
 }

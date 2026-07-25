@@ -109,3 +109,62 @@
 .swipe-action.left { right: 16px; }
 .swipe-action.right { left: 16px; }
 .swipe-action.visible { opacity: 1; }
+
+/* ===== AI Badge pulse + ripple ===== */
+@keyframes aiPulse {
+  0%, 100% { box-shadow: 0 0 4px var(--green); }
+  50% { box-shadow: 0 0 12px var(--green), 0 0 24px rgba(34,197,94,0.4); }
+}
+@keyframes aiRipple {
+  0% { transform: scale(1); opacity: 0.5; }
+  100% { transform: scale(3); opacity: 0; }
+}
+
+/* ===== Animated grid background ===== */
+.grid-bg {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(52,211,153,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(52,211,153,0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+  animation: gridMove 20s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+@keyframes gridMove {
+  0% { background-position: 0 0; }
+  100% { background-position: 40px 40px; }
+}
+
+/* ===== 3D tilt card ===== */
+.tilt-card {
+  transition: transform 0.1s ease;
+  will-change: transform;
+}
+@keyframes borderRotate {
+  0% { --border-angle: 0deg; }
+  100% { --border-angle: 360deg; }
+}
+@property --border-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+.rotating-border {
+  position: relative;
+}
+.rotating-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: conic-gradient(from var(--border-angle), var(--accent), var(--green), var(--accent));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+  animation: borderRotate 3s linear infinite;
+}
+.rotating-border:hover::before {
+  opacity: 1;
+}
