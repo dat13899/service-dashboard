@@ -1,8 +1,8 @@
 {
-  "iteration": 16,
+  "iteration": 17,
   "phase": "build",
-  "vision": "Cosmic Dreamscape v16 — Comet Shower (big bright comets across ALL modes) + Stardust Residual (lingering sparkle dust from dead particles). Comets are 6-10x bigger than shooting stars with long multi-color gradient ion tails, fragmentation (split into child fragments on decay), audio-reactive tail intensity, and a soft central glow. Stardust residuals are tiny fading sparkle motes left behind when any particle dies — adds ambient residual glow to every scene.",
-  "goal": "Add Comet Shower system + Stardust Residual sparkle system.",
+  "vision": "Cosmic Dreamscape v17 — Resonance Wave Rings (expanding energy rings from clicks/gravity bursts/comet spawns) with harmonic overtones (1-3 sub-rings with offset hue), interference pattern wavy edge modulation, rotating sparkle dots along circumference, inner fill glow, configurable Waves slider (0-10), K key shortcut for silent resonance burst. Every click explosion, gravity release, and comet spawn now emits concentric energy rings across all modes.",
+  "goal": "Add Resonance Wave Rings system — expanding energy rings with harmonic overtones, interference patterns, and sparkle dots.",
   "built": [
     "v1: 600 stars parallax, 8 nebulas, 60 particles, trails, connections, click explosion",
     "v2: 6 color palettes, Web Audio ambient (4 drone layers + chimes), shooting stars, keyboard controls, palette UI, constellation wander",
@@ -19,7 +19,8 @@
     "v13: Firefly Swarm scene mode (11th mode, B key) — 200 fireflies boids flocking, green-yellow glow aura, per-firefly pulsation, mouse attraction, audio-reactive pulse/size",
     "v14: Cosmic Storm scene mode (12th mode, U key) — procedural recursive lightning forks, charged rain particles, dark storm clouds, screen flash, audio-reactive",
     "v15: Thunder rumble audio, rain puddle reflections, wormhole 3D mouse perspective tilt",
-    "v16: Comet Shower (periodic bright comets across ALL modes, 6-10x bigger than shooting stars, long multi-color gradient ion tails, fragmentation into child comets, audio-reactive tail, glow core) + Stardust Residual system (fading sparkle motes from dead particles, ambient residual glow in every scene)"
+    "v16: Comet Shower (periodic bright comets across ALL modes, 6-10x bigger than shooting stars, long multi-color gradient ion tails, fragmentation into child comets, audio-reactive tail, glow core) + Stardust Residual system (fading sparkle motes from dead particles, ambient residual glow in every scene)",
+    "v17: Resonance Wave Rings (expanding energy rings from clicks/gravity/comets, 1-3 harmonic overtones with offset hue, interference wavy edge modulation, sparkle dots, inner fill glow, configurable Waves slider, K key silent resonance burst)"
   ],
   "todo": [
     "Video recording / GIF export with WebGL capture",
@@ -29,7 +30,8 @@
     "Interactive per-firefly click to spawn offspring burst",
     "Rain splash particle effects on puddle impact",
     "Wormhole ring particle stream 3D depth sorting",
-    "Perlin noise organic firefly movement"
+    "Perlin noise organic firefly movement",
+    "Auto-theme waves that pulse to music BPM detection"
   ],
   "critic": "",
   "score": null,
