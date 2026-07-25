@@ -134,7 +134,7 @@ export default function DashboardPage() {
           {/* Service list */}
           {loadingSvcs ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              {['60%','80%','40%'].map((w,i) => <div key={i} className="skeleton" style={{ height: 48, width: w }} />)}
+              {['60%','80%','40%'].map((w,i) => <div key={i} className="skeleton skeleton-card" style={{ width: w }} />)}
             </div>
           ) : filteredSvcs.length === 0 ? (
             <div className="empty-state">📭 <p>Không có service nào</p></div>

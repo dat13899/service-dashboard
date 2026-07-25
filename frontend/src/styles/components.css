@@ -12,10 +12,13 @@
   cursor: pointer;
   transition: all var(--transition-fast);
   border: 1px solid transparent;
-  min-height: 40px; /* touch-friendly */
+  min-height: 40px;
   min-width: 40px;
   justify-content: center;
   white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
 }
 .btn:active { transform: scale(0.97); }
 .btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }

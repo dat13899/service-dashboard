@@ -1,0 +1,111 @@
+/* ===== Touch Ripple (Material-style) ===== */
+.ripple-container {
+  position: relative;
+  overflow: hidden;
+}
+.ripple-effect {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(0);
+  animation: rippleAnim 0.6s ease-out forwards;
+  pointer-events: none;
+}
+@keyframes rippleAnim {
+  to { transform: scale(4); opacity: 0; }
+}
+
+/* ===== Skeleton Loading (Telegram-style) ===== */
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface) 50%, var(--surface-2) 75%);
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+.skeleton-text {
+  height: 14px;
+  margin-bottom: 8px;
+  width: 80%;
+}
+.skeleton-text:last-child { width: 60%; }
+.skeleton-title {
+  height: 20px;
+  width: 50%;
+  margin-bottom: 16px;
+}
+.skeleton-card {
+  height: 120px;
+  width: 100%;
+  margin-bottom: 12px;
+}
+.skeleton-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+@keyframes skeletonShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ===== Pull-to-refresh ===== */
+.ptr-container {
+  position: relative;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.ptr-indicator {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100%);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  font-size: 1.2rem;
+  transition: transform 0.2s ease;
+  z-index: 10;
+}
+.ptr-indicator.pulling {
+  transform: translateX(-50%) translateY(0);
+}
+.ptr-indicator.refreshing {
+  transform: translateX(-50%) translateY(5px);
+  animation: ptrSpin 0.8s linear infinite;
+}
+@keyframes ptrSpin {
+  to { transform: translateX(-50%) translateY(5px) rotate(360deg); }
+}
+
+/* ===== Swipe cards ===== */
+.swipe-card {
+  touch-action: pan-y;
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s ease;
+  user-select: none;
+}
+.swipe-card.swiping {
+  transition: none;
+}
+.swipe-card.swiped-left {
+  transform: translateX(-120%) rotate(-8deg);
+  opacity: 0;
+}
+.swipe-card.swiped-right {
+  transform: translateX(120%) rotate(8deg);
+  opacity: 0;
+}
+.swipe-action {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.5rem;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+}
+.swipe-action.left { right: 16px; }
+.swipe-action.right { left: 16px; }
+.swipe-action.visible { opacity: 1; }

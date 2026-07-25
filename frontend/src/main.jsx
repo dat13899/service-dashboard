@@ -9,6 +9,7 @@ import './styles/tokens.css';
 import './styles/reset.css';
 import './styles/utilities.css';
 import './styles/components.css';
+import './styles/mobile-ux.css';
 
 // Fonts — Geist (Taste Skill standard, replacing Inter)
 import '@fontsource/geist-sans/400.css';
