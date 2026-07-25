@@ -19,7 +19,7 @@
     "v13: Firefly Swarm scene mode (11th mode, B key) — 200 fireflies boids flocking, green-yellow glow aura, per-firefly pulsation, mouse attraction, audio-reactive pulse/size",
     "v14: Cosmic Storm scene mode (12th mode, U key) — procedural recursive lightning forks, charged rain particles, dark storm clouds, screen flash, audio-reactive",
     "v15: Thunder rumble audio, rain puddle reflections, wormhole 3D mouse perspective tilt",
-    "v16: Comet Shower (periodic bright comets across ALL modes, 6-10x bigger than shooting stars, long multi-color gradient ion tails, fragmentation into child comets, audio-reactive tail, central glow core) + Stardust Residual system (fading sparkle motes from dead particles, ambient residual glow in every scene)"
+    "v16: Comet Shower (periodic bright comets across ALL modes, 6-10x bigger than shooting stars, long multi-color gradient ion tails, fragmentation into child comets, audio-reactive tail, glow core) + Stardust Residual system (fading sparkle motes from dead particles, ambient residual glow in every scene)"
   ],
   "todo": [
     "Video recording / GIF export with WebGL capture",
