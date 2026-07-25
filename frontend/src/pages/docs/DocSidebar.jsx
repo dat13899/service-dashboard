@@ -295,12 +295,13 @@ export default function DocSidebar({
     }
   }, [searchQuery, saveSearchQuery]);
 
-  // Dynamic tags from actual docs
+  // Dynamic tags from actual docs (handles string or array)
   const allTags = useMemo(() => {
     const tagSet = new Set();
     docs.forEach(d => {
-      if (d.tags && Array.isArray(d.tags)) {
-        d.tags.forEach(t => tagSet.add(t));
+      if (d.tags) {
+        const tags = Array.isArray(d.tags) ? d.tags : d.tags.split(',').map(t => t.trim()).filter(Boolean);
+        tags.forEach(t => tagSet.add(t));
       }
     });
     return Array.from(tagSet).sort();
@@ -327,9 +328,10 @@ export default function DocSidebar({
 
     // Tag filter
     if (selectedTags.length > 0) {
-      result = result.filter(d =>
-        d.tags && selectedTags.some(t => (d.tags || []).includes(t))
-      );
+      result = result.filter(d => {
+        const tags = d.tags ? (Array.isArray(d.tags) ? d.tags : d.tags.split(',').map(t => t.trim()).filter(Boolean)) : [];
+        return selectedTags.some(t => tags.includes(t));
+      });
     }
 
     // Draft filter
@@ -341,10 +343,10 @@ export default function DocSidebar({
     const sorted = [...result];
     switch (sortBy) {
       case 'newest':
-        sorted.sort((a, b) => new Date(b.meta?.createdAt || 0) - new Date(a.meta?.createdAt || 0));
+        sorted.sort((a, b) => new Date(b.created || b.meta?.createdAt || 0) - new Date(a.created || a.meta?.createdAt || 0));
         break;
       case 'oldest':
-        sorted.sort((a, b) => new Date(a.meta?.createdAt || 0) - new Date(b.meta?.createdAt || 0));
+        sorted.sort((a, b) => new Date(a.created || a.meta?.createdAt || 0) - new Date(b.created || b.meta?.createdAt || 0));
         break;
       case 'az':
         sorted.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
@@ -547,13 +549,16 @@ export default function DocSidebar({
             />
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={s.docTitle}>{doc.title || 'Untitled'}</div>
-              {doc.tags && doc.tags.length > 0 && (
-                <div style={s.docTags}>
-                  {doc.tags.map(t => (
-                    <span key={t} style={s.docTag}>{t}</span>
-                  ))}
-                </div>
-              )}
+              {doc.tags && (() => {
+                const tags = Array.isArray(doc.tags) ? doc.tags : doc.tags.split(',').map(t => t.trim()).filter(Boolean);
+                return tags.length > 0 ? (
+                  <div style={s.docTags}>
+                    {tags.map((t, i) => (
+                      <span key={i} style={s.docTag}>{t}</span>
+                    ))}
+                  </div>
+                ) : null;
+              })()}
             </div>
           </div>
         ))}

@@ -39,13 +39,16 @@ export default function useDocuments(toast) {
   const fetchDoc = useCallback(async (id) => {
     try {
       const data = await request(`/api/documents/${id}`);
-      setCurrentDoc(data);
-      return data;
+      // Merge with list data for full metadata (title, tags, created)
+      const listDoc = docs.find(d => d.id === id);
+      const merged = { ...(listDoc || {}), ...data };
+      setCurrentDoc(merged);
+      return merged;
     } catch {
       toast?.('Lỗi tải tài liệu', 'error');
       return null;
     }
-  }, [toast]);
+  }, [toast, docs]); // depends on docs for merge
 
   // ── Create document ──
   const createDoc = useCallback(async (title = 'Tài liệu mới', opts = {}) => {

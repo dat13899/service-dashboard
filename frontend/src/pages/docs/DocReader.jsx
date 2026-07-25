@@ -376,15 +376,18 @@ export default function DocReader({ doc, onEdit, onDelete, onRename, onConvert, 
             <h2 style={s.title}>{doc.title || 'Untitled'}</h2>
           )}
           <div style={s.meta}>
-            {doc.meta?.createdAt && (
-              <span><i className="far fa-calendar-alt" style={{ marginRight: '0.25rem' }}></i>{fmtDate(doc.meta.createdAt)}</span>
+            {(doc.created || doc.meta?.createdAt) && (
+              <span><i className="far fa-calendar-alt" style={{ marginRight: '0.25rem' }}></i>{fmtDate(doc.created || doc.meta?.createdAt)}</span>
             )}
-            {doc.meta?.updatedAt && (
+            {(doc.meta?.updatedAt) && (
               <span><i className="far fa-clock" style={{ marginRight: '0.25rem' }}></i>{fmtDate(doc.meta.updatedAt)}</span>
             )}
-            {doc.tags && doc.tags.length > 0 && doc.tags.map(t => (
-              <span key={t} style={s.metaTag}>{t}</span>
-            ))}
+            {doc.tags && (() => {
+              const tags = Array.isArray(doc.tags) ? doc.tags : String(doc.tags).split(',').map(t => t.trim()).filter(Boolean);
+              return tags.map((t, i) => (
+                <span key={i} style={s.metaTag}>{t}</span>
+              ));
+            })()}
           </div>
         </div>
 
