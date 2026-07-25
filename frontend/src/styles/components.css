@@ -256,3 +256,9 @@
   from { opacity: 0; transform: translateX(-50%) scaleX(0); }
   to { opacity: 1; transform: translateX(-50%) scaleX(1); }
 }
+
+/* ===== Badge pulse (Telegram-style notification dot) ===== */
+@keyframes badgePulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.3); }
+}

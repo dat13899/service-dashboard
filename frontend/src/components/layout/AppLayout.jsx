@@ -17,7 +17,7 @@ export default function AppLayout({ children }) {
       <Navbar />
       <main style={{
         paddingTop: '56px',           // navbar height
-        paddingBottom: isMobile ? '72px' : '0', // bottom tab space
+        paddingBottom: isMobile ? '64px' : '0', // bottom tab space
         minHeight: '100dvh',
         display: 'flex',
         flexDirection: 'column',
