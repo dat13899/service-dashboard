@@ -30,9 +30,9 @@ const gameStyle = {
   },
   diceBtn: (active) => ({
     padding: '0.25rem 0.5rem', borderRadius: '4px',
-    border: `1px solid ${active ? '#818cf8' : 'var(--glass-border)'}`,
-    background: active ? 'rgba(129,140,248,0.15)' : 'transparent',
-    color: active ? '#818cf8' : 'var(--text-dim)',
+    border: `1px solid ${active ? 'var(--accent)' : 'var(--glass-border)'}`,
+    background: active ? 'var(--glass-bg)' : 'transparent',
+    color: active ? 'var(--accent)' : 'var(--text-dim)',
     fontSize: '0.65rem', cursor: 'pointer',
   }),
   coinDisplay: {

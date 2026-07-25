@@ -16,9 +16,9 @@
   --transition-normal: 0.2s ease;
   --transition-slow: 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.15);
-  --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.2);
-  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.25);
+  --shadow-sm: 0 2px 8px rgba(10, 14, 23, 0.25);
+  --shadow-md: 0 8px 32px rgba(10, 14, 23, 0.35);
+  --shadow-lg: 0 16px 48px rgba(10, 14, 23, 0.4);
 
   --z-nav: 500;
   --z-overlay: 1000;
@@ -36,18 +36,18 @@
   --text: #f1f5f9;
   --text-strong: #fff;
   --text-dim: #94a3b8;
-  --accent: #818cf8;
-  --accent-hover: #6366f1;
+  --accent: #34d399;
+  --accent-hover: #10b981;
   --green: #22c55e;
   --red: #ef4444;
   --amber: #f59e0b;
   --glass-bg: rgba(17, 24, 39, 0.55);
   --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-shadow: rgba(0, 0, 0, 0.35);
-  --blob-1: #818cf8;
-  --blob-2: #06b6d4;
-  --blob-3: #a855f7;
-  --blob-4: #f59e0b;
+  --glass-shadow: rgba(10, 14, 23, 0.55);
+  --blob-1: #34d399;
+  --blob-2: #10b981;
+  --blob-3: #059669;
+  --blob-4: #6ee7b7;
 }
 
 /* ===== Light Theme ===== */
@@ -59,18 +59,18 @@
   --text: #1e293b;
   --text-strong: #0f172a;
   --text-dim: #64748b;
-  --accent: #6366f1;
-  --accent-hover: #4f46e5;
+  --accent: #10b981;
+  --accent-hover: #059669;
   --green: #16a34a;
   --red: #dc2626;
   --amber: #d97706;
   --glass-bg: rgba(255, 255, 255, 0.55);
   --glass-border: rgba(0, 0, 0, 0.08);
-  --glass-shadow: rgba(99, 102, 241, 0.12);
-  --blob-1: #f472b6;
-  --blob-2: #fb923c;
-  --blob-3: #a78bfa;
-  --blob-4: #34d399;
+  --glass-shadow: rgba(100, 116, 139, 0.15);
+  --blob-1: #34d399;
+  --blob-2: #10b981;
+  --blob-3: #6ee7b7;
+  --blob-4: #a7f3d0;
 }
 
 /* ===== Smooth theme transitions ===== */

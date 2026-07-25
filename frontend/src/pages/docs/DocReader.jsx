@@ -19,7 +19,7 @@ const s = {
     top: 0,
     left: 0,
     height: '3px',
-    background: 'linear-gradient(90deg, var(--accent), #818cf8)',
+    background: 'linear-gradient(90deg, var(--accent), var(--green))',
     zIndex: 999,
     transition: 'width .15s ease',
   },

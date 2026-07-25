@@ -66,7 +66,7 @@ function calcStrength(pwd) {
   if (score < 40) return { label: 'Yếu', color: '#ef4444', score, width: `${score}%` };
   if (score < 65) return { label: 'Trung bình', color: '#f59e0b', score, width: `${score}%` };
   if (score < 85) return { label: 'Mạnh', color: '#22c55e', score, width: `${score}%` };
-  return { label: 'Rất mạnh', color: '#818cf8', score, width: `${score}%` };
+  return { label: 'Rất mạnh', color: 'var(--accent)', score, width: `${score}%` };
 }
 
 const UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 const moods = [
   { emoji: '😄', label: 'Tuyệt vời', color: '#22c55e' },
-  { emoji: '🙂', label: 'Tốt', color: '#818cf8' },
+  { emoji: '🙂', label: 'Tốt', color: 'var(--accent)' },
   { emoji: '😐', label: 'Bình thường', color: '#f59e0b' },
   { emoji: '😞', label: 'Buồn', color: '#f97316' },
   { emoji: '😡', label: 'Tức giận', color: '#ef4444' },

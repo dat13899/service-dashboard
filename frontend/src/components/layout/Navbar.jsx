@@ -75,7 +75,7 @@ export default function Navbar() {
             justifyContent: 'center',
             width: '32px', height: '32px',
             borderRadius: '10px',
-            background: 'linear-gradient(135deg, var(--accent), #a855f7)',
+            background: 'linear-gradient(135deg, var(--accent), var(--green))',
             color: '#fff',
             fontSize: '0.85rem',
             fontWeight: 900,
@@ -143,9 +143,9 @@ export default function Navbar() {
                     width: '60%',
                     height: '2.5px',
                     borderRadius: '999px',
-                    background: 'linear-gradient(90deg, var(--accent), #a855f7)',
+                    background: 'linear-gradient(90deg, var(--accent), var(--green))',
                     animation: 'pillSlide 0.3s cubic-bezier(.4,0,.2,1)',
-                    boxShadow: '0 0 8px rgba(129,140,248,0.4)',
+                    boxShadow: '0 0 8px rgba(52,211,153,0.4)',
                   }} />
                 )}
               </Link>

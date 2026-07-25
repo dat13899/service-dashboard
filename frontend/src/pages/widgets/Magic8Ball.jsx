@@ -44,7 +44,7 @@ const S = {
   answer: {
     fontSize: '0.7rem',
     fontWeight: 600,
-    color: '#818cf8',
+    color: 'var(--accent)',
     textAlign: 'center',
     padding: '0.3rem',
     lineHeight: 1.2,
@@ -100,7 +100,7 @@ const S = {
     fontSize: '0.78rem',
   },
   q: { color: 'var(--text-dim)', flex: 1 },
-  a: { color: '#818cf8', fontWeight: 600 },
+  a: { color: 'var(--accent)', fontWeight: 600 },
 };
 
 export default function Magic8Ball() {
