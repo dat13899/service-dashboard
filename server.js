@@ -609,12 +609,21 @@ const server = http.createServer(async (req, res) => {
   }
 
   // Try Vite build assets from dist/
-  if (u.pathname.startsWith('/assets/') && u.pathname.endsWith('.js')) {
+  if (u.pathname.startsWith('/assets/')) {
     const distAsset = path.join(__dirname, 'dist', u.pathname);
     if (fs.existsSync(distAsset)) {
+      const ext = path.extname(distAsset).toLowerCase();
+      const mime = ext === '.js' ? 'text/javascript; charset=utf-8'
+        : ext === '.css' ? 'text/css; charset=utf-8'
+        : ext === '.svg' ? 'image/svg+xml'
+        : ext === '.png' ? 'image/png'
+        : ext === '.jpg' || ext === '.jpeg' ? 'image/jpeg'
+        : ext === '.woff2' ? 'font/woff2'
+        : ext === '.woff' ? 'font/woff'
+        : 'application/octet-stream';
       fs.readFile(distAsset, (err, data) => {
         if (!err) {
-          res.writeHead(200, { 'Content-Type': 'text/javascript; charset=utf-8', 'Cache-Control': 'public, max-age=31536000, immutable' });
+          res.writeHead(200, { 'Content-Type': mime, 'Cache-Control': 'public, max-age=31536000, immutable' });
           res.end(data);
         }
       });
