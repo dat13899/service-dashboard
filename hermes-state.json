@@ -1,8 +1,8 @@
 {
-  "iteration": 13,
+  "iteration": 14,
   "phase": "build",
-  "vision": "Cosmic Dreamscape v13 — Firefly Swarm scene mode (11th mode). 200 fireflies with full Craig Reynolds boids flocking (separation/alignment/cohesion), green-yellow glow aura with ring gradient, pulsating brightness (sinusoidal per-firefly), mouse attraction (fireflies gently follow cursor), trail canvas glow trails, audio-reactive pulse intensity + size boost, B key toggle. Tab/Arrow cycling includes all 11 modes. Resize reinit includes firefly swarm geometry.",
-  "goal": "Thêm scene Firefly Swarm (11th mode) — 200 boids flocking with pulsating green glow aura, mouse attraction, audio-reactive intensity.",
+  "vision": "Cosmic Dreamscape v14 — Lightning Storm scene mode (12th mode). Procedural recursive lightning bolts with forked branches and ground-strike child forks, charged rain particles (250+ base, audio-reactive density) with mouse-wind influence, dark storm cloud layers (8 clouds, radial-gradient dark blue/purple nebula), screen flash on strike (white-blue overlay), audio-reactive strike frequency (more lightning when bass hits) + rain speed boost. U key toggles storm. Tab/Arrow cycling includes all 12 modes. Resize reinit includes storm geometry.",
+  "goal": "Thêm scene Cosmic Storm (12th mode) — lightning bolts procedural, charged rain, dark storm clouds, screen flash.",
   "built": [
     "v1: 600 stars parallax, 8 nebulas, 60 particles, trails, connections, click explosion",
     "v2: 6 color palettes, Web Audio ambient (4 drone layers + chimes), shooting stars, keyboard controls, palette UI, constellation wander",
@@ -10,13 +10,14 @@
     "v4: Dual-canvas (main + trail), particle merging with spark burst, animated panorama noise background, radial gradient bg, galaxy rotation (1000 stars, 4 layers), accent-colored cosmic web, 15 waves of polish",
     "v5: Hyperspace tunnel mode (T key — 3D star projection, depth warping, rotational drift, colorshift), gravity wells (hold mouse drag — pull/absorb/black-hole-spin particles, burst on release), light bloom canvas overlay (mouse-following soft glow bloom), mode badge, gravity indicator ring, 1200 stars, 250 max particles",
     "v6: Scene Mode system — 5 modes (Cosmic/Hyperspace/Paint/Constellation/Nebula) with slide-in panel, Particle Paint mode with brush size & hue range sliders, clear button, paint particles spawn on drag with glow boost + thicker trails, Constellation mode (2.5x web, 3x particle connections, wider connection range), Nebula Flow mode (2.2x nebula alpha/size), per-scene multipliers, mode-specific badge colors, keyboard shortcuts P/C/N, paint hue influences bloom canvas color, fixed lerp() bug, fixed tunnel rotation typo",
-    "v7: Particle Word Form mode (6th scene — type text, particles assemble into glowing letter shapes from 800px offscreen canvas, auto-disperse after 8s, green-accented badge), interactive gradient strip color picker for paint brush (drag across full rainbow spectrum, highlights hue indicator), snapshot export (S key saves 3-canvas composite as downloadable PNG with filename hermes-{mode}-{timestamp}.png, toast notification), word input modal with Enter submit / Escape dismiss, 3 buttons wide mode panel (136px)",
-    "v8: Config panel with real-time sliders (tunnel speed, bloom intensity, nebula drift speed) + 3 toggle switches (audio reactive, trails, HUD), spiral swirl scene transition animation (swirl-closes then opens-to-reveal) when switching scene modes, G key toggles settings panel, settings button (⚙) in mode panel area, trail toggle clears trail canvas instantly, tunnel/nebula speed dynamically adjustable, bloom intensity multiplier follows config slider",
-    "v9: Prism Rave scene mode (7th mode, R key) — 8-sector kaleidoscope with 6 concentric polygon layers, hue-cycling, audio-reactive glow and rotation, central mandala dot, 8 rotating laser lines, swirling prism particles. Tab / Arrow key cycling through all 7 scene modes. Mobile dual-touch: pinch to open/close config panel. Density slider actually wires into getEffMaxParticles() — dynamically adjusts spawn cap 150–950 particles across explosions, paint, and natural spawn. Resize handler reinitializes prism geometry.",
-    "v10: Aurora Borealis scene mode (8th mode, A key) — 6 flowing aurora curtain bands with sinusoidal wave superposition, additive green/cyan/blue/violet hsla blending, audio-reactive glow multiplier, configurable speed slider (cfgAuroraSpeed). Circular Audio Visualizer ring: 64 radially-spaced frequency bars rotating around center, hue cycles per bar, audioLevel drives height/alpha, central glow pulse. Viz toggle in config panel. Tab/Arrow cycling extended to 8 modes. Resize reinit includes aurora bands.",
-    "v11: Stargate Wormhole scene mode (9th mode, O key) — 12 concentric warp rings with 3D perspective tilt (sinusoidal scaleY), hue-cycling per ring, audio-reactive glow/pulse. Inner triple-vortex spiral (3 intertwined arms), bright event horizon core glow, 80 orbiting particle stream around portal. Config tunnel-speed slider controls warp rotation rate. Resize reinit includes wormhole geometry. Tab/Arrow cycling extended to 9 modes.",
-    "v12: Galaxy Map scene mode (10th mode, Y key) — 4000 stars in 4 logarithmic spiral arms with stellar scatter, mouse-orbit parallax (sky follows pointer), auto-rotation (config-tunnel-speed controlled), warm galactic core glow (radial gradient + pulsing bright center), orbit ring indicators. Wormhole cinematic auto-pilot camera (X toggle) — continuous pan/zoom orbit sweep through the portal. Tab/Arrow cycling extended to 10 modes. Resize reinit includes galaxy geometry.",
-    "v13: Firefly Swarm scene mode (11th mode, B key) — 200 fireflies with Craig Reynolds boids flocking (separation/alignment/cohesion), green-yellow glow aura with radial gradient ring, per-firefly sinusoidal pulsation brightness, mouse attraction, trail canvas glow trails, audio-reactive pulse intensity/size boost, body + inner spark rendering. Tab/Arrow cycling extended to 11 modes. Resize reinit includes firefly swarm geometry."
+    "v7: Particle Word Form mode (6th scene), gradient color strip picker, snapshot export (S key PNG), word input modal, 3 buttons wide mode panel",
+    "v8: Config panel with sliders (tunnel speed, bloom intensity, nebula drift, density) + toggles (reactive, trails, HUD), spiral swirl transition animation, G key settings toggle",
+    "v9: Prism Rave scene mode (7th mode, R key) — 8-sector kaleidoscope, 6 polygon layers, hue-cycling, audio-reactive glow, central mandala, laser lines, prism particles, mobile pinch-to-open settings, density slider dynamic spawn",
+    "v10: Aurora Borealis scene mode (8th mode, A key) — 6 aurora curtain bands with sinusoidal wave superposition, additive green/cyan/blue/violet blending, audio-reactive glow, configurable speed, Circular Audio Visualizer ring (64 bars), viz toggle",
+    "v11: Stargate Wormhole scene mode (9th mode, O key) — 12 warp rings 3D perspective, hue-cycling, inner triple-vortex spiral, event horizon core, orbiting particle stream, cinematic auto-pilot (X toggle)",
+    "v12: Galaxy Map scene mode (10th mode, Y key) — 4000 stars in 4 spiral arms, mouse-orbit parallax, auto-rotation, warm galactic core, orbit ring indicators",
+    "v13: Firefly Swarm scene mode (11th mode, B key) — 200 fireflies boids flocking, green-yellow glow aura, per-firefly pulsation, mouse attraction, audio-reactive pulse/size",
+    "v14: Cosmic Storm scene mode (12th mode, U key) — procedural recursive lightning bolts with forked branches and ground-strike child forks, charged rain particles (250+ audio-reactive), dark storm clouds (8 layers), screen flash on strike, audio-reactive frequency boost"
   ],
   "todo": [
     "Video recording / GIF export with WebGL capture",
@@ -24,7 +25,9 @@
     "Mid-air particle text that follows mouse on a path",
     "Export preset scenes as data URL bookmarks (shareable)",
     "3D perspective tilt parallax dựa trên con trỏ chuột cho wormhole mode",
-    "Interactive per-firefly click to spawn offspring burst"
+    "Interactive per-firefly click to spawn offspring burst",
+    "Storm rain puddle reflections on ground",
+    "Thunder rumble audio (low-frequency oscillator triggered by lightning)"
   ],
   "critic": "",
   "score": null,
