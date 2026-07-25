@@ -15,12 +15,38 @@ const widgetComponents = {
   '8ball': lazy(() => import('./widgets/Magic8Ball')),
   braindump: lazy(() => import('./widgets/BrainDump')),
   games: lazy(() => import('./widgets/MiniGames')),
+  food: lazy(() => import('./widgets/Food')),
+  bmi: lazy(() => import('./widgets/Bmi')),
+  calendar: lazy(() => import('./widgets/Calendar')),
+  cards: lazy(() => import('./widgets/Cards')),
+  challenge: lazy(() => import('./widgets/Challenge')),
+  convert: lazy(() => import('./widgets/Convert')),
+  countdown: lazy(() => import('./widgets/Countdown')),
+  counter: lazy(() => import('./widgets/Counter')),
+  emoji: lazy(() => import('./widgets/Emoji')),
+  guess: lazy(() => import('./widgets/Guess')),
+  history: lazy(() => import('./widgets/History')),
+  idea: lazy(() => import('./widgets/Idea')),
+  list: lazy(() => import('./widgets/List')),
+  mood: lazy(() => import('./widgets/Mood')),
+  pomodoro: lazy(() => import('./widgets/Pomodoro')),
+  rps: lazy(() => import('./widgets/Rps')),
+  tarot: lazy(() => import('./widgets/Tarot')),
+  textgen: lazy(() => import('./widgets/TextGen')),
+  van: lazy(() => import('./widgets/Van')),
+  workout: lazy(() => import('./widgets/Workout')),
 };
 
 export default function WidgetPage() {
   const [selected, setSelected] = useState(null);
+  const [search, setSearch] = useState('');
 
   const ActiveWidget = selected ? widgetComponents[selected] : null;
+
+  const filtered = widgets.filter(w =>
+    w.name.toLowerCase().includes(search.toLowerCase()) ||
+    w.desc.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <>
@@ -78,13 +104,36 @@ export default function WidgetPage() {
                 </p>
               </div>
 
+              {/* Search bar */}
+              <div style={{ marginBottom: '1rem', textAlign: 'center' }}>
+                <input type="text" value={search} onChange={e => setSearch(e.target.value)}
+                  placeholder="🔍 Tìm widget..."
+                  style={{
+                    width: '100%', maxWidth: '360px', padding: '0.5rem 0.75rem',
+                    borderRadius: 'var(--radius-sm)',
+                    border: '1px solid var(--glass-border)', background: 'var(--glass-bg)',
+                    backdropFilter: 'blur(16px)', color: 'var(--text)',
+                    fontSize: '0.85rem', outline: 'none',
+                  }}
+                />
+              </div>
+
               {/* Grid */}
               <div style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
                 gap: '0.75rem',
-              }}>
-                {widgets.map(w => (
+              }}
+                className="widget-grid"
+              >
+                {filtered.length === 0 ? (
+                  <div style={{
+                    gridColumn: '1 / -1', textAlign: 'center', padding: '2rem',
+                    color: 'var(--text-dim)', fontSize: '0.85rem',
+                  }}>
+                    Không tìm thấy widget "{search}"
+                  </div>
+                ) : filtered.map(w => (
                   <div key={w.id} className="card glass-card" onClick={() => setSelected(w.id)}
                     style={{
                       position: 'relative',
@@ -142,6 +191,15 @@ export default function WidgetPage() {
           )}
         </div>
       </section>
+
+      {/* Mobile responsive: 2 columns on small screens */}
+      <style>{`
+        @media (max-width: 720px) {
+          .widget-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+        }
+      `}</style>
     </>
   );
 }

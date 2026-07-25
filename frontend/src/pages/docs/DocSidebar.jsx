@@ -1,6 +1,6 @@
-import { useState, useMemo, useRef, useCallback } from 'react';
+import { useState, useMemo, useRef, useCallback, useEffect } from 'react';
 
-const ALL_TAGS = ['note', 'guide', 'reference', 'draft', 'important', 'archive'];
+const LS_SEARCH_HISTORY = 'documents_search_history';
 
 const s = {
   sidebar: (visible, mobile) => ({
@@ -43,16 +43,53 @@ const s = {
     outline: 'none',
     boxSizing: 'border-box',
   },
+  sortBar: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: '0.15rem 0.5rem',
+    borderBottom: '1px solid var(--glass-border)',
+    fontSize: '0.6rem',
+    gap: '0.35rem',
+  },
+  sortSelect: {
+    fontSize: '0.65rem',
+    padding: '0.15rem 0.3rem',
+    borderRadius: 'var(--radius-sm)',
+    border: '1px solid var(--glass-border)',
+    background: 'var(--surface-2)',
+    color: 'var(--text-dim)',
+    outline: 'none',
+    cursor: 'pointer',
+  },
+  filterRow: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: '0.25rem 0.5rem',
+    borderBottom: '1px solid var(--glass-border)',
+    gap: '0.5rem',
+    fontSize: '0.65rem',
+  },
+  draftCheck: {
+    accentColor: 'var(--accent)',
+    cursor: 'pointer',
+  },
+  draftLabel: {
+    color: 'var(--text-dim)',
+    cursor: 'pointer',
+    fontSize: '0.65rem',
+  },
   tagsRow: {
     display: 'flex',
     flexWrap: 'wrap',
-    gap: '0.3rem',
-    padding: '0.5rem 0.75rem',
+    gap: '0.25rem',
+    padding: '0.35rem 0.5rem',
     borderBottom: '1px solid var(--glass-border)',
+    maxHeight: '80px',
+    overflowY: 'auto',
   },
   tagChip: (active) => ({
-    fontSize: '0.72rem',
-    padding: '0.15rem 0.5rem',
+    fontSize: '0.58rem',
+    padding: '0.1rem 0.45rem',
     borderRadius: '999px',
     border: '1px solid var(--glass-border)',
     background: active ? 'var(--accent)' : 'var(--surface-2)',
@@ -73,10 +110,17 @@ const s = {
     transition: 'background .15s',
     display: 'flex',
     alignItems: 'center',
-    gap: '0.5rem',
+    gap: '0.4rem',
     background: selected ? 'rgba(99,102,241,0.08)' : 'transparent',
     border: selected ? '1px solid rgba(99,102,241,0.2)' : '1px solid transparent',
   }),
+  docCheckbox: {
+    cursor: 'pointer',
+    accentColor: 'var(--accent)',
+    flexShrink: 0,
+    width: '14px',
+    height: '14px',
+  },
   docTitle: {
     fontSize: '0.82rem',
     color: 'var(--text)',
@@ -118,6 +162,27 @@ const s = {
     alignItems: 'center',
     gap: '0.25rem',
   },
+  footer: {
+    padding: '0.35rem 0.5rem',
+    borderTop: '1px solid var(--glass-border)',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    fontSize: '0.65rem',
+  },
+  footerBtn: (color) => ({
+    fontSize: '0.65rem',
+    padding: '0.2rem 0.45rem',
+    borderRadius: 'var(--radius-sm)',
+    border: '1px solid var(--glass-border)',
+    background: 'var(--surface-2)',
+    color: color || 'var(--text-dim)',
+    cursor: 'pointer',
+    transition: 'all .15s',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.2rem',
+  }),
   dragOverlay: {
     position: 'absolute',
     inset: 0,
@@ -132,16 +197,114 @@ const s = {
     color: 'var(--accent)',
     fontWeight: 600,
   },
-  checkbox: {
+  searchDropdown: {
+    position: 'absolute',
+    top: '100%',
+    left: 0,
+    right: 0,
+    marginTop: '0.15rem',
+    background: 'var(--glass-bg)',
+    backdropFilter: 'blur(20px)',
+    border: '1px solid var(--glass-border)',
+    borderRadius: 'var(--radius-sm)',
+    boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+    zIndex: 50,
+    maxHeight: '240px',
+    overflowY: 'auto',
+  },
+  searchDropdownItem: {
+    padding: '0.35rem 0.75rem',
+    fontSize: '0.75rem',
+    color: 'var(--text)',
     cursor: 'pointer',
-    accentColor: 'var(--accent)',
-    flexShrink: 0,
+    transition: 'background .1s',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.35rem',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
+  searchHistoryItem: {
+    padding: '0.35rem 0.75rem',
+    fontSize: '0.7rem',
+    color: 'var(--text-dim)',
+    cursor: 'pointer',
+    transition: 'background .1s',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.35rem',
+  },
+  searchWrap: {
+    position: 'relative',
   },
 };
 
-export default function DocSidebar({ docs, loading, currentDoc, selectedTags, setSelectedTags, searchQuery, setSearchQuery, onSelectDoc, onCreateDoc, onDeleteDoc, onUploadDoc, visible, isMobile }) {
+export default function DocSidebar({
+  docs, loading, currentDoc, selectedTags, setSelectedTags,
+  searchQuery, setSearchQuery, onSelectDoc, onCreateDoc,
+  onUploadDoc, visible, isMobile,
+  sortBy, setSortBy, draftOnly, setDraftOnly,
+  selectedIds, setSelectedIds,
+  onCacheClear,
+}) {
   const [dragOver, setDragOver] = useState(false);
+  const [searchFocus, setSearchFocus] = useState(false);
   const fileRef = useRef(null);
+  const searchWrapRef = useRef(null);
+
+  // Search history from localStorage
+  const searchHistory = useMemo(() => {
+    try { return JSON.parse(localStorage.getItem(LS_SEARCH_HISTORY)) || []; }
+    catch { return []; }
+  }, []);
+
+  // Match docs for full-text dropdown
+  const searchResults = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    const q = searchQuery.toLowerCase();
+    return docs.filter(d =>
+      (d.title || '').toLowerCase().includes(q) ||
+      (d.content || '').toLowerCase().includes(q)
+    ).slice(0, 8);
+  }, [docs, searchQuery]);
+
+  // Click outside dropdown
+  useEffect(() => {
+    const handler = (e) => {
+      if (searchWrapRef.current && !searchWrapRef.current.contains(e.target)) {
+        setSearchFocus(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  // Save search query to history
+  const saveSearchQuery = useCallback((q) => {
+    if (!q.trim()) return;
+    const history = (() => { try { return JSON.parse(localStorage.getItem(LS_SEARCH_HISTORY)) || []; } catch { return []; } })();
+    const updated = [q.trim(), ...history.filter(h => h !== q.trim())].slice(0, 5);
+    try { localStorage.setItem(LS_SEARCH_HISTORY, JSON.stringify(updated)); } catch {}
+  }, []);
+
+  const handleSearchKeyDown = useCallback((e) => {
+    if (e.key === 'Enter') {
+      saveSearchQuery(searchQuery);
+      setSearchFocus(false);
+    }
+  }, [searchQuery, saveSearchQuery]);
+
+  // Dynamic tags from actual docs
+  const allTags = useMemo(() => {
+    const tagSet = new Set();
+    docs.forEach(d => {
+      if (d.tags && Array.isArray(d.tags)) {
+        d.tags.forEach(t => tagSet.add(t));
+      }
+    });
+    return Array.from(tagSet).sort();
+  }, [docs]);
 
   const handleTagToggle = useCallback((tag) => {
     setSelectedTags(prev =>
@@ -149,8 +312,11 @@ export default function DocSidebar({ docs, loading, currentDoc, selectedTags, se
     );
   }, [setSelectedTags]);
 
+  // Filtering & sorting
   const filteredDocs = useMemo(() => {
     let result = docs;
+
+    // Search filter
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       result = result.filter(d =>
@@ -158,13 +324,50 @@ export default function DocSidebar({ docs, loading, currentDoc, selectedTags, se
         (d.content || '').toLowerCase().includes(q)
       );
     }
+
+    // Tag filter
     if (selectedTags.length > 0) {
       result = result.filter(d =>
         d.tags && selectedTags.some(t => (d.tags || []).includes(t))
       );
     }
-    return result;
-  }, [docs, searchQuery, selectedTags]);
+
+    // Draft filter
+    if (draftOnly) {
+      result = result.filter(d => d.status === 'draft');
+    }
+
+    // Sort
+    const sorted = [...result];
+    switch (sortBy) {
+      case 'newest':
+        sorted.sort((a, b) => new Date(b.meta?.createdAt || 0) - new Date(a.meta?.createdAt || 0));
+        break;
+      case 'oldest':
+        sorted.sort((a, b) => new Date(a.meta?.createdAt || 0) - new Date(b.meta?.createdAt || 0));
+        break;
+      case 'az':
+        sorted.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+        break;
+      case 'za':
+        sorted.sort((a, b) => (b.title || '').localeCompare(a.title || ''));
+        break;
+      default:
+        break;
+    }
+
+    return sorted;
+  }, [docs, searchQuery, selectedTags, draftOnly, sortBy]);
+
+  // Toggle selection for bulk delete
+  const handleCheckToggle = useCallback((e, docId) => {
+    e.stopPropagation();
+    setSelectedIds(prev =>
+      prev.includes(docId)
+        ? prev.filter(id => id !== docId)
+        : [...prev, docId]
+    );
+  }, [setSelectedIds]);
 
   const handleDragOver = useCallback((e) => {
     e.preventDefault();
@@ -200,7 +403,7 @@ export default function DocSidebar({ docs, loading, currentDoc, selectedTags, se
         <div style={s.headerTitle}>
           <span><i className="fas fa-file-lines" style={{ marginRight: '0.35rem', color: 'var(--accent)' }}></i>Tài liệu</span>
           <div style={{ display: 'flex', gap: '0.25rem' }}>
-            <button style={s.newBtn} onClick={onCreateDoc} title="Tạo mới">
+            <button style={s.newBtn} onClick={() => onCreateDoc?.()} title="Tạo mới">
               <i className="fas fa-plus" style={{ fontSize: '0.65rem' }}></i> Mới
             </button>
             <button style={s.newBtn} onClick={() => fileRef.current?.click()} title="Tải lên">
@@ -209,7 +412,7 @@ export default function DocSidebar({ docs, loading, currentDoc, selectedTags, se
             <input
               ref={fileRef}
               type="file"
-              accept=".md,.txt,.html,.pdf"
+              accept=".md,.txt,.html,.pdf,.docx"
               style={{ display: 'none' }}
               onChange={(e) => {
                 const f = e.target.files?.[0];
@@ -219,26 +422,102 @@ export default function DocSidebar({ docs, loading, currentDoc, selectedTags, se
             />
           </div>
         </div>
-        <input
-          style={s.searchInput}
-          placeholder="Tìm tài liệu..."
-          value={searchQuery}
-          onChange={e => setSearchQuery(e.target.value)}
-        />
+        <div ref={searchWrapRef} style={s.searchWrap}>
+          <input
+            style={s.searchInput}
+            placeholder="Tìm tài liệu..."
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            onFocus={() => setSearchFocus(true)}
+            onKeyDown={handleSearchKeyDown}
+          />
+          {searchFocus && (searchQuery.trim() || searchHistory.length > 0) && (
+            <div style={s.searchDropdown}>
+              {/* Full-text results when typing */}
+              {searchQuery.trim() && searchResults.length > 0 && (
+                <>
+                  <div style={{ padding: '0.35rem 0.75rem', fontSize: '0.65rem', color: 'var(--text-dim)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', borderBottom: '1px solid var(--glass-border)' }}>
+                    <i className="fas fa-search" style={{ marginRight: '0.25rem' }}></i>Kết quả tìm kiếm
+                  </div>
+                  {searchResults.map(d => (
+                    <div
+                      key={d.id}
+                      style={s.searchDropdownItem}
+                      onClick={() => { onSelectDoc(d.id); setSearchFocus(false); }}
+                      onMouseEnter={e => e.target.style.background = 'var(--surface-2)'}
+                      onMouseLeave={e => e.target.style.background = 'transparent'}
+                    >
+                      <i className="fas fa-file-lines" style={{ color: 'var(--accent)', fontSize: '0.65rem', flexShrink: 0 }}></i>
+                      {d.title || 'Untitled'}
+                    </div>
+                  ))}
+                  <div style={{ borderTop: '1px solid var(--glass-border)' }} />
+                </>
+              )}
+              {/* Search history */}
+              {searchHistory.length > 0 && (
+                <>
+                  <div style={{ padding: '0.35rem 0.75rem', fontSize: '0.65rem', color: 'var(--text-dim)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', borderBottom: '1px solid var(--glass-border)' }}>
+                    <i className="fas fa-history" style={{ marginRight: '0.25rem' }}></i>Lịch sử tìm kiếm
+                  </div>
+                  {searchHistory.map((q, idx) => (
+                    <div
+                      key={idx}
+                      style={s.searchHistoryItem}
+                      onClick={() => { setSearchQuery(q); saveSearchQuery(q); setSearchFocus(false); }}
+                      onMouseEnter={e => e.target.style.background = 'var(--surface-2)'}
+                      onMouseLeave={e => e.target.style.background = 'transparent'}
+                    >
+                      <i className="fas fa-clock" style={{ fontSize: '0.6rem', flexShrink: 0 }}></i>
+                      {q}
+                    </div>
+                  ))}
+                </>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Tags */}
-      <div style={s.tagsRow}>
-        {ALL_TAGS.map(tag => (
-          <span
-            key={tag}
-            style={s.tagChip(selectedTags.includes(tag))}
-            onClick={() => handleTagToggle(tag)}
-          >
-            {tag}
-          </span>
-        ))}
+      {/* Sort bar */}
+      <div style={s.sortBar}>
+        <i className="fas fa-sort" style={{ color: 'var(--text-dim)', fontSize: '0.55rem' }}></i>
+        <select
+          style={s.sortSelect}
+          value={sortBy}
+          onChange={e => setSortBy(e.target.value)}
+        >
+          <option value="newest">Mới nhất</option>
+          <option value="oldest">Cũ nhất</option>
+          <option value="az">A → Z</option>
+          <option value="za">Z → A</option>
+        </select>
+        <div style={{ flex: 1 }} />
+        <label style={{ display: 'flex', alignItems: 'center', gap: '0.2rem', cursor: 'pointer' }}>
+          <input
+            type="checkbox"
+            style={s.draftCheck}
+            checked={draftOnly}
+            onChange={e => setDraftOnly(e.target.checked)}
+          />
+          <span style={s.draftLabel}>Nháp</span>
+        </label>
       </div>
+
+      {/* Dynamic tags */}
+      {allTags.length > 0 && (
+        <div style={s.tagsRow}>
+          {allTags.map(tag => (
+            <span
+              key={tag}
+              style={s.tagChip(selectedTags.includes(tag))}
+              onClick={() => handleTagToggle(tag)}
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
 
       {/* Doc list */}
       <div style={s.listContainer}>
@@ -249,7 +528,7 @@ export default function DocSidebar({ docs, loading, currentDoc, selectedTags, se
         )}
         {!loading && filteredDocs.length === 0 && (
           <div style={s.empty}>
-            {searchQuery || selectedTags.length > 0
+            {searchQuery || selectedTags.length > 0 || draftOnly
               ? 'Không tìm thấy tài liệu nào'
               : 'Chưa có tài liệu nào'}
           </div>
@@ -262,10 +541,9 @@ export default function DocSidebar({ docs, loading, currentDoc, selectedTags, se
           >
             <input
               type="checkbox"
-              style={s.checkbox}
-              checked={currentDoc?.id === doc.id}
-              onChange={() => onSelectDoc(doc.id)}
-              onClick={e => e.stopPropagation()}
+              style={s.docCheckbox}
+              checked={selectedIds.includes(doc.id)}
+              onChange={(e) => handleCheckToggle(e, doc.id)}
             />
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={s.docTitle}>{doc.title || 'Untitled'}</div>
@@ -279,6 +557,14 @@ export default function DocSidebar({ docs, loading, currentDoc, selectedTags, se
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Footer: cache clear */}
+      <div style={s.footer}>
+        <span style={{ color: 'var(--text-dim)' }}>{filteredDocs.length} tài liệu</span>
+        <button style={s.footerBtn()} onClick={onCacheClear} title="Xoá cache">
+          <i className="fas fa-eraser"></i> Xoá cache
+        </button>
       </div>
 
       {/* Drag overlay */}

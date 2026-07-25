@@ -32,6 +32,37 @@ const s = {
     alignItems: 'center',
     gap: '0.5rem',
   },
+  mdToolbar: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.2rem',
+    padding: '0.25rem 0.75rem',
+    borderBottom: '1px solid var(--glass-border)',
+    background: 'var(--surface-2)',
+    flexShrink: 0,
+    flexWrap: 'wrap',
+  },
+  mdBtn: {
+    fontSize: '0.72rem',
+    padding: '0.25rem 0.5rem',
+    borderRadius: 'var(--radius-sm)',
+    border: '1px solid transparent',
+    background: 'transparent',
+    color: 'var(--text-dim)',
+    cursor: 'pointer',
+    transition: 'all .1s',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.15rem',
+    fontWeight: 500,
+    lineHeight: 1.2,
+  },
+  mdDivider: {
+    width: '1px',
+    height: '18px',
+    background: 'var(--glass-border)',
+    margin: '0 0.15rem',
+  },
   closeBtn: {
     fontSize: '0.82rem',
     padding: '0.35rem 0.7rem',
@@ -148,11 +179,22 @@ function renderMarkdown(content) {
   return '<p>Đang tải...</p>';
 }
 
+// Markdown toolbar actions
+const MD_ACTIONS = [
+  { key: 'bold', label: 'B', icon: null, wrapper: ['**', '**'], hint: 'Bold' },
+  { key: 'italic', label: 'I', icon: null, wrapper: ['*', '*'], hint: 'Italic' },
+  { key: 'heading', label: 'H', icon: null, wrapper: ['\n## ', ''], hint: 'Heading' },
+  { key: 'link', label: null, icon: 'fa-link', wrapper: ['[', '](url)'], hint: 'Link' },
+  { key: 'code', label: '{}', icon: null, wrapper: ['\n```\n', '\n```'], hint: 'Code block' },
+  { key: 'list', label: null, icon: 'fa-list', wrapper: ['\n- ', ''], hint: 'List' },
+];
+
 export default function DocEditor({ doc, onClose, onSave, saving }) {
   const [content, setContent] = useState(doc?.content || '');
   const [splitRatio, setSplitRatio] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef(null);
+  const textareaRef = useRef(null);
 
   // Reset content when doc changes
   useEffect(() => {
@@ -217,6 +259,41 @@ export default function DocEditor({ doc, onClose, onSave, saving }) {
     return () => window.removeEventListener('keydown', handler);
   }, [onClose]);
 
+  // Markdown toolbar insert
+  const handleMdAction = useCallback((action) => {
+    const ta = textareaRef.current;
+    if (!ta) return;
+    const start = ta.selectionStart;
+    const end = ta.selectionEnd;
+    const selected = content.substring(start, end);
+    const [open, close] = action.wrapper;
+
+    let inserted;
+    if (action.key === 'heading' || action.key === 'list') {
+      // Insert at start of line
+      const beforeLine = content.lastIndexOf('\n', start - 1) + 1;
+      const linePrefix = content.substring(beforeLine, start);
+      if (linePrefix.trim().length === 0 || action.key === 'heading') {
+        inserted = open + (selected || 'heading') + close;
+      } else {
+        inserted = open + selected + close;
+      }
+    } else if (selected) {
+      inserted = open + selected + close;
+    } else {
+      inserted = open + (action.hint || 'text') + close;
+    }
+
+    const newContent = content.substring(0, start) + inserted + content.substring(end);
+    setContent(newContent);
+    // Restore cursor
+    requestAnimationFrame(() => {
+      ta.focus();
+      const cursorPos = start + inserted.length;
+      ta.setSelectionRange(cursorPos, cursorPos);
+    });
+  }, [content, textareaRef]);
+
   return (
     <div style={s.overlay}>
       {/* Toolbar */}
@@ -245,12 +322,35 @@ export default function DocEditor({ doc, onClose, onSave, saving }) {
         </div>
       </div>
 
+      {/* Markdown toolbar */}
+      <div style={s.mdToolbar}>
+        {MD_ACTIONS.map((act, i) => (
+          <span key={act.key} style={{ display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
+            {i > 0 && <div style={s.mdDivider} />}
+            <button
+              style={s.mdBtn}
+              onClick={() => handleMdAction(act)}
+              title={act.hint}
+              onMouseEnter={e => { e.target.style.background = 'var(--surface-2)'; e.target.style.borderColor = 'var(--glass-border)'; }}
+              onMouseLeave={e => { e.target.style.background = 'transparent'; e.target.style.borderColor = 'transparent'; }}
+            >
+              {act.icon ? <i className={`fas ${act.icon}`} style={{ fontSize: '0.65rem' }}></i> : act.label}
+            </button>
+          </span>
+        ))}
+        <div style={{ flex: 1 }} />
+        <span style={{ fontSize: '0.65rem', color: 'var(--text-dim)' }}>
+          <i className="fas fa-info-circle"></i> Ctrl+S lưu
+        </span>
+      </div>
+
       {/* Split pane */}
       <div ref={containerRef} style={s.splitPane}>
         {/* Editor */}
         <div style={{ ...s.editorPane, flexBasis: `${splitRatio}%`, maxWidth: `${splitRatio}%` }}>
           <div style={s.paneHeader}>Editor</div>
           <textarea
+            ref={textareaRef}
             style={s.textarea}
             value={content}
             onChange={handleChange}

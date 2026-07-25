@@ -227,6 +227,33 @@ export default function DashboardPage() {
       <section className="section" style={{ paddingTop: '1rem' }}>
         <div className="container" style={{ maxWidth: '1200px' }}>
 
+          {/* Stats bar */}
+          <div style={{
+            display: 'flex', gap: '0.6rem', marginBottom: '0.8rem', flexWrap: 'wrap', padding: '0 0.5rem',
+          }}>
+            {[
+              { label: 'running', count: services.filter(s => s.status === 'running').length, color: '#22c55e', cls: 'green' },
+              { label: 'stopped', count: services.filter(s => s.status !== 'running').length, color: '#6b7280', cls: 'gray' },
+              { label: 'error', count: services.filter(s => s.status === 'error').length, color: '#ef4444', cls: 'red' },
+            ].map(stat => (
+              <div key={stat.label} style={{
+                background: 'var(--glass-bg)', backdropFilter: 'blur(16px)',
+                WebkitBackdropFilter: 'blur(16px)',
+                border: '1px solid var(--glass-border)', borderRadius: 'var(--radius-md)',
+                padding: '0.5rem 1rem', flex: '1 1 100px', textAlign: 'center',
+                boxShadow: '0 4px 16px var(--glass-shadow)',
+                transition: 'transform .2s',
+              }}>
+                <div style={{ fontSize: '1.25rem', fontWeight: 700, lineHeight: '1.3', color: stat.color }}>
+                  {stat.count}
+                </div>
+                <div style={{ fontSize: '0.65rem', color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  {stat.label}
+                </div>
+              </div>
+            ))}
+          </div>
+
           {/* Tabs */}
           <div className="tabs is-boxed" style={{ marginBottom: '1rem' }}>
             <ul style={{ borderBottomColor: 'var(--glass-border)', gap: '0.2rem' }}>
@@ -317,7 +344,26 @@ export default function DashboardPage() {
                         <i className={`fas fa-chevron-${expanded[s.id] ? 'down' : 'right'}`} style={{ color: 'var(--text-dim)', fontSize: '0.7rem', width: '12px' }}></i>
                         <span style={{ fontWeight: 600, fontSize: '0.88rem', color: 'var(--text-strong)', flex: '1 0 auto', minWidth: '120px' }}>{s.name || s.id}</span>
                         {statusBadge(s)}
-                        {s.port && <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>:{s.port}</span>}
+                        {s.port ? (
+                          <a href={`http://localhost:${s.port}`} target="_blank" rel="noopener"
+                            onClick={e => e.stopPropagation()}
+                            style={{
+                              fontSize: '0.65rem', padding: '0.15rem 0.5rem', borderRadius: '6px',
+                              background: 'var(--surface-2)', border: '1px solid var(--glass-border)',
+                              color: 'var(--text-dim)', textDecoration: 'none', flexShrink: 0,
+                            }}
+                          >
+                            :{s.port}
+                          </a>
+                        ) : <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>—</span>}
+                        {s.autoRestart && (
+                          <span style={{
+                            fontSize: '0.6rem', padding: '0.1rem 0.4rem', borderRadius: '4px',
+                            background: 'rgba(245,158,11,0.15)', color: 'var(--amber)', flexShrink: 0,
+                          }}>
+                            ↻ auto
+                          </span>
+                        )}
                         <div style={{ display: 'flex', gap: '0.25rem', marginLeft: 'auto' }}>
                           {s.status !== 'running' && (
                             <button onClick={(e) => { e.stopPropagation(); handleStart(s.id); }} className="button is-small" style={{ background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: '4px', fontSize: '0.7rem', padding: '0.2rem 0.5rem', fontWeight: 600 }}>▶</button>

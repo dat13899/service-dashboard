@@ -48,11 +48,14 @@ export default function useDocuments(toast) {
   }, [toast]);
 
   // ── Create document ──
-  const createDoc = useCallback(async (title = 'Tài liệu mới') => {
+  const createDoc = useCallback(async (title = 'Tài liệu mới', opts = {}) => {
     try {
+      const payload = { title, content: opts.content || '# Tài liệu mới\n\nNội dung...' };
+      if (opts.tags) payload.tags = opts.tags;
+      if (opts.template) payload.template = opts.template;
       const data = await request('/api/documents', {
         method: 'POST',
-        body: JSON.stringify({ title, content: '# Tài liệu mới\n\nNội dung...' }),
+        body: JSON.stringify(payload),
       });
       setDocs(prev => [data, ...prev]);
       toast?.('Đã tạo tài liệu mới', 'success');
@@ -115,6 +118,23 @@ export default function useDocuments(toast) {
     }
   }, [toast]);
 
+  // ── Bulk delete ──
+  const bulkDelete = useCallback(async (ids) => {
+    try {
+      await request('/api/documents/bulk-delete', {
+        method: 'POST',
+        body: JSON.stringify({ ids }),
+      });
+      setDocs(prev => prev.filter(d => !ids.includes(d.id)));
+      setCurrentDoc(prev => prev && ids.includes(prev.id) ? null : prev);
+      toast?.(`Đã xoá ${ids.length} tài liệu`, 'info');
+      return true;
+    } catch {
+      toast?.('Lỗi xoá hàng loạt', 'error');
+      return false;
+    }
+  }, [toast]);
+
   // ── Rename document ──
   const renameDoc = useCallback(async (id, title) => {
     try {
@@ -132,7 +152,7 @@ export default function useDocuments(toast) {
     }
   }, [toast]);
 
-  // ── Convert to PDF ──
+  // ── Convert to PDF (server-side) ──
   const convertDoc = useCallback(async (id) => {
     try {
       await request(`/api/documents/${id}/convert`, { method: 'POST' });
@@ -142,6 +162,44 @@ export default function useDocuments(toast) {
       toast?.('Lỗi chuyển PDF', 'error');
       return false;
     }
+  }, [toast]);
+
+  // ── Export PDF (download blob) ──
+  const exportPdf = useCallback(async (id, filename = 'document.pdf') => {
+    try {
+      const res = await fetch(`${BASE}/api/documents/${id}/export-pdf`, { method: 'POST' });
+      if (!res.ok) throw new Error(`Export PDF ${res.status}`);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename.replace(/\.(md|txt)$/, '') + '.pdf';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast?.('Đã tải PDF', 'success');
+      return true;
+    } catch {
+      toast?.('Lỗi xuất PDF', 'error');
+      return false;
+    }
+  }, [toast]);
+
+  // ── Download as .md file ──
+  const downloadDoc = useCallback((doc) => {
+    if (!doc) return;
+    const content = doc.content || '';
+    const blob = new Blob([content], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = (doc.title || 'document').replace(/[^a-zA-Z0-9-_]/g, '_') + '.md';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast?.('Đã tải file .md', 'success');
   }, [toast]);
 
   // ── Upload file ──
@@ -177,8 +235,11 @@ export default function useDocuments(toast) {
     updateDoc,
     scheduleSave,
     deleteDoc,
+    bulkDelete,
     renameDoc,
     convertDoc,
+    exportPdf,
+    downloadDoc,
     uploadDoc,
   };
 }

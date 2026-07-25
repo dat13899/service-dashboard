@@ -14,14 +14,14 @@ const s = {
     position: 'relative',
     minWidth: 0,
   },
-  progressBar: {
-    position: 'absolute',
+  readingProgress: {
+    position: 'fixed',
     top: 0,
     left: 0,
     height: '3px',
-    background: 'var(--accent)',
-    transition: 'width .2s ease',
-    zIndex: 2,
+    background: 'linear-gradient(90deg, var(--accent), #818cf8)',
+    zIndex: 999,
+    transition: 'width .15s ease',
   },
   header: {
     padding: '1rem 1.25rem',
@@ -35,6 +35,7 @@ const s = {
   titleRow: {
     flex: 1,
     minWidth: 0,
+    cursor: 'pointer',
   },
   title: {
     fontSize: '1.1rem',
@@ -65,6 +66,7 @@ const s = {
     gap: '0.35rem',
     flexShrink: 0,
     alignItems: 'center',
+    flexWrap: 'wrap',
   },
   actionBtn: (color) => ({
     fontSize: '0.75rem',
@@ -83,7 +85,6 @@ const s = {
     flex: 1,
     overflowY: 'auto',
     padding: '1.5rem 2rem',
-    fontSize: '0.92rem',
     lineHeight: 1.7,
     color: 'var(--text)',
     wordBreak: 'break-word',
@@ -154,6 +155,34 @@ const s = {
     width: '100%',
     boxSizing: 'border-box',
   },
+  wordCount: {
+    fontSize: '0.72rem',
+    color: 'var(--text-dim)',
+    padding: '0.35rem 1.25rem',
+    borderTop: '1px solid var(--glass-border)',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexShrink: 0,
+  },
+  fontCtrl: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.15rem',
+  },
+  fontBtn: {
+    fontSize: '0.7rem',
+    padding: '0.2rem 0.4rem',
+    borderRadius: 'var(--radius-sm)',
+    border: '1px solid var(--glass-border)',
+    background: 'var(--surface-2)',
+    color: 'var(--text-dim)',
+    cursor: 'pointer',
+    transition: 'all .15s',
+    display: 'flex',
+    alignItems: 'center',
+    lineHeight: 1,
+  },
 };
 
 // Convert markdown headings to TOC items
@@ -183,11 +212,24 @@ function fmtDate(ts) {
   return d.toLocaleDateString('vi-VN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
 }
 
-export default function DocReader({ doc, onEdit, onDelete, onRename, onConvert, isMobile }) {
+// Word count
+function wordStats(content) {
+  const text = content || '';
+  const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+  const chars = text.length;
+  const lines = text.split('\n').length;
+  return { words, chars, lines };
+}
+
+export default function DocReader({ doc, onEdit, onDelete, onRename, onConvert, onExportPdf, onDownloadDoc, isMobile }) {
   const [showToc, setShowToc] = useState(false);
   const [readProgress, setReadProgress] = useState(0);
   const [renaming, setRenaming] = useState(false);
   const [newTitle, setNewTitle] = useState('');
+  const [fontSize, setFontSize] = useState(() => {
+    try { return parseFloat(localStorage.getItem('docReaderFontSize')) || 0.92; }
+    catch { return 0.92; }
+  });
   const contentRef = useRef(null);
   const tocRef = useRef(null);
   const renameRef = useRef(null);
@@ -204,6 +246,14 @@ export default function DocReader({ doc, onEdit, onDelete, onRename, onConvert, 
     return extractTOC(renderedHtml);
   }, [renderedHtml]);
 
+  // Word count
+  const stats = useMemo(() => wordStats(doc?.content), [doc?.content]);
+
+  // Persist font size
+  useEffect(() => {
+    try { localStorage.setItem('docReaderFontSize', fontSize.toString()); } catch {}
+  }, [fontSize]);
+
   // Reading progress
   const handleScroll = useCallback(() => {
     const el = contentRef.current;
@@ -214,6 +264,14 @@ export default function DocReader({ doc, onEdit, onDelete, onRename, onConvert, 
       setReadProgress(Math.min((scrollTop / scrollHeight) * 100, 100));
     }
   }, []);
+
+  // Track page-level scroll for fixed progress bar
+  useEffect(() => {
+    const el = contentRef.current;
+    if (!el) return;
+    el.addEventListener('scroll', handleScroll);
+    return () => el.removeEventListener('scroll', handleScroll);
+  }, [handleScroll]);
 
   // Click outside TOC dropdown
   useEffect(() => {
@@ -245,6 +303,30 @@ export default function DocReader({ doc, onEdit, onDelete, onRename, onConvert, 
     }
   }, []);
 
+  // Font size controls
+  const increaseFont = useCallback(() => {
+    setFontSize(prev => Math.min(prev + 0.08, 1.6));
+  }, []);
+
+  const decreaseFont = useCallback(() => {
+    setFontSize(prev => Math.max(prev - 0.08, 0.65));
+  }, []);
+
+  // Print
+  const handlePrint = useCallback(() => {
+    window.print();
+  }, []);
+
+  // Download
+  const handleDownload = useCallback(() => {
+    onDownloadDoc?.(doc);
+  }, [onDownloadDoc, doc]);
+
+  // Export PDF
+  const handleExportPdf = useCallback(() => {
+    onExportPdf?.(doc.id, doc.title);
+  }, [onExportPdf, doc]);
+
   if (!doc) {
     return (
       <div style={s.container}>
@@ -275,12 +357,12 @@ export default function DocReader({ doc, onEdit, onDelete, onRename, onConvert, 
 
   return (
     <div style={s.container}>
-      {/* Reading progress bar */}
-      <div style={{ ...s.progressBar, width: `${readProgress}%` }} />
+      {/* Fixed reading progress bar */}
+      <div style={{ ...s.readingProgress, width: `${readProgress}%` }} />
 
       {/* Header */}
       <div style={s.header}>
-        <div style={s.titleRow}>
+        <div style={s.titleRow} onDoubleClick={handleStartRename}>
           {renaming ? (
             <input
               ref={renameRef}
@@ -293,7 +375,6 @@ export default function DocReader({ doc, onEdit, onDelete, onRename, onConvert, 
           ) : (
             <h2 style={s.title}>{doc.title || 'Untitled'}</h2>
           )}
-
           <div style={s.meta}>
             {doc.meta?.createdAt && (
               <span><i className="far fa-calendar-alt" style={{ marginRight: '0.25rem' }}></i>{fmtDate(doc.meta.createdAt)}</span>
@@ -309,6 +390,17 @@ export default function DocReader({ doc, onEdit, onDelete, onRename, onConvert, 
 
         {/* Actions */}
         <div style={s.actions}>
+          {/* Font size controls */}
+          <div style={s.fontCtrl}>
+            <button style={s.fontBtn} onClick={decreaseFont} title="Thu nhỏ chữ">
+              <i className="fas fa-font" style={{ fontSize: '0.55rem' }}></i><span style={{ fontSize: '0.55rem' }}>⁻</span>
+            </button>
+            <span style={{ fontSize: '0.65rem', color: 'var(--text-dim)', padding: '0 0.2rem' }}>{Math.round(fontSize * 100)}%</span>
+            <button style={s.fontBtn} onClick={increaseFont} title="Phóng to chữ">
+              <i className="fas fa-font" style={{ fontSize: '0.7rem' }}></i><span style={{ fontSize: '0.65rem' }}>⁺</span>
+            </button>
+          </div>
+
           {/* TOC button */}
           {toc.length > 0 && (
             <div ref={tocRef} style={{ position: 'relative' }}>
@@ -344,7 +436,13 @@ export default function DocReader({ doc, onEdit, onDelete, onRename, onConvert, 
           <button style={s.actionBtn()} onClick={handleStartRename} title="Đổi tên">
             <i className="fas fa-pencil"></i>
           </button>
-          <button style={s.actionBtn('var(--amber)')} onClick={() => onConvert?.(doc.id)} title="Xuất PDF">
+          <button style={s.actionBtn()} onClick={handleDownload} title="Tải xuống .md">
+            <i className="fas fa-download"></i>
+          </button>
+          <button style={s.actionBtn()} onClick={handlePrint} title="In ấn">
+            <i className="fas fa-print"></i>
+          </button>
+          <button style={s.actionBtn('var(--amber)')} onClick={handleExportPdf} title="Xuất PDF">
             <i className="fas fa-file-pdf"></i>
           </button>
           <button style={s.actionBtn('var(--red)')} onClick={() => onDelete?.(doc)} title="Xoá">
@@ -356,11 +454,19 @@ export default function DocReader({ doc, onEdit, onDelete, onRename, onConvert, 
       {/* Content */}
       <div
         ref={contentRef}
-        style={s.contentArea}
-        onScroll={handleScroll}
+        style={{ ...s.contentArea, fontSize: `${fontSize}rem` }}
         className="doc-reader-content"
         dangerouslySetInnerHTML={{ __html: renderedHtml }}
       />
+
+      {/* Word count footer */}
+      {doc.content && (
+        <div style={s.wordCount}>
+          <span>{stats.lines} dòng</span>
+          <span>{stats.words} từ</span>
+          <span>{stats.chars} ký tự</span>
+        </div>
+      )}
     </div>
   );
 }
