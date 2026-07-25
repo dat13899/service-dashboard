@@ -2078,6 +2078,22 @@ function initWormhole(){
   }
 }
 initWormhole();
+
+// ─── Galaxy Map — Top-down spiral galaxy ─────────────────────
+let galaxyMode=false;
+let fireflyMode=false;
+let galaxyStars=[];
+let galaxyRotation=0;
+let galaxyOrbitX=0.5;
+let galaxyOrbitY=0.5;
+let galaxyOrbitTargetX=0.5;
+let galaxyOrbitTargetY=0.5;
+let galaxyDragX=0,galaxyDragY=0;
+let galaxyDrag=false;
+let galaxyAutoRotate=true;
+const GALAXY_STAR_COUNT=4000;
+const GALAXY_ARMS=4;
+
 initGalaxy();
 
 function drawWormhole(time){
@@ -2232,21 +2248,6 @@ function drawWormhole(time){
   ctx.globalAlpha=1;
   ctx.restore();
 }
-
-// ─── Galaxy Map — Top-down spiral galaxy ─────────────────────
-let galaxyMode=false;
-let fireflyMode=false;
-let galaxyStars=[];
-let galaxyRotation=0;
-let galaxyOrbitX=0.5;
-let galaxyOrbitY=0.5;
-let galaxyOrbitTargetX=0.5;
-let galaxyOrbitTargetY=0.5;
-let galaxyDragX=0,galaxyDragY=0;
-let galaxyDrag=false;
-let galaxyAutoRotate=true;
-const GALAXY_STAR_COUNT=4000;
-const GALAXY_ARMS=4;
 
 function initGalaxy(){
   galaxyStars=[];

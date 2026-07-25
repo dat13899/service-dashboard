@@ -1,8 +1,8 @@
 {
-  "iteration": 14,
+  "iteration": 15,
   "phase": "build",
-  "vision": "Cosmic Dreamscape v14 — Lightning Storm scene mode (12th mode). Procedural recursive lightning bolts with forked branches and ground-strike child forks, charged rain particles (250+ base, audio-reactive density) with mouse-wind influence, dark storm cloud layers (8 clouds, radial-gradient dark blue/purple nebula), screen flash on strike (white-blue overlay), audio-reactive strike frequency (more lightning when bass hits) + rain speed boost. U key toggles storm. Tab/Arrow cycling includes all 12 modes. Resize reinit includes storm geometry.",
-  "goal": "Thêm scene Cosmic Storm (12th mode) — lightning bolts procedural, charged rain, dark storm clouds, screen flash.",
+  "vision": "Cosmic Dreamscape v15 — Thunder Rumble Audio + Rain Puddle Reflections + Wormhole 3D Perspective Tilt. Lightning now triggers low-frequency oscillator rumble (dual sine/triangle sub-harmonic). Rain accumulates on ground as shimmering elliptical puddle reflections with light streaks. Wormhole mode has mouse-driven 3D perspective tilt (rotation + scale + parallax offset). Puddles pulse with storm flash and audio reactivity.",
+  "goal": "Thêm thunder rumble audio, rain puddle reflections, wormhole 3D mouse perspective tilt.",
   "built": [
     "v1: 600 stars parallax, 8 nebulas, 60 particles, trails, connections, click explosion",
     "v2: 6 color palettes, Web Audio ambient (4 drone layers + chimes), shooting stars, keyboard controls, palette UI, constellation wander",
@@ -17,17 +17,17 @@
     "v11: Stargate Wormhole scene mode (9th mode, O key) — 12 warp rings 3D perspective, hue-cycling, inner triple-vortex spiral, event horizon core, orbiting particle stream, cinematic auto-pilot (X toggle)",
     "v12: Galaxy Map scene mode (10th mode, Y key) — 4000 stars in 4 spiral arms, mouse-orbit parallax, auto-rotation, warm galactic core, orbit ring indicators",
     "v13: Firefly Swarm scene mode (11th mode, B key) — 200 fireflies boids flocking, green-yellow glow aura, per-firefly pulsation, mouse attraction, audio-reactive pulse/size",
-    "v14: Cosmic Storm scene mode (12th mode, U key) — procedural recursive lightning bolts with forked branches and ground-strike child forks, charged rain particles (250+ audio-reactive), dark storm clouds (8 layers), screen flash on strike, audio-reactive frequency boost"
+    "v14: Cosmic Storm scene mode (12th mode, U key) — procedural recursive lightning bolts with forked branches and ground-strike child forks, charged rain particles (250+ audio-reactive), dark storm clouds (8 layers), screen flash on strike, audio-reactive frequency boost",
+    "v15: Thunder rumble audio (LFO oscillator triggered by lightning), rain puddle reflections (elliptical shimmering puddles on ground), wormhole 3D mouse perspective tilt (rotation + scale + parallax offset driven by mouse position)"
   ],
   "todo": [
     "Video recording / GIF export with WebGL capture",
     "Shader-based background (WebGL fragment shaders thay vì CPU noise)",
     "Mid-air particle text that follows mouse on a path",
     "Export preset scenes as data URL bookmarks (shareable)",
-    "3D perspective tilt parallax dựa trên con trỏ chuột cho wormhole mode",
     "Interactive per-firefly click to spawn offspring burst",
-    "Storm rain puddle reflections on ground",
-    "Thunder rumble audio (low-frequency oscillator triggered by lightning)"
+    "Rain splash particle effects on puddle impact",
+    "Wormhole ring particle stream 3D depth sorting"
   ],
   "critic": "",
   "score": null,
