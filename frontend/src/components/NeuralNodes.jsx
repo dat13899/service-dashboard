@@ -70,7 +70,7 @@ export default function NeuralNodes({ services = [], loading, healthMap, statusC
               <div style={{
                 position: 'absolute', top: 8, right: 8,
                 width: 10, height: 10, borderRadius: '50%',
-                background: '#22c55e',
+                background: '#00ccff',
                 boxShadow: '0 0 8px rgba(34,197,94,0.5), 0 0 16px rgba(34,197,94,0.2)',
                 animation: 'aiPulse 2s ease-in-out infinite',
               }} />
@@ -115,9 +115,9 @@ export default function NeuralNodes({ services = [], loading, healthMap, statusC
       }}>
         <defs>
           <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#34d399" stopOpacity="0" />
-            <stop offset="50%" stopColor="#34d399" stopOpacity="1" />
-            <stop offset="100%" stopColor="#34d399" stopOpacity="0" />
+            <stop offset="0%" stopColor="#00d4ff" stopOpacity="0" />
+            <stop offset="50%" stopColor="#00d4ff" stopOpacity="1" />
+            <stop offset="100%" stopColor="#00d4ff" stopOpacity="0" />
           </linearGradient>
         </defs>
         {services.length > 1 && Array.from({ length: Math.min(services.length * 2, 12) }).map((_, i) => (

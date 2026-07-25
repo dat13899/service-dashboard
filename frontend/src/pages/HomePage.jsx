@@ -48,7 +48,7 @@ function HeroSection() {
                 WebkitBackgroundClip: ch !== ' ' ? 'text' : undefined,
                 WebkitTextFillColor: ch !== ' ' ? 'transparent' : undefined,
                 backgroundImage: ch !== ' '
-                  ? 'linear-gradient(135deg, #fff 20%, #34d399 50%, #fff 80%)'
+                  ? 'linear-gradient(135deg, #fff 20%, #00d4ff 50%, #fff 80%)'
                   : undefined,
                 backgroundSize: '200% auto',
                 animation: ch !== ' ' ? 'shimmer 3s ease-in-out infinite' : undefined,
@@ -81,7 +81,7 @@ function HeroSection() {
           transition={{ delay: 1.3, duration: 0.5 }}
           style={{
             display: 'inline-block', marginTop: '2rem',
-            background: 'linear-gradient(135deg, #34d399, #10b981)',
+            background: 'linear-gradient(135deg, #00d4ff, #00a8e0)',
             color: '#fff', padding: '0.7rem 2rem', borderRadius: 'var(--radius-sm)',
             fontWeight: 700, textDecoration: 'none', fontSize: '0.9rem',
             boxShadow: '0 0 30px rgba(52,211,153,0.25)',

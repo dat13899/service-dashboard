@@ -33,12 +33,12 @@ function ParticleField({ count = 400 }) {
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
-      <pointsMaterial size={0.015} color="#34d399" transparent opacity={0.4} depthWrite={false} />
+      <pointsMaterial size={0.015} color="#00d4ff" transparent opacity={0.4} depthWrite={false} />
     </points>
   );
 }
 
-function FloatingTorus({ color = '#34d399', position = [0, 0, 0], scale = 1, speed = 0.5 }) {
+function FloatingTorus({ color = '#00d4ff', position = [0, 0, 0], scale = 1, speed = 0.5 }) {
   const ref = useRef();
   useFrame(({ clock }) => {
     if (ref.current) {
@@ -78,11 +78,11 @@ function Icosahedron() {
       <mesh ref={ref} position={[2.5, -1, -2]}>
         <icosahedronGeometry args={[0.7, 1]} />
         <meshStandardMaterial
-          color="#34d399"
+          color="#00d4ff"
           wireframe
           transparent
           opacity={0.12}
-          emissive="#34d399"
+          emissive="#00d4ff"
           emissiveIntensity={0.3}
         />
       </mesh>
@@ -98,10 +98,10 @@ export default function Scene3D() {
         dpr={[1, 1.5]}
         style={{ background: 'transparent' }}
       >
-        <ambientLight intensity={0.3} color="#34d399" />
+        <ambientLight intensity={0.3} color="#00d4ff" />
         <directionalLight position={[5, 5, 5]} intensity={0.4} />
-        <FloatingTorus color="#34d399" position={[-1.8, 0.8, -1]} scale={0.8} speed={0.7} />
-        <FloatingTorus color="#10b981" position={[2, -0.5, -2]} scale={0.5} speed={1.1} />
+        <FloatingTorus color="#00d4ff" position={[-1.8, 0.8, -1]} scale={0.8} speed={0.7} />
+        <FloatingTorus color="#00a8e0" position={[2, -0.5, -2]} scale={0.5} speed={1.1} />
         <Icosahedron />
         <ParticleField count={500} />
       </Canvas>

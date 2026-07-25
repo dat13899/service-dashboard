@@ -76,7 +76,7 @@ export default function TerminalContact({ toast }) {
       }}>
         <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#ef4444' }} />
         <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#f59e0b' }} />
-        <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#22c55e' }} />
+        <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#00ccff' }} />
         <span style={{ marginLeft: '0.5rem', color: 'var(--text-dim)', fontSize: '0.65rem' }}>
           dat@home-lab:~/
         </span>
@@ -85,7 +85,7 @@ export default function TerminalContact({ toast }) {
       {/* Terminal lines */}
       {visibleLines.map((idx) => (
         <div key={idx} style={{ marginBottom: '0.5rem', lineHeight: 1.6 }}>
-          <div style={{ color: '#34d399' }}>
+          <div style={{ color: '#00d4ff' }}>
             <span style={{ color: 'var(--text-dim)' }}>$ </span>
             {COMMANDS[idx].input}
           </div>
@@ -98,7 +98,7 @@ export default function TerminalContact({ toast }) {
       {/* Current typing line */}
       {currentCmd < COMMANDS.length && (
         <div style={{ marginBottom: '0.5rem', lineHeight: 1.6 }}>
-          <div style={{ color: '#34d399' }}>
+          <div style={{ color: '#00d4ff' }}>
             <span style={{ color: 'var(--text-dim)' }}>$ </span>
             {typing}
             <span style={{
