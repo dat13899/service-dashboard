@@ -514,13 +514,15 @@ function drawCosmicWeb(time){
 }
 
 // ─── Web Audio ──────────────────────────────────────────────────────
-let audioCtx=null,audioGain=null,analyser=null,audioNodes=[],audioEnabled=false,audioInitialized=false,freqData=null;
+let audioCtx=null,audioGain=null,analyser=null,audioNodes=[],audioEnabled=false,freqData=null;
+window.audioInitialized=false;
 
 function initAudio(){
-  if(audioInitialized)return;
-  audioInitialized=true;
+  if(window.audioInitialized)return;
+  window.audioInitialized=true;
   try{
     audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==='suspended')audioCtx.resume();
     analyser=audioCtx.createAnalyser();analyser.fftSize=64;
     freqData=new Uint8Array(analyser.frequencyBinCount);
     audioGain=audioCtx.createGain();audioGain.gain.value=0;
@@ -588,7 +590,7 @@ function initAudio(){
 }
 
 function toggleAudio(){
-  if(!audioInitialized){initAudio();return}
+  if(!window.audioInitialized){initAudio();return}
   audioEnabled=!audioEnabled;
   const n=audioCtx.currentTime;
   if(audioEnabled){
@@ -757,6 +759,8 @@ const panelToggle=document.getElementById('mode-panel-toggle');
 const panel=document.getElementById('mode-panel');
 let panelOpen=false;
 
+function isMobilePanel(){return window.innerWidth<=768}
+
 panelToggle.addEventListener('click',()=>{
   panelOpen=!panelOpen;
   panel.classList.toggle('open',panelOpen);
@@ -765,10 +769,25 @@ panelToggle.addEventListener('click',()=>{
   panelToggle.textContent=panelOpen?'✕':'☰';
 });
 
+// Mobile: tap peek bar to open/close
+panel.addEventListener('click',e=>{
+  if(!isMobilePanel())return;
+  // Only toggle if clicked on panel itself (not on a mode-btn child)
+  if(e.target===panel||e.target===panel.firstChild){
+    panelOpen=!panelOpen;
+    panel.classList.toggle('visible',panelOpen);
+  }
+});
+
 document.querySelectorAll('.mode-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
     const mode=btn.dataset.mode;
     setSceneMode(mode);
+    // Mobile: auto-close panel
+    if(isMobilePanel()&&panelOpen){
+      panelOpen=false;
+      panel.classList.remove('visible');
+    }
   });
 });
 
@@ -986,10 +1005,12 @@ addEventListener('keydown',e=>{
 // ─── Mobile Dual-Touch Gestures ────────────────────────────────────
 let touchPinchDist=0;
 let touchModeCycle=false;
+let touchStartAvgX=0;
 addEventListener('touchstart',e=>{
   if(e.touches.length===2&&!wordModalActive){
     const t1=e.touches[0],t2=e.touches[1];
     touchPinchDist=Math.hypot(t1.clientX-t2.clientX,t1.clientY-t2.clientY);
+    touchStartAvgX=(t1.clientX+t2.clientX)/2;
     touchModeCycle=true;
     e.preventDefault();
   }
@@ -1009,8 +1030,19 @@ addEventListener('touchmove',e=>{
     }
 
     // Two-finger horizontal swipe → cycle modes
-    const avgX=(t1.clientX+t2.clientX)/2;
-    const avgY=(t1.clientY+t2.clientY)/2;
+    const avgX_now=(t1.clientX+t2.clientX)/2;
+    const swipeX=avgX_now-touchStartAvgX;
+    if(Math.abs(swipeX)>120){
+      if(swipeX>0){
+        const idx=SCENE_MODES.findIndex(m=>m.id===currentMode);
+        setSceneMode(SCENE_MODES[(idx+1)%SCENE_MODES.length].id);
+      }else{
+        const idx=SCENE_MODES.findIndex(m=>m.id===currentMode);
+        setSceneMode(SCENE_MODES[(idx-1+SCENE_MODES.length)%SCENE_MODES.length].id);
+      }
+      touchStartAvgX=avgX_now;
+      touchModeCycle=false;
+    }
   }
 },{passive:false});
 
