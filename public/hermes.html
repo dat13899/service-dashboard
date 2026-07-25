@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>✦ Hermes — Cosmic Dreamscape v11 · Stargate Wormhole</title>
+<title>✦ Hermes — Cosmic Dreamscape v13 · Firefly Swarm</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌀</text></svg>">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -86,6 +86,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05060f;font-family:
 #mode-badge.aurora-mode{color:rgba(80,220,160,.2);letter-spacing:10px}
 #mode-badge.wormhole-mode{color:rgba(180,100,255,.25);letter-spacing:10px}
 #mode-badge.galaxy-mode{color:rgba(255,200,80,.25);letter-spacing:10px}
+#mode-badge.firefly-mode{color:rgba(150,255,100,.25);letter-spacing:10px}
 
 /* gravity indicator */
 #gravity-indicator{position:fixed;pointer-events:none;z-index:4;border-radius:50%;
@@ -117,6 +118,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05060f;font-family:
 #mode-panel.open .mode-btn:nth-child(8){transition-delay:.16s}
 #mode-panel.open .mode-btn:nth-child(9){transition-delay:.18s}
 #mode-panel.open .mode-btn:nth-child(10){transition-delay:.20s}
+#mode-panel.open .mode-btn:nth-child(11){transition-delay:.22s}
 .mode-btn:hover{border-color:rgba(120,180,255,.25);color:rgba(200,220,255,.7);background:rgba(5,6,15,.7)}
 .mode-btn.active{background:rgba(91,192,255,.12);border-color:rgba(91,192,255,.3);color:#5bc0ff}
 .mode-btn .mode-icon{font-size:16px;width:20px;text-align:center}
@@ -214,8 +216,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05060f;font-family:
 </head>
 <body>
 <div id="splash"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="rgba(91,192,255,.4)" stroke-width="2" stroke-dasharray="80 30"/><circle cx="50" cy="50" r="20" fill="none" stroke="rgba(255,107,203,.4)" stroke-width="2" stroke-dasharray="40 20"/></svg></div>
-<div id="hint">✦ click explode · hold drag gravity · T tunnel · P paint · C const · N nebula · R rave · A aurora · O wormhole · Y galaxy · W word · Tab/→ cycle · S snapshot · G settings · 1-6 palette · ? help ✦</div>
-<div id="title">✦ hermes — cosmic dreamscape v12 ✦</div>
+<div id="hint">✦ click explode · hold drag gravity · T tunnel · P paint · C const · N nebula · R rave · A aurora · O wormhole · Y galaxy · B firefly · W word · Tab/→ cycle · S snapshot · G settings · 1-6 palette · ? help ✦</div>
+<div id="title">✦ hermes — cosmic dreamscape v13 ✦</div>
 <div id="mode-badge">◆ cosmic drift ◆</div>
 <div id="aurora-vis"></div>
 <div id="palette-indicator"></div>
@@ -235,6 +237,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05060f;font-family:
   <button class="mode-btn" data-mode="aurora"><span class="mode-icon">🌟</span><span class="mode-label">Aurora</span><span class="mode-check">✓</span></button>
   <button class="mode-btn" data-mode="wormhole"><span class="mode-icon">🌀</span><span class="mode-label">Wormhole</span><span class="mode-check">✓</span></button>
   <button class="mode-btn" data-mode="galaxy"><span class="mode-icon">🌌</span><span class="mode-label">Galaxy Map</span><span class="mode-check">✓</span></button>
+  <button class="mode-btn" data-mode="firefly"><span class="mode-icon">🪲</span><span class="mode-label">Firefly Swarm</span><span class="mode-check">✓</span></button>
 </div>
 
 <!-- Paint Controls -->
@@ -325,6 +328,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05060f;font-family:
       <div class="help-desc"><span class="help-key">O</span> wormhole mode</div>
       <div class="help-desc"><span class="help-key">X</span> wormhole cinematic</div>
       <div class="help-desc"><span class="help-key">Y</span> galaxy map mode</div>
+      <div class="help-desc"><span class="help-key">B</span> firefly swarm mode</div>
       <div class="help-desc"><span class="help-key">W</span> word form mode</div>
       <div class="help-desc"><span class="help-key">S</span> snapshot (PNG)</div>
       <div class="help-desc"><span class="help-key">G</span> settings panel</div>
@@ -349,7 +353,7 @@ function resize(){
   W=c.width=tc.width=bc.width=transc.width=innerWidth;
   H=c.height=tc.height=bc.height=transc.height=innerHeight;
 }
-resize();addEventListener('resize',()=>{resize();initPrismGeometry();initAuroraBands();initWormhole();initGalaxy();});
+resize();addEventListener('resize',()=>{resize();initPrismGeometry();initAuroraBands();initWormhole();initGalaxy();initFireflySwarm();});
 
 const PI2=Math.PI*2;
 const rand=(min,max)=>Math.random()*(max-min)+min;
@@ -393,6 +397,7 @@ const SCENE_MODES=[
   {id:'aurora',   label:'Aurora Borealis',  icon:'🌟', desc:'Flowing aurora curtain waves', badge:'◇ A U R O R A  B O R E A L I S ◇',badgeCls:'aurora-mode',nebulaMul:.08, webMul:0,    starParallax:.5,  tunnelDefault:false, paintMode:false, wordMode:false},
   {id:'wormhole', label:'Stargate Wormhole', icon:'🌀', desc:'Warp-ring time-space portal',    badge:'◇ S T A R G A T E  W O R M H O L E ◇',badgeCls:'wormhole-mode',nebulaMul:.05,webMul:0,    starParallax:.2,  tunnelDefault:false, paintMode:false, wordMode:false},
   {id:'galaxy',   label:'Galaxy Map',       icon:'🌌', desc:'Top-down spiral galaxy explorer',badge:'◇ G A L A X Y  M A P ◇',      badgeCls:'galaxy-mode', nebulaMul:.02,webMul:0,    starParallax:.08, tunnelDefault:false, paintMode:false, wordMode:false},
+  {id:'firefly',  label:'Firefly Swarm',     icon:'🪲', desc:'Boids flocking light swarm',       badge:'◇ F I R E F L Y  S W A R M ◇', badgeCls:'firefly-mode',nebulaMul:.01,webMul:0,    starParallax:.04, tunnelDefault:false, paintMode:false, wordMode:false},
 ];
 let currentMode='cosmic';
 let paintMode=false;
@@ -1103,6 +1108,7 @@ function setSceneMode(modeId){
     wordMode=scene.wordMode;
     prismMode=scene.id==='prism';
     galaxyMode=scene.id==='galaxy';
+    fireflyMode=scene.id==='firefly';
     tunnelMode=scene.tunnelDefault;
     tunnelTargetTransition=scene.tunnelDefault?1:0;
 
@@ -1251,6 +1257,12 @@ addEventListener('keydown',e=>{
   if(k==='y'||k==='Y'){
     e.preventDefault();
     setSceneMode(currentMode==='galaxy'?'cosmic':'galaxy');
+    return;
+  }
+  if(k==='b'||k==='B'){
+    if(wordModalActive)return;
+    e.preventDefault();
+    setSceneMode(currentMode==='firefly'?'cosmic':'firefly');
     return;
   }
   if(k==='o'||k==='O'){
@@ -2158,6 +2170,7 @@ function drawWormhole(time){
 
 // ─── Galaxy Map — Top-down spiral galaxy ─────────────────────
 let galaxyMode=false;
+let fireflyMode=false;
 let galaxyStars=[];
 let galaxyRotation=0;
 let galaxyOrbitX=0.5;
@@ -2288,6 +2301,192 @@ document.addEventListener('mousemove',e=>{
   }
 });
 
+// ─── Firefly Swarm — Boids Flocking ────────────────────────────
+const FIREFLY_COUNT=200;
+let fireflies=[];
+const FF_PERCEPTION=150;
+const FF_SEPARATION=35;
+const FF_MAX_SPEED=2.5;
+const FF_MAX_FORCE=.08;
+
+function initFireflySwarm(){
+  fireflies=[];
+  for(let i=0;i<FIREFLY_COUNT;i++){
+    fireflies.push({
+      x:rand(0,W),y:rand(0,H),
+      vx:rand(-1,1),vy:rand(-1,1),
+      size:rand(1.5,4.5),
+      hue:rand(80,160), // greens/yellows
+      sat:rand(70,100),
+      lig:rand(50,85),
+      glowPhase:rand(0,PI2),
+      glowSpeed:rand(.002,.008),
+      glowIntensity:rand(.4,1),
+      trail:[],
+      phase:rand(0,PI2),
+      wanderAngle:rand(0,PI2),
+    });
+  }
+}
+initFireflySwarm();
+
+function updateFireflySwarm(dt){
+  if(currentMode!=='firefly')return;
+  const ar=audioLevel*2;
+  const densityMul=getEffMaxParticles()/getEffMaxParticles();
+  for(const fb of fireflies){
+    // ── Boids flocking ──
+    let steerX=0,steerY=0;
+    let alignX=0,alignY=0,alignCount=0;
+    let cohesX=0,cohesY=0,cohesCount=0;
+    let sepaX=0,sepaY=0,sepaCount=0;
+
+    for(const other of fireflies){
+      if(other===fb)continue;
+      const dx=other.x-fb.x;
+      const dy=other.y-fb.y;
+      const d=Math.sqrt(dx*dx+dy*dy);
+
+      if(d<FF_PERCEPTION){
+        // Alignment
+        alignX+=other.vx;
+        alignY+=other.vy;
+        alignCount++;
+        // Cohesion
+        cohesX+=other.x;
+        cohesY+=other.y;
+        cohesCount++;
+
+        if(d<FF_SEPARATION&&d>0){
+          // Separation
+          const force=(FF_SEPARATION-d)/FF_SEPARATION;
+          sepaX-=(dx/d)*force;
+          sepaY-=(dy/d)*force;
+          sepaCount++;
+        }
+      }
+    }
+
+    // Apply forces
+    if(sepaCount>0){
+      steerX+=sepaX*6;
+      steerY+=sepaY*6;
+    }
+    if(alignCount>0){
+      steerX+=(alignX/alignCount-fb.vx)*.035;
+      steerY+=(alignY/alignCount-fb.vy)*.035;
+    }
+    if(cohesCount>0){
+      cohesX=(cohesX/cohesCount-fb.x)*.006;
+      cohesY=(cohesY/cohesCount-fb.y)*.006;
+      steerX+=cohesX;
+      steerY+=cohesY;
+    }
+
+    // Mouse attraction / repulsion
+    if(mouse.active){
+      const dx=mouse.x-fb.x;
+      const dy=mouse.y-fb.y;
+      const d=Math.sqrt(dx*dx+dy*dy);
+      if(d<200&&d>5){
+        steerX+=dx*.002*(200-d)/200;
+        steerY+=dy*.002*(200-d)/200;
+      }
+    }
+
+    // Wander
+    fb.wanderAngle+=rand(-.05,.05);
+    steerX+=Math.cos(fb.wanderAngle)*.02;
+    steerY+=Math.sin(fb.wanderAngle)*.02;
+
+    // Apply steering
+    const steerMag=Math.sqrt(steerX*steerX+steerY*steerY);
+    if(steerMag>0){
+      const limited=Math.min(steerMag,FF_MAX_FORCE*(1+ar*.3));
+      fb.vx+=(steerX/steerMag)*limited;
+      fb.vy+=(steerY/steerMag)*limited;
+    }
+
+    // Limit speed
+    const speed=Math.sqrt(fb.vx*fb.vx+fb.vy*fb.vy);
+    if(speed>FF_MAX_SPEED*(1+ar*.3)){
+      fb.vx=(fb.vx/speed)*FF_MAX_SPEED*(1+ar*.3);
+      fb.vy=(fb.vy/speed)*FF_MAX_SPEED*(1+ar*.3);
+    }
+
+    // Apply velocity
+    fb.x+=fb.vx;
+    fb.y+=fb.vy;
+
+    // Wrap around edges
+    if(fb.x<-20)fb.x=W+20;
+    if(fb.x>W+20)fb.x=-20;
+    if(fb.y<-20)fb.y=H+20;
+    if(fb.y>H+20)fb.y=-20;
+
+    // Trail
+    fb.trail.push({x:fb.x,y:fb.y});
+    if(fb.trail.length>8)fb.trail.shift();
+  }
+}
+
+function drawFireflySwarm(time){
+  if(currentMode!=='firefly')return;
+  const ar=audioLevel*3;
+  for(const fb of fireflies){
+    const tw=Math.sin(time*fb.glowSpeed+fb.glowPhase);
+    const glow=.5+tw*.5;
+    const pulseIntensity=fb.glowIntensity*glow*(1+ar*.4);
+    const a=clamp(.2+pulseIntensity*.7,0,.95);
+
+    if(a<.03)continue;
+    const sz=fb.size*(1+pulseIntensity*.5+ar*.3);
+    const hue=fb.hue+Math.sin(time*.001+fb.phase)*10;
+
+    // ── Glow trail ──
+    const tLen=fb.trail.length;
+    for(let t=1;t<tLen;t++){
+      const ta=t/tLen;
+      tctx.globalAlpha=ta*.12*pulseIntensity;
+      tctx.strokeStyle=`hsla(${hue},${fb.sat}%,${fb.lig+10}%,${ta*.4})`;
+      tctx.lineWidth=sz*ta*.3;
+      tctx.beginPath();
+      tctx.moveTo(fb.trail[t-1].x,fb.trail[t-1].y);
+      tctx.lineTo(fb.trail[t].x,fb.trail[t].y);
+      tctx.stroke();
+    }
+
+    // ── Outer glow ring (firefly aura) ──
+    ctx.globalAlpha=a*.3;
+    const glowR=sz*10*pulseIntensity;
+    const gg=ctx.createRadialGradient(fb.x,fb.y,0,fb.x,fb.y,glowR);
+    gg.addColorStop(0,`hsla(${hue},${fb.sat}%,${fb.lig+20}%,.4)`);
+    gg.addColorStop(.2,`hsla(${hue},${fb.sat}%,${fb.lig+10}%,.2)`);
+    gg.addColorStop(.5,`hsla(${hue},${fb.sat}%,${fb.lig}%,.08)`);
+    gg.addColorStop(1,'hsla(0,0%,100%,0)');
+    ctx.fillStyle=gg;
+    ctx.beginPath();ctx.arc(fb.x,fb.y,glowR,0,PI2);
+    ctx.fill();
+
+    // ── Firefly body (bright core) ──
+    ctx.globalAlpha=a*.9;
+    ctx.fillStyle=`hsla(${hue},${fb.sat}%,${fb.lig+15}%,1)`;
+    ctx.shadowColor=`hsla(${hue},100%,80%,${a*.5})`;
+    ctx.shadowBlur=10+sz*5+ar*10;
+    ctx.beginPath();ctx.arc(fb.x,fb.y,sz*(.8+pulseIntensity*.3),0,PI2);
+    ctx.fill();
+    ctx.shadowBlur=0;
+
+    // ── Inner bright spark ──
+    ctx.globalAlpha=a*Math.min(1,pulseIntensity*1.5);
+    ctx.fillStyle=`hsla(${hue},100%,90%,1)`;
+    ctx.beginPath();ctx.arc(fb.x,fb.y,sz*.35,0,PI2);
+    ctx.fill();
+  }
+  ctx.globalAlpha=1;
+  tctx.globalAlpha=1;
+}
+
 // ─── Circular Audio Visualizer Ring ────────────────────────────
 function drawCircularVisualizer(time){
   if(!showVisualizer)return;
@@ -2370,6 +2569,8 @@ function loop(time){
   drawAurora(time);
   drawWormhole(time);
   drawGalaxy(time);
+  updateFireflySwarm(dt);
+  drawFireflySwarm(time);
   drawCircularVisualizer(time);
   drawParticles(dt);
 
