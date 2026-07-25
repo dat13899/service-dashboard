@@ -79,10 +79,4 @@ function loop(time){
   requestAnimationFrame(loop);
 }
 
-// ─── Start ──────────────────────────────────────────────────────────
-setTimeout(()=>document.getElementById('splash').classList.add('fade'),800);
-setTimeout(()=>{document.getElementById('hint').style.opacity='0'},8000);
-setTimeout(()=>document.getElementById('title').style.opacity='0',12000);
-document.addEventListener('click',()=>{if(!audioInitialized)initAudio()},{once:true});
-document.addEventListener('touchstart',()=>{if(!audioInitialized)initAudio()},{once:true});
-requestAnimationFrame(loop);
+// Start sequence moved to hermes.html inline script (runs after resize() inside try/catch)
