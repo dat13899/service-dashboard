@@ -1,0 +1,366 @@
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
+
+const s = {
+  container: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    background: 'var(--glass-bg)',
+    backdropFilter: 'blur(16px)',
+    WebkitBackdropFilter: 'blur(16px)',
+    border: '1px solid var(--glass-border)',
+    borderRadius: 'var(--radius-lg)',
+    overflow: 'hidden',
+    position: 'relative',
+    minWidth: 0,
+  },
+  progressBar: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    height: '3px',
+    background: 'var(--accent)',
+    transition: 'width .2s ease',
+    zIndex: 2,
+  },
+  header: {
+    padding: '1rem 1.25rem',
+    borderBottom: '1px solid var(--glass-border)',
+    display: 'flex',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    gap: '0.75rem',
+    flexWrap: 'wrap',
+  },
+  titleRow: {
+    flex: 1,
+    minWidth: 0,
+  },
+  title: {
+    fontSize: '1.1rem',
+    fontWeight: 700,
+    color: 'var(--text-strong)',
+    margin: 0,
+    wordBreak: 'break-word',
+  },
+  meta: {
+    fontSize: '0.75rem',
+    color: 'var(--text-dim)',
+    marginTop: '0.25rem',
+    display: 'flex',
+    gap: '0.75rem',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+  },
+  metaTag: {
+    fontSize: '0.65rem',
+    padding: '0.05rem 0.4rem',
+    borderRadius: '999px',
+    background: 'var(--surface-2)',
+    border: '1px solid var(--glass-border)',
+    color: 'var(--text-dim)',
+  },
+  actions: {
+    display: 'flex',
+    gap: '0.35rem',
+    flexShrink: 0,
+    alignItems: 'center',
+  },
+  actionBtn: (color) => ({
+    fontSize: '0.75rem',
+    padding: '0.3rem 0.55rem',
+    borderRadius: 'var(--radius-sm)',
+    border: '1px solid var(--glass-border)',
+    background: 'var(--surface-2)',
+    color: color || 'var(--text-dim)',
+    cursor: 'pointer',
+    transition: 'all .15s',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.25rem',
+  }),
+  contentArea: {
+    flex: 1,
+    overflowY: 'auto',
+    padding: '1.5rem 2rem',
+    fontSize: '0.92rem',
+    lineHeight: 1.7,
+    color: 'var(--text)',
+    wordBreak: 'break-word',
+  },
+  tocBtn: {
+    fontSize: '0.75rem',
+    padding: '0.3rem 0.55rem',
+    borderRadius: 'var(--radius-sm)',
+    border: '1px solid var(--glass-border)',
+    background: 'var(--surface-2)',
+    color: 'var(--text-dim)',
+    cursor: 'pointer',
+    transition: 'all .15s',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.25rem',
+    position: 'relative',
+  },
+  tocDropdown: {
+    position: 'absolute',
+    top: '100%',
+    right: 0,
+    marginTop: '0.25rem',
+    minWidth: '220px',
+    maxHeight: '320px',
+    overflowY: 'auto',
+    background: 'var(--glass-bg)',
+    backdropFilter: 'blur(24px)',
+    WebkitBackdropFilter: 'blur(24px)',
+    border: '1px solid var(--glass-border)',
+    borderRadius: 'var(--radius-md)',
+    boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+    zIndex: 20,
+    padding: '0.25rem 0',
+  },
+  tocItem: (depth) => ({
+    padding: '0.3rem 0.75rem',
+    paddingLeft: `${0.75 + (depth - 1) * 1}rem`,
+    fontSize: '0.78rem',
+    color: 'var(--text)',
+    cursor: 'pointer',
+    transition: 'background .1s',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  }),
+  empty: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: 'var(--text-dim)',
+    fontSize: '0.9rem',
+    gap: '0.5rem',
+    padding: '2rem',
+    textAlign: 'center',
+  },
+  renameInput: {
+    fontSize: '1.1rem',
+    fontWeight: 700,
+    padding: '0.15rem 0.35rem',
+    borderRadius: 'var(--radius-sm)',
+    border: '1px solid var(--accent)',
+    background: 'var(--surface-2)',
+    color: 'var(--text-strong)',
+    outline: 'none',
+    width: '100%',
+    boxSizing: 'border-box',
+  },
+};
+
+// Convert markdown headings to TOC items
+function extractTOC(html) {
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  const headings = div.querySelectorAll('h1, h2, h3, h4');
+  return Array.from(headings).map(h => ({
+    id: h.id || h.textContent.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
+    text: h.textContent,
+    depth: parseInt(h.tagName[1], 10),
+  }));
+}
+
+// Render markdown to HTML
+function renderMarkdown(content) {
+  if (typeof window !== 'undefined' && window.marked) {
+    return window.marked.parse(content || '', { breaks: true, gfm: true });
+  }
+  return `<p>Đang tải thư viện markdown...</p>`;
+}
+
+// Format date
+function fmtDate(ts) {
+  if (!ts) return '';
+  const d = new Date(ts);
+  return d.toLocaleDateString('vi-VN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+}
+
+export default function DocReader({ doc, onEdit, onDelete, onRename, onConvert, isMobile }) {
+  const [showToc, setShowToc] = useState(false);
+  const [readProgress, setReadProgress] = useState(0);
+  const [renaming, setRenaming] = useState(false);
+  const [newTitle, setNewTitle] = useState('');
+  const contentRef = useRef(null);
+  const tocRef = useRef(null);
+  const renameRef = useRef(null);
+
+  // Rendered HTML
+  const renderedHtml = useMemo(() => {
+    if (!doc) return '';
+    return renderMarkdown(doc.content);
+  }, [doc?.content]);
+
+  // TOC from rendered HTML
+  const toc = useMemo(() => {
+    if (!renderedHtml) return [];
+    return extractTOC(renderedHtml);
+  }, [renderedHtml]);
+
+  // Reading progress
+  const handleScroll = useCallback(() => {
+    const el = contentRef.current;
+    if (!el) return;
+    const scrollTop = el.scrollTop;
+    const scrollHeight = el.scrollHeight - el.clientHeight;
+    if (scrollHeight > 0) {
+      setReadProgress(Math.min((scrollTop / scrollHeight) * 100, 100));
+    }
+  }, []);
+
+  // Click outside TOC dropdown
+  useEffect(() => {
+    const handleClick = (e) => {
+      if (tocRef.current && !tocRef.current.contains(e.target)) {
+        setShowToc(false);
+      }
+    };
+    if (showToc) {
+      document.addEventListener('mousedown', handleClick);
+      return () => document.removeEventListener('mousedown', handleClick);
+    }
+  }, [showToc]);
+
+  // Focus rename input
+  useEffect(() => {
+    if (renaming && renameRef.current) {
+      renameRef.current.focus();
+      renameRef.current.select();
+    }
+  }, [renaming]);
+
+  // Scroll content to heading
+  const scrollToHeading = useCallback((id) => {
+    setShowToc(false);
+    const el = contentRef.current?.querySelector(`#${CSS.escape(id)}`);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, []);
+
+  if (!doc) {
+    return (
+      <div style={s.container}>
+        <div style={s.empty}>
+          <i className="fas fa-file-lines" style={{ fontSize: '2rem', opacity: 0.4 }}></i>
+          <span>Chọn một tài liệu để xem</span>
+        </div>
+      </div>
+    );
+  }
+
+  const handleStartRename = () => {
+    setNewTitle(doc.title || '');
+    setRenaming(true);
+  };
+
+  const handleSubmitRename = () => {
+    if (newTitle.trim() && newTitle.trim() !== doc.title) {
+      onRename?.(doc.id, newTitle.trim());
+    }
+    setRenaming(false);
+  };
+
+  const handleKeyRename = (e) => {
+    if (e.key === 'Enter') handleSubmitRename();
+    if (e.key === 'Escape') setRenaming(false);
+  };
+
+  return (
+    <div style={s.container}>
+      {/* Reading progress bar */}
+      <div style={{ ...s.progressBar, width: `${readProgress}%` }} />
+
+      {/* Header */}
+      <div style={s.header}>
+        <div style={s.titleRow}>
+          {renaming ? (
+            <input
+              ref={renameRef}
+              style={s.renameInput}
+              value={newTitle}
+              onChange={e => setNewTitle(e.target.value)}
+              onBlur={handleSubmitRename}
+              onKeyDown={handleKeyRename}
+            />
+          ) : (
+            <h2 style={s.title}>{doc.title || 'Untitled'}</h2>
+          )}
+
+          <div style={s.meta}>
+            {doc.meta?.createdAt && (
+              <span><i className="far fa-calendar-alt" style={{ marginRight: '0.25rem' }}></i>{fmtDate(doc.meta.createdAt)}</span>
+            )}
+            {doc.meta?.updatedAt && (
+              <span><i className="far fa-clock" style={{ marginRight: '0.25rem' }}></i>{fmtDate(doc.meta.updatedAt)}</span>
+            )}
+            {doc.tags && doc.tags.length > 0 && doc.tags.map(t => (
+              <span key={t} style={s.metaTag}>{t}</span>
+            ))}
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div style={s.actions}>
+          {/* TOC button */}
+          {toc.length > 0 && (
+            <div ref={tocRef} style={{ position: 'relative' }}>
+              <button
+                style={s.tocBtn}
+                onClick={() => setShowToc(p => !p)}
+                title="Mục lục"
+              >
+                <i className="fas fa-list"></i>
+                <span style={{ display: isMobile ? 'none' : 'inline' }}> Mục lục</span>
+              </button>
+              {showToc && (
+                <div style={s.tocDropdown}>
+                  {toc.map((item, idx) => (
+                    <div
+                      key={idx}
+                      style={s.tocItem(item.depth)}
+                      onClick={() => scrollToHeading(item.id)}
+                      onMouseEnter={e => e.target.style.background = 'var(--surface-2)'}
+                      onMouseLeave={e => e.target.style.background = 'transparent'}
+                    >
+                      {item.text}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          <button style={s.actionBtn()} onClick={() => onEdit?.(doc)} title="Chỉnh sửa">
+            <i className="fas fa-pen"></i>
+          </button>
+          <button style={s.actionBtn()} onClick={handleStartRename} title="Đổi tên">
+            <i className="fas fa-pencil"></i>
+          </button>
+          <button style={s.actionBtn('var(--amber)')} onClick={() => onConvert?.(doc.id)} title="Xuất PDF">
+            <i className="fas fa-file-pdf"></i>
+          </button>
+          <button style={s.actionBtn('var(--red)')} onClick={() => onDelete?.(doc)} title="Xoá">
+            <i className="fas fa-trash"></i>
+          </button>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div
+        ref={contentRef}
+        style={s.contentArea}
+        onScroll={handleScroll}
+        className="doc-reader-content"
+        dangerouslySetInnerHTML={{ __html: renderedHtml }}
+      />
+    </div>
+  );
+}

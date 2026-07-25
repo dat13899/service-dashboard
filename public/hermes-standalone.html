@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>✦ Hermes — Cosmic Dreamscape</title>
+<meta name="description" content="Hermes Cosmic Dreamscape — Interactive particle visualizer">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌀</text></svg>">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1/css/bulma.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="/assets/global.css?v=3">
+<style>
+/* ── Overrides for fullscreen visualizer ── */
+html,body{width:100%;height:100%;overflow:hidden;background:#05060f;font-family:system-ui,sans-serif}
+body{position:relative}
+/* Canvas layers */
+#c{position:fixed;top:0;left:0;width:100%;height:100%;display:block;cursor:crosshair;z-index:2}
+#trailCanvas{position:fixed;top:0;left:0;width:100%;height:100%;display:block;z-index:1;pointer-events:none}
+#bloom{position:fixed;top:0;left:0;width:100%;height:100%;display:block;z-index:3;pointer-events:none}
+/* ── Title ── */
+#title{position:fixed;top:64px;left:50%;transform:translateX(-50%);font-size:13px;letter-spacing:3px;text-transform:uppercase;color:rgba(200,220,255,.2);z-index:10;pointer-events:none;font-weight:300;transition:opacity 1.5s}
+@media(max-width:480px){#title{top:56px;font-size:10px;letter-spacing:2px}}
+/* ── HUD ── */
+#hud{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:8px;align-items:center;padding:7px 14px;background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:12px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:10;user-select:none;font-size:11px;color:rgba(200,220,255,.6);letter-spacing:.2px;transition:opacity .4s,transform .4s;white-space:nowrap}
+#hud.hidden{opacity:0;transform:translateX(-50%) translateY(16px);pointer-events:none}
+.hud-dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:3px;vertical-align:middle}
+.hud-dot.cyan{background:#5bc0ff;box-shadow:0 0 5px #5bc0ff66}
+.hud-dot.pink{background:#ff6bcb;box-shadow:0 0 5px #ff6bcb66}
+.hud-dot.gold{background:#ffd700;box-shadow:0 0 5px #ffd70066}
+.hud-div{width:1px;height:14px;background:var(--glass-border);margin:0 3px}
+#hud-drag{position:fixed;bottom:4px;left:50%;transform:translateX(-50%);z-index:9;width:36px;height:4px;border-radius:2px;background:rgba(200,220,255,.12);transition:opacity .4s}
+#hud-drag.hidden{opacity:0}
+@media(max-width:480px){
+  #hud{bottom:8px;font-size:10px;padding:5px 10px;gap:5px;border-radius:10px;max-width:96vw;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .hud-div{display:none}
+  #hud-drag{bottom:2px}
+  #scene-name,#palette-name{display:none}
+}
+/* ── Mode badge ── */
+#mode-badge{position:fixed;top:54px;left:50%;transform:translateX(-50%);z-index:5;pointer-events:none;font-size:10px;letter-spacing:5px;text-transform:uppercase;color:rgba(200,220,255,.07);transition:opacity 1.5s,color .8s;opacity:0}
+#mode-badge.show{opacity:1}
+/* ── Mode Panel — Desktop Sidebar ── */
+#mode-panel-toggle{position:fixed;left:12px;top:50%;transform:translateY(-50%);z-index:21;width:34px;height:34px;border-radius:50%;background:var(--glass-bg);border:1px solid var(--glass-border);display:flex;align-items:center;justify-content:center;color:rgba(200,220,255,.4);font-size:15px;cursor:pointer;transition:.3s;user-select:none}
+#mode-panel-toggle:hover{background:var(--surface-2);border-color:var(--accent);color:var(--text)}
+#mode-panel-toggle.open{left:172px}
+#mode-panel{position:fixed;left:16px;top:50%;transform:translateY(-50%);z-index:20;display:flex;flex-direction:column;gap:4px;transition:opacity .4s,transform .4s;pointer-events:none}
+#mode-panel.visible{pointer-events:auto}
+.mode-btn{width:144px;padding:7px 10px;border-radius:10px;background:var(--glass-bg);border:1px solid var(--glass-border);color:var(--text-dim);font-size:11px;cursor:pointer;transition:all .25s;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);user-select:none;display:flex;align-items:center;gap:8px;letter-spacing:.2px;opacity:0;transform:translateX(-24px)}
+#mode-panel.open .mode-btn{opacity:1;transform:translateX(0)}
+.mode-btn:hover{border-color:var(--accent);color:var(--text);background:var(--surface-2)}
+.mode-btn.active{background:rgba(91,192,255,.1);border-color:rgba(91,192,255,.3);color:#5bc0ff}
+.mode-btn .mode-icon{font-size:15px;width:20px;text-align:center}
+.mode-btn .mode-label{flex:1;font-size:10px}
+.mode-btn .mode-check{opacity:0;transition:.3s;font-size:12px}
+.mode-btn.active .mode-check{opacity:1}
+/* ── Mode Panel — Mobile Bottom Sheet ── */
+@media(max-width:768px){
+  #mode-panel-toggle{display:none}
+  #mode-panel{position:fixed;left:0;right:0;bottom:0;top:auto;transform:translateY(calc(100% - 38px));flex-direction:row;flex-wrap:wrap;gap:2px;padding:8px 6px calc(env(safe-area-inset-bottom,0)+6px);background:rgba(5,6,15,.88);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--glass-border);border-radius:16px 16px 0 0;pointer-events:auto;transition:transform .35s cubic-bezier(.4,0,.2,1);z-index:20;max-height:55vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  #mode-panel .panel-handle{display:block;width:32px;height:4px;border-radius:2px;background:rgba(200,220,255,.15);margin:0 auto 6px;flex:0 0 auto}
+  #mode-panel.visible{transform:translateY(0)}
+  #mode-panel.open .mode-btn{opacity:1;transform:none}
+  .mode-btn{width:auto;flex:1 1 31%;min-width:68px;padding:5px 4px;border-radius:8px;font-size:10px;gap:3px;opacity:1;transform:none;justify-content:center}
+  .mode-btn .mode-icon{font-size:13px;width:auto}
+  .mode-btn .mode-label{font-size:9px;flex:0}
+  .mode-btn .mode-check{display:none}
+}
+@media(min-width:769px){.panel-handle{display:none}}
+/* ── Config Panel ── */
+#mode-config{position:fixed;left:16px;top:50%;transform:translateY(-50%) translateX(-220px);z-index:19;display:flex;flex-direction:column;gap:4px;padding:10px 12px;background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:12px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);user-select:none;transition:transform .35s cubic-bezier(.4,0,.2,1),opacity .35s;opacity:0;pointer-events:none;min-width:140px}
+#mode-config.open{transform:translateY(-50%) translateX(0);opacity:1;pointer-events:auto}
+#cfg-btn{position:fixed;left:56px;bottom:56px;z-index:22;width:32px;height:32px;border-radius:8px;background:var(--glass-bg);border:1px solid var(--glass-border);display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:12px;cursor:pointer;transition:.3s;user-select:none}
+@media(max-width:768px){
+  #mode-config{left:8px;right:8px;top:auto;bottom:60px;transform:translateY(120%);flex-direction:row;flex-wrap:wrap;gap:4px 8px;padding:10px 14px;min-width:auto;z-index:19;border-radius:14px;overflow-y:auto;max-height:45vh}
+  #mode-config.open{transform:translateY(0)}
+  #cfg-btn{left:12px;bottom:62px;width:30px;height:30px;font-size:11px}
+}
+/* ── Volume toggle ── */
+#vol-toggle{position:fixed;bottom:56px;right:20px;z-index:10;width:36px;height:36px;border-radius:50%;background:var(--glass-bg);border:1px solid var(--glass-border);display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:16px;cursor:pointer;transition:.3s;user-select:none}
+@media(max-width:768px){#vol-toggle{bottom:52px;right:12px;width:32px;height:32px;font-size:14px}}
+/* ── Paint Controls ── */
+#paint-controls{position:fixed;bottom:76px;left:50%;transform:translateX(-50%);z-index:15;display:none;align-items:center;gap:10px;padding:10px 18px;background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:14px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);user-select:none}
+#paint-controls.show{display:flex}
+/* ── Word Modal ── */
+#word-modal{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;background:rgba(5,6,15,.75);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+#word-modal.show{display:flex}
+/* ── Help overlay ── */
+#help-overlay{position:fixed;inset:0;z-index:50;background:rgba(5,6,15,.85);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:none;flex-direction:column;align-items:center;justify-content:center;user-select:none}
+#help-overlay.show{display:flex}
+/* ── Back to site button (mobile only) ── */
+#back-site{position:fixed;top:8px;left:8px;z-index:501;display:flex;width:32px;height:32px;border-radius:8px;background:var(--glass-bg);border:1px solid var(--glass-border);align-items:center;justify-content:center;color:var(--text-dim);font-size:14px;cursor:pointer;text-decoration:none}
+@media(max-width:768px){#back-site{width:30px;height:30px;font-size:12px}}
+/* ── Splash ── */
+#splash{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#05060f;transition:opacity 1.2s ease}
+#splash.fade{opacity:0;pointer-events:none}
+/* ── Hint ── */
+#hint{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:12px;letter-spacing:2px;color:rgba(200,220,255,.12);z-index:5;pointer-events:none;transition:opacity 1.2s;text-align:center;line-height:1.8;max-width:90vw}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes pulse-fade{0%,100%{opacity:1}50%{opacity:.3}}
+</style>
+</head>
+<body>
+
+<!-- Splash -->
+<div id="splash">
+  <svg viewBox="0 0 100 100">
+    <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(91,192,255,.4)" stroke-width="2" stroke-dasharray="80 30"/>
+    <circle cx="50" cy="50" r="20" fill="none" stroke="rgba(255,107,203,.4)" stroke-width="2" stroke-dasharray="40 20"/>
+  </svg>
+  <div class="splash-sub">hermes</div>
+</div>
+
+<div id="hint">✦ click explode · hold drag gravity · T tunnel · P paint · C const · N nebula · R rave · A aurora · O wormhole · Y galaxy · B firefly · U storm · W word · Tab/→ cycle · S snapshot · G settings · 1-6 palette · ? help ✦</div>
+<div id="title">✦ hermes — cosmic dreamscape ✦</div>
+<div id="mode-badge">◆ cosmic drift ◆</div>
+<div id="palette-indicator"></div>
+<div id="constellation">✦ wandering through the cosmos ✦</div>
+<div id="gravity-indicator"></div>
+
+<!-- Scene Mode Panel -->
+<div id="mode-panel-toggle" title="Scene Modes (☰)">☰</div>
+<div id="mode-panel">
+  <div class="panel-handle"></div>
+  <button class="mode-btn active" data-mode="cosmic"><span class="mode-icon">🌌</span><span class="mode-label">Cosmic Drift</span><span class="mode-check">✓</span></button>
+  <button class="mode-btn" data-mode="tunnel"><span class="mode-icon">🌀</span><span class="mode-label">Hyperspace</span><span class="mode-check">✓</span></button>
+  <button class="mode-btn" data-mode="paint"><span class="mode-icon">🎨</span><span class="mode-label">Particle Paint</span><span class="mode-check">✓</span></button>
+  <button class="mode-btn" data-mode="constellation"><span class="mode-icon">✦</span><span class="mode-label">Constellation</span><span class="mode-check">✓</span></button>
+  <button class="mode-btn" data-mode="nebula"><span class="mode-icon">🌊</span><span class="mode-label">Nebula Flow</span><span class="mode-check">✓</span></button>
+  <button class="mode-btn" data-mode="word"><span class="mode-icon">✎</span><span class="mode-label">Word Form</span><span class="mode-check">✓</span></button>
+  <button class="mode-btn" data-mode="prism"><span class="mode-icon">🔮</span><span class="mode-label">Prism Rave</span><span class="mode-check">✓</span></button>
+  <button class="mode-btn" data-mode="aurora"><span class="mode-icon">🌟</span><span class="mode-label">Aurora</span><span class="mode-check">✓</span></button>
+  <button class="mode-btn" data-mode="wormhole"><span class="mode-icon">🌀</span><span class="mode-label">Wormhole</span><span class="mode-check">✓</span></button>
+  <button class="mode-btn" data-mode="galaxy"><span class="mode-icon">🌌</span><span class="mode-label">Galaxy Map</span><span class="mode-check">✓</span></button>
+  <button class="mode-btn" data-mode="firefly"><span class="mode-icon">🪲</span><span class="mode-label">Firefly Swarm</span><span class="mode-check">✓</span></button>
+  <button class="mode-btn" data-mode="storm"><span class="mode-icon">⚡</span><span class="mode-label">Cosmic Storm</span><span class="mode-check">✓</span></button>
+</div>
+
+<!-- Paint Controls -->
+<div id="paint-controls">
+  <label>Brush</label>
+  <input type="range" id="paint-size" min="2" max="20" value="8" step=".5">
+  <span id="paint-size-val">8</span>
+  <label style="margin-left:4px">Color</label>
+  <div id="gradient-strip-wrap">
+    <div id="gradient-strip">
+      <canvas id="gradient-canvas"></canvas>
+      <div id="gradient-picker" style="left:55%"></div>
+    </div>
+  </div>
+  <span id="paint-hue-indicator"></span>
+  <button id="paint-clearbtn">Clear</button>
+</div>
+
+<!-- Word Input Modal -->
+<div id="word-modal">
+  <div id="word-box">
+    <h3>✦ type a word ✦</h3>
+    <input id="word-input" type="text" placeholder="hermes..." maxlength="30" autocomplete="off" spellcheck="false">
+    <div><button id="word-submit">FORM</button></div>
+    <div id="word-hint">particles will assemble into your word</div>
+  </div>
+</div>
+
+<!-- Snapshot Toast -->
+<div id="snapshot-toast">📸 snapshot saved</div>
+<canvas id="trans-overlay"></canvas>
+
+<!-- Config Panel -->
+<div id="cfg-btn" title="Settings (G)">⚙</div>
+<div id="mode-config">
+  <div class="cfg-title">settings</div>
+  <div class="cfg-row"><span class="cfg-label">Tunnel</span><input type="range" id="cfg-tunnel-speed" min="1" max="10" value="5"><span class="cfg-val" id="cfg-tunnel-val">5</span></div>
+  <div class="cfg-row"><span class="cfg-label">Bloom</span><input type="range" id="cfg-bloom" min="0" max="10" value="5"><span class="cfg-val" id="cfg-bloom-val">5</span></div>
+  <div class="cfg-row"><span class="cfg-label">Nebula</span><input type="range" id="cfg-nebula-speed" min="1" max="10" value="5"><span class="cfg-val" id="cfg-nebula-val">5</span></div>
+  <div class="cfg-row"><span class="cfg-label">Aurora</span><input type="range" id="cfg-aurora-speed" min="1" max="10" value="5"><span class="cfg-val" id="cfg-aurora-val">5</span></div>
+  <div class="cfg-row"><span class="cfg-label">Density</span><input type="range" id="cfg-density" min="1" max="10" value="5"><span class="cfg-val" id="cfg-density-val">5</span></div>
+  <div class="cfg-row" style="margin-top:2px"><span class="cfg-label">Reactive</span><div class="cfg-toggle on" id="cfg-reactive"></div></div>
+  <div class="cfg-row"><span class="cfg-label">Trails</span><div class="cfg-toggle on" id="cfg-trails"></div></div>
+  <div class="cfg-row"><span class="cfg-label">HUD</span><div class="cfg-toggle on" id="cfg-hud"></div></div>
+  <div class="cfg-row"><span class="cfg-label">Viz</span><div class="cfg-toggle on" id="cfg-viz"></div></div>
+</div>
+
+<div id="hud">
+  <span><span class="hud-dot cyan"></span><span id="starsC">0</span> stars</span>
+  <span class="hud-div"></span>
+  <span><span class="hud-dot pink"></span><span id="particlesC">0</span> particles</span>
+  <span class="hud-div"></span>
+  <span><span class="hud-dot gold"></span><span id="shootersC">0</span> meteors</span>
+  <span class="hud-div"></span>
+  <span class="hud-dot cyan" style="width:5px;height:5px;animation:pulse-fade 1s ease infinite" id="audio-dot"></span>
+  <span id="fpsC">0</span> fps
+  <span class="hud-div"></span>
+  <span id="palette-name" style="font-size:10px;opacity:.6">NEBULA</span>
+  <span class="hud-div"></span>
+  <span id="scene-name" style="font-size:10px;opacity:.4">🌌 COSMIC</span>
+</div>
+<div id="hud-drag"></div>
+<div id="vol-toggle">♪</div>
+<canvas id="trailCanvas"></canvas>
+<canvas id="c"></canvas>
+<canvas id="bloom"></canvas>
+
+<div id="help-overlay">
+  <h2>⌘ hermes — controls</h2>
+  <div class="help-row">
+    <div class="help-col">
+      <div class="help-desc"><span class="help-key">1-6</span> switch palette</div>
+      <div class="help-desc"><span class="help-key">Z</span> random palette</div>
+      <div class="help-desc"><span class="help-key">SPACE</span> explode!</div>
+      <div class="help-desc"><span class="help-key">click</span> burst at cursor</div>
+      <div class="help-desc"><span class="help-key">hold drag</span> gravity well</div>
+      <div class="help-desc"><span class="help-key">☰/Tab</span> scene modes</div>
+    </div>
+    <div class="help-col">
+      <div class="help-desc"><span class="help-key">T</span> hyperspace tunnel</div>
+      <div class="help-desc"><span class="help-key">P</span> particle paint</div>
+      <div class="help-desc"><span class="help-key">C</span> constellation mode</div>
+      <div class="help-desc"><span class="help-key">N</span> nebula flow</div>
+      <div class="help-desc"><span class="help-key">R</span> prism rave</div>
+      <div class="help-desc"><span class="help-key">A</span> aurora</div>
+      <div class="help-desc"><span class="help-key">O</span> wormhole</div>
+      <div class="help-desc"><span class="help-key">Y</span> galaxy map</div>
+      <div class="help-desc"><span class="help-key">B</span> firefly swarm</div>
+      <div class="help-desc"><span class="help-key">U</span> cosmic storm</div>
+      <div class="help-desc"><span class="help-key">W</span> word form</div>
+      <div class="help-desc"><span class="help-key">S</span> snapshot (PNG)</div>
+      <div class="help-desc"><span class="help-key">G</span> settings</div>
+      <div class="help-desc"><span class="help-key">H</span> toggle hud</div>
+      <div class="help-desc"><span class="help-key">M</span> toggle audio</div>
+      <div class="help-desc"><span class="help-key">? /</span> help</div>
+      <div class="help-desc" style="margin-top:6px;font-size:10px;color:var(--text-dim)">📱 pinch → settings | 2-finger swipe → cycle modes</div>
+    </div>
+  </div>
+  <div id="help-close">press ? or click to close</div>
+</div>
+
+<script src="/hermes/hermes-core.js"></script>
+<script src="/hermes/hermes-visuals.js"></script>
+<script src="/hermes/hermes-main.js"></script>
+
+<script>
+try{
+  resize();
+  addEventListener('resize',()=>{resize();initAuroraBands();initWormhole();initGalaxy();initPrismGeometry();});
+  initAuroraBands();initWormhole();initGalaxy();initPrismGeometry();
+  document.getElementById('mode-indicator')&&(document.getElementById('mode-indicator').textContent='✨ Cosmic');
+  buildPaletteUI();
+  setTimeout(()=>document.getElementById('splash').classList.add('fade'),600);
+  setTimeout(()=>{document.getElementById('hint').style.opacity='0'},6000);
+  setTimeout(()=>document.getElementById('title').style.opacity='0',10000);
+  document.addEventListener('click',()=>{if(!window.audioInitialized)initAudio()},{once:true});
+  document.addEventListener('touchstart',()=>{if(!window.audioInitialized)initAudio()},{once:true});
+  requestAnimationFrame(loop);
+}catch(e){
+  document.getElementById('splash').innerHTML='<div style="color:#ff6b6b;text-align:center;padding:40px;max-width:600px"><h2 style="margin-bottom:20px">⚠️ Runtime Error</h2><pre style="background:rgba(255,0,0,.1);padding:20px;border-radius:8px;font-size:13px;line-height:1.6;text-align:left;word-break:break-all;max-height:70vh;overflow:auto">'+e.stack+'</pre></div>';
+  document.getElementById('splash').classList.remove('fade');
+}
+window.onerror=function(msg,url,line,col,err){
+  document.getElementById('splash').innerHTML='<div style="color:#ff6b6b;text-align:center;padding:40px;max-width:600px"><h2 style="margin-bottom:20px">⚠️ Runtime Error</h2><pre style="background:rgba(255,0,0,.1);padding:20px;border-radius:8px;font-size:13px;line-height:1.6;text-align:left;word-break:break-all;max-height:70vh;overflow:auto">'+msg+'\\nat line '+line+'\\n'+(err&&err.stack||'')+'</pre></div>';
+  document.getElementById('splash').classList.remove('fade');
+  return true;
+};
+</script>
+</body>
+</html>
