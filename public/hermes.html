@@ -2903,7 +2903,7 @@ function drawCircularVisualizer(time){
   }
   // Central glow pulse
   if(audioLevel>.05||time%2000<500){
-    const gp=Math.min(1,audioLevel*4+Math.sin(time*.003)*.2);
+    const gp=Math.max(0,Math.min(1,audioLevel*4+Math.sin(time*.003)*.2));
     const gg=ctx.createRadialGradient(cx,cy,0,cx,cy,rad*.2*gp);
     gg.addColorStop(0,`rgba(100,200,255,${.02+gp*.04})`);
     gg.addColorStop(1,'rgba(0,0,0,0)');
