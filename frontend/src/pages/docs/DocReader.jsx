@@ -27,10 +27,8 @@ const s = {
     padding: '1rem 1.25rem',
     borderBottom: '1px solid var(--glass-border)',
     display: 'flex',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    gap: '0.75rem',
-    flexWrap: 'wrap',
+    flexDirection: 'column',
+    gap: '0.5rem',
   },
   titleRow: {
     flex: 1,
