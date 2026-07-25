@@ -1,17 +1,14 @@
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useToastContext } from '../components/shared/Toast';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import useDocuments from '../hooks/useDocuments';
 import DocSidebar from './docs/DocSidebar';
 import DocReader from './docs/DocReader';
 import DocEditor from './docs/DocEditor';
-import DocSearch from './docs/DocSearch';
-import DocTags from './docs/DocTags';
 import ConfirmModal from '../components/ConfirmModal';
 import './docs/docs.css';
 
 const MARKED_CDN = 'https://cdn.jsdelivr.net/npm/marked@5/marked.min.js';
-const LS_HISTORY = 'documents_search_history';
 
 function loadMarked() {
   if (typeof window !== 'undefined' && !window.marked) {
@@ -33,58 +30,28 @@ export default function DocumentsPage() {
   const { isMobile } = useMediaQuery();
   const docsCtrl = useDocuments(toast);
 
+  // ── Shared state (used by both DocumentsPage + DocSidebar) ──
   const [selectedTags, setSelectedTags] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState('newest');
+  const [draftOnly, setDraftOnly] = useState(false);
+  const [selectedIds, setSelectedIds] = useState([]);
 
-  // Compute allTags from docs
-  const allTags = useMemo(() => {
-    const tags = new Set();
-    for (const d of docsCtrl.docs) {
-      if (d.tags) {
-        const tagList = Array.isArray(d.tags) ? d.tags : d.tags.split(',').map(t => t.trim()).filter(Boolean);
-        tagList.forEach(t => tags.add(t));
-      }
-    }
-    return Array.from(tags).sort();
-  }, [docsCtrl.docs]);
+  // ── Local UI state ──
   const [editing, setEditing] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [showSidebar, setShowSidebar] = useState(true);
-  const [sortBy, setSortBy] = useState('newest');
-  const [selectedIds, setSelectedIds] = useState([]);
   const [showNewModal, setShowNewModal] = useState(false);
   const [newDocTitle, setNewDocTitle] = useState('');
   const [newDocTags, setNewDocTags] = useState('');
   const [newDocTemplate, setNewDocTemplate] = useState('blank');
   const [showBulkConfirm, setShowBulkConfirm] = useState(false);
-  const [searchHistory, setSearchHistory] = useState(() => {
-    try { return JSON.parse(localStorage.getItem(LS_HISTORY) || '[]').slice(0, 10); } catch { return []; }
-  });
-  const [showSearchDropdown, setShowSearchDropdown] = useState(false);
-  const searchDropdownRef = useRef(null);
 
   useEffect(() => { loadMarked(); }, []);
   useEffect(() => { docsCtrl.fetchDocs(); }, []);
 
   // Auto-hide mobile sidebar when doc selected
   useEffect(() => { if (isMobile && docsCtrl.currentDoc) setShowSidebar(false); }, [docsCtrl.currentDoc, isMobile]);
-
-  // Search history
-  const addSearchHistory = useCallback((q) => {
-    if (!q) return;
-    setSearchHistory(prev => {
-      const next = [q, ...prev.filter(h => h !== q)].slice(0, 10);
-      localStorage.setItem(LS_HISTORY, JSON.stringify(next));
-      return next;
-    });
-  }, []);
-
-  // Click outside search dropdown
-  useEffect(() => {
-    const click = (e) => { if (searchDropdownRef.current && !searchDropdownRef.current.contains(e.target)) setShowSearchDropdown(false); };
-    document.addEventListener('mousedown', click);
-    return () => document.removeEventListener('mousedown', click);
-  }, []);
 
   // ── Handlers ──
   const handleSelect = useCallback(async (id) => {
@@ -119,11 +86,12 @@ export default function DocumentsPage() {
     setShowBulkConfirm(false);
   }, [selectedIds, docsCtrl]);
 
-  const toggleTag = useCallback((tag) => {
-    setSelectedTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
-  }, []);
-
   const openNewModal = () => { setNewDocTitle(''); setNewDocTags(''); setNewDocTemplate('blank'); setShowNewModal(true); };
+
+  const handleCacheClear = useCallback(() => {
+    docsCtrl.fetchDocs();
+    toast?.('Đã xoá cache', 'info');
+  }, [docsCtrl, toast]);
 
   return (
     <div className="doc-page">
@@ -148,64 +116,30 @@ export default function DocumentsPage() {
 
       {/* Main */}
       <div className="doc-main">
-        {/* Sidebar (list) */}
+        {/* Sidebar (list) — DocSidebar has built-in search/sort/tag filter/draft filter */}
         {(!isMobile || showSidebar) && (
           <div className="doc-sidebar">
-            <div className="doc-sidebar-header">
-              {/* Search */}
-              <DocSearch
-                value={searchQuery}
-                onChange={(e) => { setSearchQuery(e.target.value); setShowSearchDropdown(true); }}
-                allDocs={docsCtrl.docs.filter(d => d.title?.toLowerCase().includes(searchQuery.toLowerCase()))}
-                onSelect={async (doc) => {
-                  addSearchHistory(searchQuery);
-                  setShowSearchDropdown(false);
-                  await handleSelect(doc.id);
-                }}
-                searchHistory={searchHistory}
-                addSearchHistory={addSearchHistory}
-                clearSearchHistory={() => { setSearchHistory([]); localStorage.removeItem(LS_HISTORY); }}
-                onSearchFocus={() => setShowSearchDropdown(true)}
-                showDropdown={showSearchDropdown}
-                searchDropdownRef={searchDropdownRef}
-              />
-
-              {/* Sort + actions row */}
-              <div className="flex gap-xs items-center" style={{ flexWrap: 'wrap' }}>
-                <select value={sortBy} onChange={e => setSortBy(e.target.value)}
-                  style={{ background: 'var(--surface-2)', border: '1px solid var(--glass-border)', borderRadius: '4px', color: 'var(--text)', fontSize: '0.7rem', padding: '0.2rem 0.3rem' }}>
-                  <option value="newest">Mới nhất</option>
-                  <option value="oldest">Cũ nhất</option>
-                  <option value="az">A → Z</option>
-                </select>
-                <button onClick={openNewModal} className="btn btn-primary btn-sm"><i className="fas fa-plus" /> New</button>
-              </div>
-
-              {/* Tags */}
-              {allTags.length > 0 && (
-                <DocTags allTags={allTags} selectedTags={selectedTags} onToggle={toggleTag} />
-              )}
-            </div>
-
-            {docsCtrl.loading ? (
-              <div className="flex flex-col gap-xs">{['60%', '80%', '40%'].map((w, i) => <div key={i} className="skeleton" style={{ height: '36px', width: w }} />)}</div>
-            ) : (
-              <DocSidebar
-                docs={docsCtrl.docs}
-                activeId={docsCtrl.currentDoc?.id}
-                selectedTags={selectedTags}
-                sortBy={sortBy}
-                selectedIds={selectedIds}
-                onSelect={handleSelect}
-                onDelete={(doc) => setDeleteTarget(doc)}
-                onRename={docsCtrl.renameDoc}
-                onDownload={docsCtrl.downloadDoc}
-                onToggleSelect={(id) => setSelectedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id])}
-                onSelectAll={() => setSelectedIds(docsCtrl.docs.filter(d => !selectedTags.length || d.tags?.some(t => selectedTags.includes(t))).map(d => d.id))}
-                onClearSelection={() => setSelectedIds([])}
-                onUpload={docsCtrl.uploadDoc}
-              />
-            )}
+            <DocSidebar
+              docs={docsCtrl.docs}
+              loading={docsCtrl.loading}
+              currentDoc={docsCtrl.currentDoc}
+              selectedTags={selectedTags}
+              setSelectedTags={setSelectedTags}
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              onSelectDoc={handleSelect}
+              onCreateDoc={openNewModal}
+              onUploadDoc={docsCtrl.uploadDoc}
+              visible={showSidebar}
+              isMobile={isMobile}
+              sortBy={sortBy}
+              setSortBy={setSortBy}
+              draftOnly={draftOnly}
+              setDraftOnly={setDraftOnly}
+              selectedIds={selectedIds}
+              setSelectedIds={setSelectedIds}
+              onCacheClear={handleCacheClear}
+            />
           </div>
         )}
 
