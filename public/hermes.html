@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>✦ Hermes — Cosmic Dreamscape v14 · Lightning Storm</title>
+<title>✦ Hermes — Cosmic Dreamscape v15 · Thunder Rumble + Puddle Reflections</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌀</text></svg>">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -224,7 +224,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05060f;font-family:
 <body>
 <div id="splash"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="rgba(91,192,255,.4)" stroke-width="2" stroke-dasharray="80 30"/><circle cx="50" cy="50" r="20" fill="none" stroke="rgba(255,107,203,.4)" stroke-width="2" stroke-dasharray="40 20"/></svg></div>
 <div id="hint">✦ click explode · hold drag gravity · T tunnel · P paint · C const · N nebula · R rave · A aurora · O wormhole · Y galaxy · B firefly · U storm · W word · Tab/→ cycle · S snapshot · G settings · 1-6 palette · ? help ✦</div>
-<div id="title">✦ hermes — cosmic dreamscape v14 ✦</div>
+<div id="title">✦ hermes — cosmic dreamscape v15 ✦</div>
 <div id="mode-badge">◆ cosmic drift ◆</div>
 <div id="storm-canvas"></div>
 <div id="storm-flash"></div>
@@ -341,6 +341,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05060f;font-family:
       <div class="help-desc"><span class="help-key">B</span> firefly swarm mode</div>
       <div class="help-desc"><span class="help-key">U</span> cosmic storm mode</div>
       <div class="help-desc"><span class="help-key">W</span> word form mode</div>
+      <div class="help-desc"><span class="help-key">J</span> storm thunder rumble</div>
       <div class="help-desc"><span class="help-key">S</span> snapshot (PNG)</div>
       <div class="help-desc"><span class="help-key">G</span> settings panel</div>
       <div class="help-desc"><span class="help-key">H</span> toggle hud</div>
@@ -1041,6 +1042,36 @@ function updateAudioLevel(){
     audioLevel=s/(freqData.length*255);
     document.getElementById('audio-dot').style.opacity=.3+audioLevel*.7;
   }catch(_){}
+}
+
+// ─── Thunder Rumble Audio (triggered by lightning) ────────────────
+function playThunderRumble(intensity){
+  if(!audioEnabled||!audioCtx||!audioGain)return;
+  try{
+    const now=audioCtx.currentTime;
+    const freq=rand(30,80);
+    const o=audioCtx.createOscillator();
+    o.type='sine';
+    o.frequency.setValueAtTime(freq,now);
+    o.frequency.exponentialRampToValueAtTime(freq*.3,now+1.5);
+    const g=audioCtx.createGain();
+    g.gain.setValueAtTime(0,now);
+    const vol=clamp(intensity*.12,0,.2);
+    g.gain.linearRampToValueAtTime(vol,now+.05);
+    g.gain.exponentialRampToValueAtTime(.001,now+1.8);
+    o.connect(g);g.connect(audioGain);
+    o.start(now);o.stop(now+2.5);
+    // Sub-harmonic rumble
+    const o2=audioCtx.createOscillator();
+    o2.type='triangle';
+    o2.frequency.setValueAtTime(freq*.5,now);
+    const g2=audioCtx.createGain();
+    g2.gain.setValueAtTime(0,now);
+    g2.gain.linearRampToValueAtTime(vol*.35,now+.08);
+    g2.gain.exponentialRampToValueAtTime(.001,now+2.5);
+    o2.connect(g2);g2.connect(audioGain);
+    o2.start(now);o2.stop(now+3);
+  }catch(e){}
 }
 
 // ─── Title Vignette ─────────────────────────────────────────────────
@@ -2057,6 +2088,11 @@ function drawWormhole(time){
   const sp=time*spd;
   const pulse=Math.sin(sp*.001)*.1+1;
 
+  // ── 3D Mouse Perspective Tilt ──
+  const tiltX=clamp((mouse.x/W-.5)*2,-1,1);
+  const tiltY=clamp((mouse.y/H-.5)*2,-1,1);
+  const tiltIntensity=wormholeCinematic?.15:.06;
+
   // ── Cinematic auto-pilot camera ──
   let camX=0,camY=0,camZoom=0.5;
   if(wormholeCinematic){
@@ -2067,6 +2103,14 @@ function drawWormhole(time){
   }
 
   ctx.save();
+
+  // Apply 3D perspective tilt + cinematic camera
+  const tiltOffsetX=tiltX*tiltIntensity*Math.min(W,H)*.12;
+  const tiltOffsetY=tiltY*tiltIntensity*Math.min(W,H)*.06;
+  ctx.translate(cx,cy);
+  ctx.rotate(tiltX*tiltIntensity*.06);
+  ctx.scale(1+tiltX*tiltIntensity*.02,1+tiltY*tiltIntensity*.02);
+  ctx.translate(-cx+tiltOffsetX,-cy+tiltOffsetY);
 
   if(wormholeCinematic){
     ctx.translate(cx+camX,cy+camY);
@@ -2322,6 +2366,7 @@ const STORM_RAIN_COUNT=250;
 let stormClouds=[];
 let stormLightnings=[];
 let stormRain=[];
+let stormPuddles=[];
 let stormFlashAlpha=0;
 let stormLightningTimer=0;
 let stormCloudCanvas=null;
@@ -2362,6 +2407,17 @@ function initStorm(){
   stormCloudCanvas=document.createElement('canvas');
   stormCloudCanvas.width=W;stormCloudCanvas.height=H;
   stormCloudCtx=stormCloudCanvas.getContext('2d');
+  // Puddle reflections
+  stormPuddles=[];
+  for(let i=0;i<12;i++){
+    stormPuddles.push({
+      x:rand(0,W),y:rand(H*.75,H*.02+H),
+      size:rand(20,60),
+      phase:rand(0,PI2),
+      alpha:rand(.02,.08),
+      wave:rand(.3,.8),waveSpeed:rand(.001,.003),
+    });
+  }
 }
 
 function generateLightningBolt(sx,sy,ex,ey,maxDepth=4){
@@ -2444,6 +2500,8 @@ function spawnLightningBolt(){
     hue:200,
   });
   stormFlashAlpha=clamp(.15+audioLevel*.25,.1,.4);
+  // Trigger thunder rumble
+  playThunderRumble(clamp(.4+audioLevel*.6,.3,1));
   // Vibrate storm overlay briefly
 }
 
@@ -2517,6 +2575,14 @@ function updateStorm(dt){
     r.trail.push({x:r.x,y:r.y});
     if(r.trail.length>4)r.trail.shift();
   }
+
+  // Update puddle reflections (pulse with storm intensity)
+  for(const p of stormPuddles){
+    p.alpha=lerp(p.alpha,.02+stormFlashAlpha*.08+ar*.04,.01);
+    // Puddles shimmer with rain impact
+    const waveEffect=Math.sin(time*p.waveSpeed+p.phase)*p.wave*.3;
+    p.alpha=clamp(p.alpha+waveEffect*.01,0,.25);
+  }
 }
 
 function drawStorm(time){
@@ -2571,7 +2637,32 @@ function drawStorm(time){
     ctx.beginPath();ctx.arc(r.x,r.y,r.size*(.8+ar*.4),0,PI2);
     ctx.fill();
   }
-  ctx.globalAlpha=1;
+
+  // ── Rain puddle reflections on ground ──
+  for(const p of stormPuddles){
+    const pa=clamp(p.alpha*(.5+ar*.4),0,.3);
+    if(pa<.005)continue;
+    tctx.globalAlpha=pa*.15;
+    const phue=200+Math.sin(time*.002+p.phase)*20;
+    tctx.fillStyle=`hsla(${phue},60%,65%,${pa*.2})`;
+    const pw=p.size*4,ph=p.size*1.2;
+    tctx.beginPath();
+    tctx.ellipse(p.x,p.y,pw,ph,0,0,PI2);
+    tctx.fill();
+    tctx.globalAlpha=pa*.08;
+    tctx.strokeStyle=`hsla(${phue},50%,80%,${pa*.1})`;
+    tctx.lineWidth=.5;
+    tctx.beginPath();
+    tctx.moveTo(p.x-pw*.6,p.y-ph*.2);
+    tctx.lineTo(p.x+pw*.6,p.y-ph*.2);
+    tctx.stroke();
+    tctx.globalAlpha=pa*.05;
+    tctx.strokeStyle=`hsla(${phue+20},40%,85%,${pa*.08})`;
+    tctx.beginPath();
+    tctx.moveTo(p.x-pw*.4,p.y+ph*.1);
+    tctx.lineTo(p.x+pw*.4,p.y+ph*.1);
+    tctx.stroke();
+  }
   tctx.globalAlpha=1;
 
   // ── Draw lightning bolts ──
