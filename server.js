@@ -590,8 +590,37 @@ const server = http.createServer(async (req, res) => {
     try { fs.unlinkSync(filePath); return json(res, { ok: true }); } catch (e) { return json(res, { error: 'not-found' }, 404); }
   }
 
-  // Redirect
-  if (u.pathname === '/dashboard' || u.pathname === '/documents' || u.pathname === '/documents/' || u.pathname === '/utilities' || u.pathname === '/random-widget' || u.pathname === '/hermes') { u.pathname = u.pathname.replace(/\/$/, '') + '.html'; }
+  // Redirect — for SPA routes, serve React build if available, else fall back to .html
+  if (u.pathname === '/' || u.pathname === '/dashboard' || u.pathname === '/documents' || u.pathname === '/documents/' || u.pathname === '/utilities' || u.pathname === '/random-widget' || u.pathname === '/hermes') {
+    const spaPath = path.join(__dirname, 'dist', 'index.html');
+    if (fs.existsSync(spaPath)) {
+      if (res.headersSent) return;
+      fs.readFile(spaPath, (err, data) => {
+        if (err) { /* fall through to old behavior */ }
+        else {
+          res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store, must-revalidate' });
+          res.end(data);
+          return;
+        }
+      });
+      return;
+    }
+    if (u.pathname !== '/') u.pathname = u.pathname.replace(/\/$/, '') + '.html';
+  }
+
+  // Try Vite build assets from dist/
+  if (u.pathname.startsWith('/assets/') && u.pathname.endsWith('.js')) {
+    const distAsset = path.join(__dirname, 'dist', u.pathname);
+    if (fs.existsSync(distAsset)) {
+      fs.readFile(distAsset, (err, data) => {
+        if (!err) {
+          res.writeHead(200, { 'Content-Type': 'text/javascript; charset=utf-8', 'Cache-Control': 'public, max-age=31536000, immutable' });
+          res.end(data);
+        }
+      });
+      return;
+    }
+  }
 
   // ── YouTube Audio API ──
   let _ytStream = null; // {url, child, req}
@@ -708,6 +737,17 @@ const server = http.createServer(async (req, res) => {
   let filePath = u.pathname === '/' ? '/index.html' : u.pathname;
   filePath = path.join(PUBLIC_DIR, filePath);
   if (!isSafePath(PUBLIC_DIR, filePath)) { res.writeHead(403); res.end('Forbidden'); return; }
+  if (fs.existsSync(filePath)) { serveStatic(res, filePath); return; }
+
+  // SPA fallback — serve React build for SPA routes
+  const isApi = u.pathname.startsWith('/api/') || u.pathname.startsWith('/proxy/');
+  const hasExt = path.extname(u.pathname);
+  if (!isApi && !hasExt) {
+    const spaPath = path.join(__dirname, 'dist', 'index.html');
+    if (fs.existsSync(spaPath)) { serveStatic(res, spaPath); return; }
+  }
+
+  // Fallback to old behavior
   serveStatic(res, filePath);
 });
 

@@ -1,20 +1,28 @@
+# Build output
+dist/
+frontend/dist/
+
+# Dependencies
 node_modules/
-.env
+frontend/node_modules/
+
+# Logs
 *.log
-.DS_Store
-cron-output/
-.pdf-cache/
-__pycache__/
-*.pyc
+
+# Python artifacts
+*.py
 rag_chroma/
-news_*.json
-text_*.json
-weather_raw.json
 *.bat
+
+# Data files (root level only)
+/services.json
+/*.json
+/*.txt
+/weather_raw.json
+/backup.bat
+/start.bat
+/startup.bat
+
+# Plans
 DESIGN.md
 PLAN.md
-aternos*.py
-aternos_config.json
-make_essay.py
-rag_server.py
-services.json
