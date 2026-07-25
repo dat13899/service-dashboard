@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>✦ Hermes — Cosmic Dreamscape v13 · Firefly Swarm</title>
+<title>✦ Hermes — Cosmic Dreamscape v14 · Lightning Storm</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌀</text></svg>">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -119,6 +119,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05060f;font-family:
 #mode-panel.open .mode-btn:nth-child(9){transition-delay:.18s}
 #mode-panel.open .mode-btn:nth-child(10){transition-delay:.20s}
 #mode-panel.open .mode-btn:nth-child(11){transition-delay:.22s}
+#mode-panel.open .mode-btn:nth-child(12){transition-delay:.24s}
 .mode-btn:hover{border-color:rgba(120,180,255,.25);color:rgba(200,220,255,.7);background:rgba(5,6,15,.7)}
 .mode-btn.active{background:rgba(91,192,255,.12);border-color:rgba(91,192,255,.3);color:#5bc0ff}
 .mode-btn .mode-icon{font-size:16px;width:20px;text-align:center}
@@ -212,13 +213,21 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05060f;font-family:
 #trans-overlay{position:fixed;inset:0;z-index:6;pointer-events:none;opacity:0;
   transition:none}
 #trans-overlay.active{opacity:1}
+
+/* ─── Storm Mode ───────────────────────────────────────────── */
+.storm-mode{color:#6fbfd0 !important}
+#storm-overlay{position:fixed;top:0;left:0;width:100%;height:100%;z-index:4;pointer-events:none}
+#storm-flash{position:fixed;top:0;left:0;width:100%;height:100%;z-index:5;pointer-events:none;
+  background:rgba(200,220,255,0);transition:background .05s}
 </style>
 </head>
 <body>
 <div id="splash"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="rgba(91,192,255,.4)" stroke-width="2" stroke-dasharray="80 30"/><circle cx="50" cy="50" r="20" fill="none" stroke="rgba(255,107,203,.4)" stroke-width="2" stroke-dasharray="40 20"/></svg></div>
-<div id="hint">✦ click explode · hold drag gravity · T tunnel · P paint · C const · N nebula · R rave · A aurora · O wormhole · Y galaxy · B firefly · W word · Tab/→ cycle · S snapshot · G settings · 1-6 palette · ? help ✦</div>
-<div id="title">✦ hermes — cosmic dreamscape v13 ✦</div>
+<div id="hint">✦ click explode · hold drag gravity · T tunnel · P paint · C const · N nebula · R rave · A aurora · O wormhole · Y galaxy · B firefly · U storm · W word · Tab/→ cycle · S snapshot · G settings · 1-6 palette · ? help ✦</div>
+<div id="title">✦ hermes — cosmic dreamscape v14 ✦</div>
 <div id="mode-badge">◆ cosmic drift ◆</div>
+<div id="storm-canvas"></div>
+<div id="storm-flash"></div>
 <div id="aurora-vis"></div>
 <div id="palette-indicator"></div>
 <div id="constellation">✦ wandering through the cosmos ✦</div>
@@ -238,6 +247,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05060f;font-family:
   <button class="mode-btn" data-mode="wormhole"><span class="mode-icon">🌀</span><span class="mode-label">Wormhole</span><span class="mode-check">✓</span></button>
   <button class="mode-btn" data-mode="galaxy"><span class="mode-icon">🌌</span><span class="mode-label">Galaxy Map</span><span class="mode-check">✓</span></button>
   <button class="mode-btn" data-mode="firefly"><span class="mode-icon">🪲</span><span class="mode-label">Firefly Swarm</span><span class="mode-check">✓</span></button>
+  <button class="mode-btn" data-mode="storm"><span class="mode-icon">⚡</span><span class="mode-label">Cosmic Storm</span><span class="mode-check">✓</span></button>
 </div>
 
 <!-- Paint Controls -->
@@ -329,6 +339,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05060f;font-family:
       <div class="help-desc"><span class="help-key">X</span> wormhole cinematic</div>
       <div class="help-desc"><span class="help-key">Y</span> galaxy map mode</div>
       <div class="help-desc"><span class="help-key">B</span> firefly swarm mode</div>
+      <div class="help-desc"><span class="help-key">U</span> cosmic storm mode</div>
       <div class="help-desc"><span class="help-key">W</span> word form mode</div>
       <div class="help-desc"><span class="help-key">S</span> snapshot (PNG)</div>
       <div class="help-desc"><span class="help-key">G</span> settings panel</div>
@@ -353,7 +364,7 @@ function resize(){
   W=c.width=tc.width=bc.width=transc.width=innerWidth;
   H=c.height=tc.height=bc.height=transc.height=innerHeight;
 }
-resize();addEventListener('resize',()=>{resize();initPrismGeometry();initAuroraBands();initWormhole();initGalaxy();initFireflySwarm();});
+resize();addEventListener('resize',()=>{resize();initPrismGeometry();initAuroraBands();initWormhole();initGalaxy();initFireflySwarm();initStorm();});
 
 const PI2=Math.PI*2;
 const rand=(min,max)=>Math.random()*(max-min)+min;
@@ -398,6 +409,7 @@ const SCENE_MODES=[
   {id:'wormhole', label:'Stargate Wormhole', icon:'🌀', desc:'Warp-ring time-space portal',    badge:'◇ S T A R G A T E  W O R M H O L E ◇',badgeCls:'wormhole-mode',nebulaMul:.05,webMul:0,    starParallax:.2,  tunnelDefault:false, paintMode:false, wordMode:false},
   {id:'galaxy',   label:'Galaxy Map',       icon:'🌌', desc:'Top-down spiral galaxy explorer',badge:'◇ G A L A X Y  M A P ◇',      badgeCls:'galaxy-mode', nebulaMul:.02,webMul:0,    starParallax:.08, tunnelDefault:false, paintMode:false, wordMode:false},
   {id:'firefly',  label:'Firefly Swarm',     icon:'🪲', desc:'Boids flocking light swarm',       badge:'◇ F I R E F L Y  S W A R M ◇', badgeCls:'firefly-mode',nebulaMul:.01,webMul:0,    starParallax:.04, tunnelDefault:false, paintMode:false, wordMode:false},
+  {id:'storm',    label:'Cosmic Storm',       icon:'⚡', desc:'Lightning bolts & charged rain',     badge:'◇ C O S M I C  S T O R M ◇',    badgeCls:'storm-mode', nebulaMul:.4, webMul:.3,   starParallax:.3,  tunnelDefault:false, paintMode:false, wordMode:false},
 ];
 let currentMode='cosmic';
 let paintMode=false;
@@ -1109,6 +1121,7 @@ function setSceneMode(modeId){
     prismMode=scene.id==='prism';
     galaxyMode=scene.id==='galaxy';
     fireflyMode=scene.id==='firefly';
+    stormMode=scene.id==='storm';
     tunnelMode=scene.tunnelDefault;
     tunnelTargetTransition=scene.tunnelDefault?1:0;
 
@@ -1263,6 +1276,11 @@ addEventListener('keydown',e=>{
     if(wordModalActive)return;
     e.preventDefault();
     setSceneMode(currentMode==='firefly'?'cosmic':'firefly');
+    return;
+  }
+  if(k==='u'||k==='U'){
+    e.preventDefault();
+    setSceneMode(currentMode==='storm'?'cosmic':'storm');
     return;
   }
   if(k==='o'||k==='O'){
@@ -2293,6 +2311,281 @@ function drawGalaxy(time){
   ctx.restore();
 }
 
+// ─── Cosmic Storm — Lightning + Charged Rain ─────────────────
+let stormMode=false;
+const STORM_CLOUD_COUNT=8;
+const STORM_LIGHTNING_INTERVAL=800;
+const STORM_RAIN_COUNT=250;
+let stormClouds=[];
+let stormLightnings=[];
+let stormRain=[];
+let stormFlashAlpha=0;
+let stormLightningTimer=0;
+let stormCloudCanvas=null;
+let stormCloudCtx=null;
+
+function initStorm(){
+  stormClouds=[];
+  for(let i=0;i<STORM_CLOUD_COUNT;i++){
+    stormClouds.push({
+      x:rand(0,W),y:rand(0,H*.35),
+      vx:rand(-.15,.15),vy:rand(-.03,.03),
+      radius:rand(80,220),
+      baseAlpha:rand(.04,.1),
+      pulse:rand(.3,.7),pulseSpeed:rand(.0005,.002),
+      phase:rand(0,PI2),
+      r:rand(25,45),g:rand(20,40),b:rand(50,80),
+    });
+  }
+  stormRain=[];
+  for(let i=0;i<STORM_RAIN_COUNT;i++){
+    stormRain.push({
+      x:rand(0,W),y:rand(-20,H),
+      vy:rand(200,500),
+      vx:rand(-20,20),
+      size:rand(1,3),
+      hue:rand(180,240),
+      sat:rand(30,80),
+      lig:rand(50,80),
+      trail:[],
+      phase:rand(0,PI2),
+      life:1,decay:rand(.0005,.002),
+    });
+  }
+  stormLightnings=[];
+  stormLightningTimer=0;
+  stormFlashAlpha=0;
+  // Create offscreen canvas for cloud rendering
+  stormCloudCanvas=document.createElement('canvas');
+  stormCloudCanvas.width=W;stormCloudCanvas.height=H;
+  stormCloudCtx=stormCloudCanvas.getContext('2d');
+}
+
+function generateLightningBolt(sx,sy,ex,ey,maxDepth=4){
+  const bolts=[];
+  const branches=[];
+  function gen(ax,ay,bx,by,depth,jitter){
+    const dx=bx-ax,dy=by-ay;
+    const dist=Math.sqrt(dx*dx+dy*dy);
+    if(depth<=0||dist<20){
+      branches.push({ax,ay,bx,by});
+      return;
+    }
+    const midX=(ax+bx)/2+rand(-jitter,jitter);
+    const midY=(ay+by)/2+rand(-jitter,jitter);
+    gen(ax,ay,midX,midY,depth-1,jitter*.55);
+    gen(midX,midY,bx,by,depth-1,jitter*.55);
+    // Fork off a sub-bolt occasionally
+    if(depth>1&&Math.random()<.35){
+      const forkEndX=midX+rand(-jitter*2,jitter*2);
+      const forkEndY=midY+rand(30,80);
+      gen(midX,midY,forkEndX,forkEndY,depth-2,jitter*.4);
+    }
+  }
+  gen(sx,sy,ex,ey,maxDepth,rand(20,60));
+  // Also add independent secondary forks from main path
+  if(Math.random()<.5){
+    // Ground-strike child forks
+    const fCnt=Math.floor(rand(1,3));
+    for(let i=0;i<fCnt;i++){
+      const fMidX=lerp(sx,ex,rand(.2,.7));
+      const fMidY=lerp(sy,ey,rand(.2,.7));
+      const fEndX=fMidX+rand(-50,50);
+      const fEndY=fMidY+rand(30,80);
+      gen(fMidX,fMidY,fEndX,fEndY,Math.max(1,depth-2),rand(15,40));
+    }
+  }
+  return branches;
+}
+
+function drawLightningBolt(time,branches,alpha){
+  if(alpha<.02)return;
+  const hue=200+Math.sin(time*.005)*30;
+  const ar=audioLevel*2;
+  for(const b of branches){
+    ctx.globalAlpha=alpha*(.7+ar*.3);
+    ctx.strokeStyle=`hsla(${hue},100%,70%,${ctx.globalAlpha})`;
+    ctx.lineWidth=rand(1.5,3.5)*(1+ar*.5);
+    ctx.shadowColor=`hsla(${hue},100%,80%,${alpha*.5})`;
+    ctx.shadowBlur=8+ar*15;
+    ctx.beginPath();
+    ctx.moveTo(b.ax,b.ay);
+    ctx.lineTo(b.bx,b.by);
+    ctx.stroke();
+
+    // Inner white core
+    ctx.globalAlpha=alpha*(.3+ar*.2);
+    ctx.strokeStyle='rgba(255,255,255,.8)';
+    ctx.lineWidth=1;
+    ctx.shadowBlur=0;
+    ctx.beginPath();
+    ctx.moveTo(b.ax,b.ay);
+    ctx.lineTo(b.bx,b.by);
+    ctx.stroke();
+  }
+  ctx.shadowBlur=0;
+  ctx.globalAlpha=1;
+}
+
+function spawnLightningBolt(){
+  const x=rand(0,W);
+  const y=rand(0,30);
+  const endX=x+rand(-80,80);
+  const endY=rand(H*.3,H*.9);
+  const branches=generateLightningBolt(x,y,endX,endY);
+  stormLightnings.push({
+    branches,
+    life:1,
+    decay:rand(.004,.008),
+    phase:rand(0,PI2),
+    hue:200,
+  });
+  stormFlashAlpha=clamp(.15+audioLevel*.25,.1,.4);
+  // Vibrate storm overlay briefly
+}
+
+function updateStorm(dt){
+  if(currentMode!=='storm')return;
+  const ar=audioLevel*2.5;
+
+  // Update clouds
+  for(const c of stormClouds){
+    c.x+=c.vx*dt*.016;
+    c.y+=c.vy*dt*.016;
+    if(c.x<-c.radius)c.x=W+c.radius;
+    if(c.x>W+c.radius)c.x=-c.radius;
+    if(c.y<-c.radius)c.y=H*.3;
+    if(c.y>H*.4)c.y=H*.35;
+  }
+
+  // Lightning timer
+  stormLightningTimer-=dt;
+  if(stormLightningTimer<=0){
+    spawnLightningBolt();
+    stormLightningTimer=STORM_LIGHTNING_INTERVAL+rand(-300,600)-ar*150;
+    if(Math.random()<.2+ar*.1)spawnLightningBolt(); // double strike!
+  }
+
+  // Update flashlight
+  stormFlashAlpha*=Math.max(.97,.9+ar*.05);
+
+  // Update lightning bolts
+  for(let i=stormLightnings.length-1;i>=0;i--){
+    const l=stormLightnings[i];
+    l.life-=l.decay*dt;
+    if(l.life<=0){stormLightnings.splice(i,1);continue}
+  }
+
+  // Update rain
+  const rainTarget=STORM_RAIN_COUNT+Math.floor(ar*80);
+  while(stormRain.length<rainTarget&&stormRain.length<STORM_RAIN_COUNT*2){
+    stormRain.push({
+      x:rand(0,W),y:rand(-50,0),
+      vy:rand(200,500),vx:rand(-20,20),
+      size:rand(1,3),hue:rand(180,240),
+      sat:rand(30,80),lig:rand(50,80),
+      trail:[],phase:rand(0,PI2),
+      life:1,decay:rand(.0005,.002),
+    });
+  }
+  while(stormRain.length>rainTarget&&stormRain.length>20){
+    stormRain.pop();
+  }
+  for(let i=stormRain.length-1;i>=0;i--){
+    const r=stormRain[i];
+    r.life-=r.decay*dt;
+    if(r.life<=0||r.y>H+30){
+      // Recycle
+      r.x=rand(0,W);r.y=rand(-40,-5);
+      r.vy=rand(200,500)+(audioLevel*200);
+      r.vx=rand(-20,20);
+      r.life=1;
+      r.hue=rand(180,240);
+      // Wind from mouse
+      if(mouse.active){
+        r.vx+=(mouse.x-r.x)*.001;
+      }
+    }
+    // Wind influenced by mouse
+    if(mouse.active){r.vx+=(mouse.x-r.x)*.003*dt*.016}
+    r.x+=r.vx*dt*.016;
+    r.y+=r.vy*dt*.016;
+    // Trail
+    r.trail.push({x:r.x,y:r.y});
+    if(r.trail.length>4)r.trail.shift();
+  }
+}
+
+function drawStorm(time){
+  if(currentMode!=='storm')return;
+  const ar=audioLevel*2.5;
+
+  // ── Render storm clouds to offscreen ──
+  stormCloudCtx.clearRect(0,0,W,H);
+  const flash=stormFlashAlpha>.01;
+  for(const c of stormClouds){
+    const pu=1+Math.sin(time*c.pulseSpeed+c.phase)*c.pulse*.5;
+    const r=c.radius*pu;
+    const a=clamp(c.baseAlpha*(.8+ar*.3),.02,.15);
+    const g=stormCloudCtx.createRadialGradient(c.x,c.y,0,c.x,c.y,r);
+    g.addColorStop(0,`rgba(${c.r},${c.g},${c.b},${a})`);
+    g.addColorStop(.5,`rgba(${c.r-10},${c.g-5},${c.b-10},${a*.5})`);
+    g.addColorStop(1,'rgba(0,0,0,0)');
+    stormCloudCtx.fillStyle=g;
+    stormCloudCtx.beginPath();stormCloudCtx.arc(c.x,c.y,r,0,PI2);
+    stormCloudCtx.fill();
+  }
+
+  // ── Draw clouds to main canvas ──
+  ctx.drawImage(stormCloudCanvas,0,0);
+
+  // ── Draw rain ──
+  for(const r of stormRain){
+    const len=r.trail.length;
+    for(let t=1;t<len;t++){
+      const ta=t/len;
+      tctx.globalAlpha=ta*.06*clamp(r.life,.2,1)*(.6+ar*.3);
+      tctx.strokeStyle=`hsla(${r.hue},${r.sat}%,${r.lig+10}%,${ta*.4})`;
+      tctx.lineWidth=r.size*ta*.3;
+      tctx.beginPath();
+      tctx.moveTo(r.trail[t-1].x,r.trail[t-1].y);
+      tctx.lineTo(r.trail[t].x,r.trail[t].y);
+      tctx.stroke();
+    }
+    // Rain streak
+    ctx.globalAlpha=clamp(r.life*.15*(.5+ar*.3),.02,.25);
+    const rHue=r.hue+Math.sin(time*.003+r.phase)*20;
+    ctx.strokeStyle=`hsla(${rHue},80%,70%,${ctx.globalAlpha})`;
+    ctx.lineWidth=r.size;
+    ctx.beginPath();
+    ctx.moveTo(r.x,r.y);
+    ctx.lineTo(r.x-r.vx*dt*.008,r.y-r.vy*dt*.008);
+    ctx.stroke();
+
+    // Charged glow dot
+    ctx.globalAlpha=clamp(r.life*.3*(.5+ar*.4),.02,.2);
+    ctx.fillStyle=`hsla(${rHue},100%,80%,${ctx.globalAlpha})`;
+    ctx.beginPath();ctx.arc(r.x,r.y,r.size*(.8+ar*.4),0,PI2);
+    ctx.fill();
+  }
+  ctx.globalAlpha=1;
+  tctx.globalAlpha=1;
+
+  // ── Draw lightning bolts ──
+  for(const l of stormLightnings){
+    drawLightningBolt(time,l.branches,l.life);
+  }
+
+  // ── Screen flash ──
+  if(stormFlashAlpha>.002){
+    const el=document.getElementById('storm-flash');
+    const fa=stormFlashAlpha*(.6+ar*.4);
+    el.style.background=`rgba(180,210,255,${fa})`;
+  }else{
+    document.getElementById('storm-flash').style.background='rgba(200,220,255,0)';
+  }
+}
+
 // ─── Galaxy Map Mouse Controls ────────────────────────────────
 document.addEventListener('mousemove',e=>{
   if(currentMode==='galaxy'){
@@ -2329,6 +2622,7 @@ function initFireflySwarm(){
   }
 }
 initFireflySwarm();
+initStorm();
 
 function updateFireflySwarm(dt){
   if(currentMode!=='firefly')return;
@@ -2569,6 +2863,8 @@ function loop(time){
   drawAurora(time);
   drawWormhole(time);
   drawGalaxy(time);
+  updateStorm(dt);
+  drawStorm(time);
   updateFireflySwarm(dt);
   drawFireflySwarm(time);
   drawCircularVisualizer(time);
