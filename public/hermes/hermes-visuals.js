@@ -379,7 +379,13 @@ addEventListener('mouseup',e=>{
   paintMouseDown=false;
 });
 addEventListener('click',()=>{
-  if(!mouseDown&&!paintMode)doExplosion(mouse.x,mouse.y,50);
+  if(!mouseDown&&!paintMode){
+    const target=document.activeElement;
+    if(target&&(target.closest('#mode-panel')||target.closest('#mode-config')||target.closest('#paint-controls')||
+       target.closest('#help-overlay')||target.closest('#word-modal')||target.closest('.navbar')||
+       target.closest('#back-site')))return;
+    doExplosion(mouse.x,mouse.y,50);
+  }
 });
 addEventListener('touchmove',e=>{
   const t=e.touches[0];mouse.x=t.clientX;mouse.y=t.clientY;mouse.active=true;
@@ -390,6 +396,12 @@ addEventListener('touchmove',e=>{
 },{passive:true});
 addEventListener('touchstart',e=>{
   const t=e.touches[0];mouse.x=t.clientX;mouse.y=t.clientY;mouse.active=true;
+  // Don't trigger visualizer effects when touching UI controls
+  const target=e.target;
+  if(target.closest('#mode-panel')||target.closest('#mode-config')||target.closest('#paint-controls')||
+     target.closest('#help-overlay')||target.closest('#word-modal')||target.closest('#vol-toggle')||
+     target.closest('#cfg-btn')||target.closest('#hud')||target.closest('#palette-indicator')||
+     target.closest('#back-site')||target.closest('.navbar')||target.closest('#mode-panel-toggle')||target.closest('#snapshot-toast'))return;
   if(!paintMode){
     gravityWell.active=true;gravityWell.x=mouse.x;gravityWell.y=mouse.y;
     doExplosion(mouse.x,mouse.y,30);
