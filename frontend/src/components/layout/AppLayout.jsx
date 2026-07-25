@@ -1,16 +1,42 @@
-import { useLocation, Outlet } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion } from 'motion/react';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import BottomTab from './BottomTab';
 import BlobBackground from '../shared/BlobBackground';
+import Cursor from '../Cursor';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 
-/** AppLayout wraps every page with shared chrome. */
-export default function AppLayout({ children }) {
+/**
+ * AppLayout — premium cinematic shell.
+ * - Lenis smooth scroll
+ * - Custom magnetic cursor (desktop only)
+ * - AnimatePresence page transitions
+ * - Global touch ripple
+ */
+export default function AppLayout() {
   const { isMobile } = useMediaQuery();
+  const location = useLocation();
 
-  // Global touch ripple on all .btn, .card, clickable elements
+  // Lenis smooth scroll
+  useEffect(() => {
+    let lenis;
+    import('lenis').then(mod => {
+      const Lenis = mod.default;
+      lenis = new Lenis({
+        lerp: isMobile ? 0.1 : 0.065,
+        wheelMultiplier: 1,
+        smoothWheel: true,
+        syncTouch: true,
+      });
+      const raf = (time) => { lenis.raf(time); requestAnimationFrame(raf); };
+      requestAnimationFrame(raf);
+    });
+    return () => lenis?.destroy();
+  }, [isMobile]);
+
+  // Global touch ripple
   useEffect(() => {
     const handler = (e) => {
       const el = e.target.closest('.btn, .card, [role="button"], a[href]');
@@ -35,21 +61,40 @@ export default function AppLayout({ children }) {
     };
   }, []);
 
+  const pageVariants = {
+    initial: { opacity: 0, y: 12, scale: 0.985 },
+    animate: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] } },
+    exit: { opacity: 0, y: -8, scale: 0.99, transition: { duration: 0.2, ease: 'easeIn' } },
+  };
+
   return (
     <>
+      <Cursor />
       <div className="noise-overlay" />
       <BlobBackground />
       <Navbar />
-      <main style={{
-        paddingTop: '56px',           // navbar height
-        paddingBottom: isMobile ? '64px' : '0', // bottom tab space
-        minHeight: '100dvh',
-        display: 'flex',
-        flexDirection: 'column',
-      }}>
-        {/* Page content via children or Outlet */}
+      <main
+        style={{
+          paddingTop: '56px',
+          paddingBottom: isMobile ? '64px' : '0',
+          minHeight: '100dvh',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
         <div className="page-enter flex-1">
-          {children || <Outlet />}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={location.pathname}
+              variants={pageVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              style={{ flex: 1 }}
+            >
+              <Outlet />
+            </motion.div>
+          </AnimatePresence>
         </div>
       </main>
       {isMobile && <BottomTab />}
