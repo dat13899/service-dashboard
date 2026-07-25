@@ -51,7 +51,7 @@ export default function ServicesSection({ services, loading, healthMap, statusCo
 
   return (
     <section id="services-section" style={{ padding: '3rem 1.5rem' }}>
-      <div style={{ maxWidth: 1000, margin: '0 auto' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <h2 style={{ fontSize: 'clamp(1.1rem, 3vw, 1.5rem)', color: 'var(--text-strong)', marginBottom: '1rem' }}>
           <span style={{ marginRight: 8 }}>📦</span> Services
         </h2>

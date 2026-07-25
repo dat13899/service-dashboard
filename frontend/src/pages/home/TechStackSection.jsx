@@ -21,7 +21,7 @@ const badgeStyle = {
 export default function TechStackSection() {
   return (
     <section id="stack-section" style={{ padding: '3rem 1.5rem', textAlign: 'center' }}>
-      <div style={{ maxWidth: 1000, margin: '0 auto' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <h2 style={{ fontSize: 'clamp(1.1rem, 3vw, 1.5rem)', color: 'var(--text-strong)', marginBottom: '1rem' }}>
           <span style={{ marginRight: 8 }}>🛠</span> Tech Stack
         </h2>

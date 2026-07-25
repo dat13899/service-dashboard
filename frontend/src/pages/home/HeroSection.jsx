@@ -4,7 +4,7 @@ export default function HeroSection({ displayedText, scrollTo }) {
   return (
     <section style={{
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      textAlign: 'center', padding: '4rem 1.5rem 2.5rem', minHeight: '100vh',
+      textAlign: 'center', padding: '4rem 1.5rem 2.5rem', minHeight: '100dvh',
     }}>
       <div style={{ maxWidth: 700, padding: '0 1rem' }}>
         {/* Gradient greeting */}

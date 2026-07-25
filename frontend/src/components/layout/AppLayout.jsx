@@ -13,6 +13,7 @@ export default function AppLayout({ children }) {
 
   return (
     <>
+      <div className="noise-overlay" />
       <BlobBackground />
       <Navbar />
       <main style={{
