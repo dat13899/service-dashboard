@@ -4,8 +4,8 @@ const TABS = [
   { to: '/', icon: 'fa-house', label: 'Home' },
   { to: '/dashboard', icon: 'fa-gauge-high', label: 'Dashboard' },
   { to: '/documents', icon: 'fa-file-lines', label: 'Docs' },
-  { to: '/random-widget', icon: 'fa-cubes', label: 'Widget' },
-  { to: '/hermes', icon: 'fa-cube', label: 'Hermes' },
+  { to: '/widgets', icon: 'fa-cubes', label: 'Widget' },
+  { to: '/utilities', icon: 'fa-toolbox', label: 'Tools' },
 ];
 
 /** iOS-style bottom tab bar — mobile only */
