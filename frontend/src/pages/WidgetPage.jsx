@@ -1,6 +1,4 @@
 import { useState, lazy, Suspense } from 'react';
-import Navbar from '../components/Navbar';
-import BlobBackground from '../components/BlobBackground';
 import widgets from './widgets/widgetData';
 
 const widgetComponents = {
@@ -50,9 +48,6 @@ export default function WidgetPage() {
 
   return (
     <>
-      <BlobBackground />
-      <Navbar active="/random-widget" />
-
       <section className="section" style={{ paddingTop: '1.5rem' }}>
         <div className="container" style={{ maxWidth: '1000px', margin: '0 auto' }}>
 

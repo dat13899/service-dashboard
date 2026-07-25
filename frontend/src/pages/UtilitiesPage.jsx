@@ -1,14 +1,12 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import Navbar from '../components/Navbar';
-import BlobBackground from '../components/BlobBackground';
-import { useToast } from '../hooks/useToast';
+import { useToastContext } from '../components/shared/Toast';
 
 const UTILITIES = [
   { id: 'youtube', icon: '🎵', name: 'YouTube Audio Player', desc: 'Dán link YouTube → phát âm thanh. Timer 5p mặc định, tắt hẳn stream khi hết giờ.' },
 ];
 
 export default function UtilitiesPage() {
-  const toast = useToast();
+  const toast = useToastContext();
   const [selected, setSelected] = useState('youtube');
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
@@ -69,9 +67,6 @@ export default function UtilitiesPage() {
 
   return (
     <>
-      <BlobBackground />
-      <Navbar active="/utilities" />
-
       <section className="section" style={{ paddingTop: '2rem' }}>
         <div className="container" style={{ maxWidth: '800px' }}>
           <h1 className="title is-4" style={{ color: 'var(--text-strong)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>

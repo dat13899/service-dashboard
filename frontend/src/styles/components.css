@@ -1,0 +1,235 @@
+/* ── Component Styles ── */
+
+/* ===== Buttons ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: 1px solid transparent;
+  min-height: 40px; /* touch-friendly */
+  min-width: 40px;
+  justify-content: center;
+  white-space: nowrap;
+}
+.btn:active { transform: scale(0.97); }
+.btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+
+.btn-primary {
+  composes: btn;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+}
+.btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
+
+.btn-glass {
+  composes: btn;
+  background: var(--glass-bg);
+  border-color: var(--glass-border);
+  color: var(--text-dim);
+}
+.btn-glass:hover:not(:disabled) {
+  background: var(--surface-2);
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+.btn-danger {
+  composes: btn;
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.2);
+  color: var(--red);
+}
+.btn-danger:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.2);
+}
+
+.btn-sm { font-size: 0.72rem; padding: 0.3rem 0.55rem; min-height: 32px; }
+.btn-lg { font-size: 0.92rem; padding: 0.6rem 1.2rem; }
+
+.btn-icon {
+  composes: btn;
+  padding: 0.35rem;
+  min-width: 36px;
+  min-height: 36px;
+}
+
+/* ===== Cards ===== */
+.card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.card-hover {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  transition: transform var(--transition-slow), box-shadow var(--transition-slow);
+  cursor: pointer;
+}
+.card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+.card-hover:active { transform: scale(0.98); }
+
+/* ===== Badges ===== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: var(--radius-full);
+  font-size: 0.68rem;
+  font-weight: 500;
+  border: 1px solid var(--glass-border);
+  background: var(--surface-2);
+  color: var(--text-dim);
+}
+
+.badge-accent { background: var(--accent); color: #fff; border-color: var(--accent); }
+.badge-green { background: rgba(34, 197, 94, 0.15); color: var(--green); border-color: rgba(34, 197, 94, 0.25); }
+.badge-red { background: rgba(239, 68, 68, 0.15); color: var(--red); border-color: rgba(239, 68, 68, 0.25); }
+.badge-amber { background: rgba(245, 158, 11, 0.15); color: var(--amber); border-color: rgba(245, 158, 11, 0.25); }
+
+/* ===== Inputs ===== */
+.input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color var(--transition-fast);
+  min-height: 40px;
+}
+.input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(129, 140, 248, 0.2); }
+.input::placeholder { color: var(--text-dim); opacity: 0.6; }
+
+/* ===== Section headings ===== */
+.section-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-strong);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+
+/* ===== Status dots ===== */
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.status-dot-online {
+  composes: status-dot;
+  background: var(--green);
+  box-shadow: 0 0 6px var(--green);
+}
+.status-dot-offline {
+  composes: status-dot;
+  background: var(--text-dim);
+}
+.status-dot-error {
+  composes: status-dot;
+  background: var(--red);
+}
+
+/* ===== Scrollbar ===== */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
+
+/* ===== Skeleton loading ===== */
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-2) 25%, var(--border) 50%, var(--surface-2) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 6px;
+}
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ===== Spinner ===== */
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+/* ===== Animations ===== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* ===== Blob background ===== */
+@keyframes blobFloat {
+  0%, 100% { border-radius: 50% 60% 40% 70%; transform: translate(0, 0) rotate(0deg); }
+  25% { border-radius: 60% 40% 70% 50%; transform: translate(30px, -20px) rotate(90deg); }
+  50% { border-radius: 40% 70% 50% 60%; transform: translate(-15px, 30px) rotate(180deg); }
+  75% { border-radius: 70% 50% 60% 40%; transform: translate(20px, 15px) rotate(270deg); }
+}
+
+/* ===== Page transition ===== */
+.page-enter {
+  animation: fadeIn 0.25s ease;
+}
+
+/* ===== Focus ring for accessibility ===== */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ===== Empty state ===== */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--text-dim);
+  gap: 0.5rem;
+}
+.empty-state i { font-size: 2rem; opacity: 0.3; }

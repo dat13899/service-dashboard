@@ -1,7 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import Navbar from '../components/Navbar';
-import BlobBackground from '../components/BlobBackground';
-import { useToast } from '../hooks/useToast';
+import { useToastContext } from '../components/shared/Toast';
 import useDocuments from '../hooks/useDocuments';
 import DocSidebar from './docs/DocSidebar';
 import DocReader from './docs/DocReader';
@@ -314,7 +312,7 @@ const MOBILE_BP = 720;
 const LS_CACHE_VERSION = 'documents_cache_version';
 
 export default function DocumentsPage() {
-  const toast = useToast();
+  const toast = useToastContext();
   const docsCtrl = useDocuments(toast);
 
   const [selectedTags, setSelectedTags] = useState([]);
@@ -476,8 +474,8 @@ export default function DocumentsPage() {
   }, [toast]);
 
   return (
-    <div style={s.page}>
-      <BlobBackground />
+    <>
+      {/* No BlobBackground or Navbar — handled by AppLayout */}
 
       {/* Top bar */}
       <div style={s.topBar}>
@@ -676,6 +674,6 @@ export default function DocumentsPage() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

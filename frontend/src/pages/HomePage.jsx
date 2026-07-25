@@ -1,8 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import Navbar from '../components/Navbar';
-import BlobBackground from '../components/BlobBackground';
 import { fetchServices, startService, stopService, fetchServiceHealth } from '../services/api';
-import { useToast } from '../hooks/useToast';
+import { useToastContext } from '../components/shared/Toast';
 import ConfirmModal from '../components/ConfirmModal';
 
 const TAGLINES = [
@@ -29,7 +27,7 @@ const SOCIAL_LINKS = [
 ];
 
 export default function HomePage() {
-  const toast = useToast();
+  const toast = useToastContext();
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [healthMap, setHealthMap] = useState({});
@@ -163,9 +161,6 @@ export default function HomePage() {
 
   return (
     <>
-      <BlobBackground />
-      <Navbar active="/" />
-
       {/* Hero Section */}
       <section className="hero is-fullheight-with-navbar" style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center',

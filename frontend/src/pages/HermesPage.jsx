@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react';
-import Navbar from '../components/Navbar';
 
 const HERMES_STANDALONE = '/hermes-standalone.html';
 
@@ -20,7 +19,6 @@ export default function HermesPage() {
       position: 'fixed', inset: 0, zIndex: 1,
       display: 'flex', flexDirection: 'column',
     }}>
-      <Navbar active="/hermes" />
       <iframe
         ref={iframeRef}
         src={HERMES_STANDALONE}
