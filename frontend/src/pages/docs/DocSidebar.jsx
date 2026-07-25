@@ -241,11 +241,11 @@ const s = {
 };
 
 export default function DocSidebar({
-  docs, loading, currentDoc, selectedTags, setSelectedTags,
-  searchQuery, setSearchQuery, onSelectDoc, onCreateDoc,
+  docs, loading, currentDoc, selectedTags, setSelectedTags = () => {},
+  searchQuery = '', setSearchQuery = () => {}, onSelectDoc, onCreateDoc,
   onUploadDoc, visible, isMobile,
-  sortBy, setSortBy, draftOnly, setDraftOnly,
-  selectedIds, setSelectedIds,
+  sortBy = 'newest', setSortBy = () => {}, draftOnly, setDraftOnly,
+  selectedIds = [], setSelectedIds = () => {},
   onCacheClear,
 }) {
   const [dragOver, setDragOver] = useState(false);
