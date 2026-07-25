@@ -105,8 +105,19 @@
 .health-dot.offline{background:var(--text-dim)}
 .health-dot.pulse{animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
 
-/* ── Expandable card ── */
+/* ── Responsive navbar ── */
+@media (max-width: 820px) {
+  .navbar-menu { display: none !important; }
+  .navbar-burger { display: flex !important; }
+}
+@media (min-width: 821px) {
+  .navbar-burger { display: none !important; }
+}
+@media (max-width: 640px) {
+  .nav-label { display: none; }
+}
 .card-expandable .card-header{cursor:pointer;user-select:none}
 .card-expandable .card-header .toggle-icon{transition:transform .2s}
 .card-expandable.expanded .card-header .toggle-icon{transform:rotate(180deg)}
