@@ -591,7 +591,7 @@ const server = http.createServer(async (req, res) => {
   }
 
   // Redirect — for SPA routes, serve React build if available, else fall back to .html
-  if (u.pathname === '/' || u.pathname === '/dashboard' || u.pathname === '/documents' || u.pathname === '/documents/' || u.pathname === '/utilities' || u.pathname === '/random-widget' || u.pathname === '/hermes') {
+  if (u.pathname === '/' || u.pathname === '/dashboard' || u.pathname === '/documents' || u.pathname === '/documents/' || u.pathname === '/utilities' || u.pathname === '/widgets' || u.pathname === '/hermes') {
     const spaPath = path.join(__dirname, 'dist', 'index.html');
     if (fs.existsSync(spaPath)) {
       if (res.headersSent) return;

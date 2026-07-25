@@ -1,4 +1,4 @@
-// ── Documents page CSS (mobile-first) ──
+/* ── Documents page CSS (mobile-first) ── */
 
 .doc-page { min-height: 100dvh; display: flex; flex-direction: column; }
 

@@ -7,8 +7,9 @@ const NAV_LINKS = [
   { to: '/', label: 'Home', icon: 'fa-house' },
   { to: '/dashboard', label: 'Dashboard', icon: 'fa-gauge-high' },
   { to: '/documents', label: 'Documents', icon: 'fa-file-lines' },
-  { to: '/random-widget', label: 'Widgets', icon: 'fa-cubes' },
-  { to: '/hermes', label: 'Hermes', icon: 'fa-cube' },
+  { to: '/widgets', label: 'Widgets', icon: 'fa-cubes' },
+  { to: '/utilities', label: 'Utilities', icon: 'fa-toolbox' },
+  { to: '/hermes', label: 'Hermes', icon: 'fa-galaxy' },
 ];
 
 export default function Navbar() {
