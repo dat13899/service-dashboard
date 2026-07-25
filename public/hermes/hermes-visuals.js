@@ -772,11 +772,11 @@ panelToggle.addEventListener('click',()=>{
 // Mobile: tap peek bar to open/close
 panel.addEventListener('click',e=>{
   if(!isMobilePanel())return;
-  // Only toggle if clicked on panel itself (not on a mode-btn child)
-  if(e.target===panel||e.target===panel.firstChild){
-    panelOpen=!panelOpen;
-    panel.classList.toggle('visible',panelOpen);
-  }
+  // If clicked a mode-btn or its child → let mode-btn handler deal with it
+  if(e.target.closest('.mode-btn'))return;
+  // Otherwise tap on anything else (peek bar, padding, gaps) toggles the panel
+  panelOpen=!panelOpen;
+  panel.classList.toggle('visible',panelOpen);
 });
 
 document.querySelectorAll('.mode-btn').forEach(btn=>{
