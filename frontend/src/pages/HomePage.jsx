@@ -6,7 +6,6 @@ import HeroSection from './home/HeroSection';
 import ServicesSection from './home/ServicesSection';
 import TechStackSection from './home/TechStackSection';
 import ContactSection from './home/ContactSection';
-import './home/home.css';
 
 const TAGLINES = [
   'Chạy home lab 24/7', 'Tự động hóa với AI',
@@ -89,19 +88,6 @@ export default function HomePage() {
         statusColor={statusColor} uptime={uptime} onToggle={handleToggle} />
       <TechStackSection />
       <ContactSection toast={toast} />
-
-      <footer className="home-footer">
-        <div>
-          BT Dat · 2026 · <span>⏻ checking...</span>
-          <span style={{ margin: '0 0.5rem', opacity: 0.3 }}>·</span>
-          <button onClick={() => {
-            if ('caches' in window) caches.keys().then(ks => Promise.all(ks.map(k => caches.delete(k))));
-            toast('🧹 Cache cleared', 'success');
-          }}
-            style={{ background: 'none', border: 'none', color: 'var(--text-dim)', fontSize: '0.65rem', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '2px' }}
-          >🧹 clear cache</button>
-        </div>
-      </footer>
 
       <ConfirmModal show={confirmSvc !== null}
         title={confirmAction === 'stop' ? 'Dừng service' : 'Restart service'}

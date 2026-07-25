@@ -262,3 +262,9 @@
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.5; transform: scale(1.3); }
 }
+
+/* ===== Blink cursor (typing effect) ===== */
+@keyframes blink {
+  0%, 100% { background: var(--accent); }
+  50% { background: transparent; }
+}
