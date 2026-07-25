@@ -183,6 +183,40 @@ const s = {
     alignItems: 'center',
     lineHeight: 1,
   },
+  pdfContainer: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    position: 'relative',
+    minHeight: 0,
+  },
+  pdfIframe: {
+    flex: 1,
+    border: 'none',
+    width: '100%',
+    height: '100%',
+    minHeight: '400px',
+    borderRadius: '0 0 var(--radius-lg) var(--radius-lg)',
+  },
+  pdfLoading: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: 'var(--text-dim)',
+    gap: '0.75rem',
+    fontSize: '0.9rem',
+  },
+  docxBadge: {
+    fontSize: '0.7rem',
+    padding: '0.15rem 0.5rem',
+    borderRadius: '999px',
+    background: 'rgba(59,130,246,0.15)',
+    color: '#60a5fa',
+    border: '1px solid rgba(59,130,246,0.3)',
+    fontWeight: 500,
+  },
 };
 
 // Convert markdown headings to TOC items
@@ -230,15 +264,27 @@ export default function DocReader({ doc, onEdit, onDelete, onRename, onConvert, 
     try { return parseFloat(localStorage.getItem('docReaderFontSize')) || 0.92; }
     catch { return 0.92; }
   });
+  const [pdfLoading, setPdfLoading] = useState(false);
   const contentRef = useRef(null);
   const tocRef = useRef(null);
   const renameRef = useRef(null);
 
-  // Rendered HTML
+  const isDocx = doc?.ext === 'docx' || (doc?.file || '').endsWith('.docx');
+  const pdfUrl = isDocx ? `/api/documents/${doc?.id}/pdf` : null;
+
+  // Trigger PDF convert when docx doc loads
+  useEffect(() => {
+    if (isDocx) {
+      setPdfLoading(true);
+      fetch(pdfUrl).finally(() => setPdfLoading(false));
+    }
+  }, [doc?.id, isDocx, pdfUrl]);
+
+  // Rendered HTML (only for .md files)
   const renderedHtml = useMemo(() => {
-    if (!doc) return '';
+    if (!doc || isDocx) return '';
     return renderMarkdown(doc.content);
-  }, [doc?.content]);
+  }, [doc?.content, isDocx]);
 
   // TOC from rendered HTML
   const toc = useMemo(() => {
@@ -265,7 +311,7 @@ export default function DocReader({ doc, onEdit, onDelete, onRename, onConvert, 
     }
   }, []);
 
-  // Track page-level scroll for fixed progress bar
+  // Track page-level scroll
   useEffect(() => {
     const el = contentRef.current;
     if (!el) return;
@@ -319,8 +365,17 @@ export default function DocReader({ doc, onEdit, onDelete, onRename, onConvert, 
 
   // Download
   const handleDownload = useCallback(() => {
+    if (isDocx) {
+      const a = document.createElement('a');
+      a.href = `/api/documents/${doc.id}?dl=1`;
+      a.download = (doc.title || doc.id) + '.docx';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      return;
+    }
     onDownloadDoc?.(doc);
-  }, [onDownloadDoc, doc]);
+  }, [onDownloadDoc, doc, isDocx]);
 
   // Export PDF
   const handleExportPdf = useCallback(() => {
@@ -388,24 +443,27 @@ export default function DocReader({ doc, onEdit, onDelete, onRename, onConvert, 
                 <span key={i} style={s.metaTag}>{t}</span>
               ));
             })()}
+            {isDocx && <span style={s.docxBadge}><i className="fas fa-file-word" style={{ marginRight: '0.2rem' }}></i>DOCX</span>}
           </div>
         </div>
 
         {/* Actions */}
         <div style={s.actions}>
-          {/* Font size controls */}
-          <div style={s.fontCtrl}>
-            <button style={s.fontBtn} onClick={decreaseFont} title="Thu nhỏ chữ">
-              <i className="fas fa-font" style={{ fontSize: '0.55rem' }}></i><span style={{ fontSize: '0.55rem' }}>⁻</span>
-            </button>
-            <span style={{ fontSize: '0.65rem', color: 'var(--text-dim)', padding: '0 0.2rem' }}>{Math.round(fontSize * 100)}%</span>
-            <button style={s.fontBtn} onClick={increaseFont} title="Phóng to chữ">
-              <i className="fas fa-font" style={{ fontSize: '0.7rem' }}></i><span style={{ fontSize: '0.65rem' }}>⁺</span>
-            </button>
-          </div>
+          {/* Font size controls — md only */}
+          {!isDocx && (
+            <div style={s.fontCtrl}>
+              <button style={s.fontBtn} onClick={decreaseFont} title="Thu nhỏ chữ">
+                <i className="fas fa-font" style={{ fontSize: '0.55rem' }}></i><span style={{ fontSize: '0.55rem' }}>⁻</span>
+              </button>
+              <span style={{ fontSize: '0.65rem', color: 'var(--text-dim)', padding: '0 0.2rem' }}>{Math.round(fontSize * 100)}%</span>
+              <button style={s.fontBtn} onClick={increaseFont} title="Phóng to chữ">
+                <i className="fas fa-font" style={{ fontSize: '0.7rem' }}></i><span style={{ fontSize: '0.65rem' }}>⁺</span>
+              </button>
+            </div>
+          )}
 
-          {/* TOC button */}
-          {toc.length > 0 && (
+          {/* TOC button — md only */}
+          {!isDocx && toc.length > 0 && (
             <div ref={tocRef} style={{ position: 'relative' }}>
               <button
                 style={s.tocBtn}
@@ -433,37 +491,67 @@ export default function DocReader({ doc, onEdit, onDelete, onRename, onConvert, 
             </div>
           )}
 
-          <button style={s.actionBtn()} onClick={() => onEdit?.(doc)} title="Chỉnh sửa">
-            <i className="fas fa-pen"></i>
-          </button>
+          {/* Convert to PDF — docx only */}
+          {isDocx && (
+            <button style={s.actionBtn('var(--amber)')} onClick={() => onConvert?.(doc.id)} title="Chuyển sang PDF">
+              <i className="fas fa-file-pdf"></i>
+              <span>PDF</span>
+            </button>
+          )}
+
+          {/* Edit — md only */}
+          {!isDocx && (
+            <button style={s.actionBtn()} onClick={() => onEdit?.(doc)} title="Chỉnh sửa">
+              <i className="fas fa-pen"></i>
+            </button>
+          )}
+
           <button style={s.actionBtn()} onClick={handleStartRename} title="Đổi tên">
             <i className="fas fa-pencil"></i>
           </button>
-          <button style={s.actionBtn()} onClick={handleDownload} title="Tải xuống .md">
+
+          <button style={s.actionBtn()} onClick={handleDownload} title={isDocx ? 'Tải xuống .docx' : 'Tải xuống .md'}>
             <i className="fas fa-download"></i>
           </button>
+
           <button style={s.actionBtn()} onClick={handlePrint} title="In ấn">
             <i className="fas fa-print"></i>
           </button>
-          <button style={s.actionBtn('var(--amber)')} onClick={handleExportPdf} title="Xuất PDF">
-            <i className="fas fa-file-pdf"></i>
-          </button>
+
           <button style={s.actionBtn('var(--red)')} onClick={() => onDelete?.(doc)} title="Xoá">
             <i className="fas fa-trash"></i>
           </button>
         </div>
       </div>
 
-      {/* Content */}
-      <div
-        ref={contentRef}
-        style={{ ...s.contentArea, fontSize: `${fontSize}rem` }}
-        className="doc-reader-content"
-        dangerouslySetInnerHTML={{ __html: renderedHtml }}
-      />
+      {/* Content — PDF iframe for DOCX, HTML for markdown */}
+      {isDocx ? (
+        <div style={s.pdfContainer}>
+          {pdfLoading ? (
+            <div style={s.pdfLoading}>
+              <i className="fas fa-spinner fa-spin" style={{ fontSize: '2rem', opacity: 0.6 }}></i>
+              <span>Đang chuyển đổi DOCX sang PDF...</span>
+              <span style={{ fontSize: '0.75rem', opacity: 0.6 }}>Quá trình này có thể mất vài giây</span>
+            </div>
+          ) : (
+            <iframe
+              style={s.pdfIframe}
+              src={pdfUrl}
+              title={doc.title}
+            />
+          )}
+        </div>
+      ) : (
+        <div
+          ref={contentRef}
+          style={{ ...s.contentArea, fontSize: `${fontSize}rem` }}
+          className="doc-reader-content"
+          dangerouslySetInnerHTML={{ __html: renderedHtml }}
+        />
+      )}
 
-      {/* Word count footer */}
-      {doc.content && (
+      {/* Word count footer (md only) */}
+      {!isDocx && doc.content && (
         <div style={s.wordCount}>
           <span>{stats.lines} dòng</span>
           <span>{stats.words} từ</span>
