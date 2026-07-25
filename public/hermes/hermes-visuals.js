@@ -374,6 +374,7 @@ addEventListener('mouseup',e=>{
         p.life=Math.min(1,p.life+.15);
       }
     }
+    if(gravityWell.strength>.3)spawnResonanceWave(gravityWell.x,gravityWell.y,gravityWell.strength);
   }
   gravityWell.active=false;gravityWell.strength=0;
   paintMouseDown=false;
@@ -424,6 +425,7 @@ addEventListener('touchend',()=>{
 
 function doExplosion(x,y,count){
   clickBoom=true;boomTimer=1.2;
+  spawnResonanceWave(x,y,Math.min(1,count/50));
   for(let i=0;i<count;i++){
     if(particles.length>=getEffMaxParticles())break;
     const ang=rand(0,PI2),spd=rand(120,400);
@@ -941,6 +943,11 @@ addEventListener('keydown',e=>{
     return;
   }
   if(k==='?'||k==='/'){e.preventDefault();document.getElementById('help-overlay').classList.toggle('show');}
+  if(k==='k'||k==='K'){
+    e.preventDefault();
+    spawnResonanceWave(mouse.x,mouse.y,1.2);
+    return;
+  }
 });
 document.getElementById('help-overlay').addEventListener('click',()=>document.getElementById('help-overlay').classList.remove('show'));
 
@@ -1081,6 +1088,15 @@ cfgAuroraSlider.addEventListener('input',()=>{
   cfgAuroraSpeed=parseFloat(cfgAuroraSlider.value);
   cfgAuroraVal.textContent=cfgAuroraSpeed;
 });
+
+const cfgWavesSlider=document.getElementById('cfg-waves');
+const cfgWavesVal=document.getElementById('cfg-waves-val');
+if(cfgWavesSlider){
+  cfgWavesSlider.addEventListener('input',()=>{
+    cfgWaves=parseFloat(cfgWavesSlider.value);
+    cfgWavesVal.textContent=cfgWaves;
+  });
+}
 
 cfgViz.addEventListener('click',()=>toggleCfg(cfgViz,'viz'));
 
@@ -1981,8 +1997,10 @@ function drawGalaxy(time){
     const angle=rand(-.5,.2)-Math.PI/1.6;
     const speed=rand(800,2200);
     const size=rand(6,18);
+    const sx=rand(0,W);
+    spawnResonanceWave(sx,0,.5);
     comets.push({
-      x:rand(0,W),y:rand(-H*.2,0),
+      x:sx,y:rand(-H*.2,0),
       vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,
       life:1,decay:rand(.006,.015),
       width:size,
@@ -2131,9 +2149,138 @@ function drawGalaxy(time){
     }
     ctx.shadowBlur=0;
     ctx.globalAlpha=1;
-  }
+    }
 
-  // ─── Cosmic Storm — Lightning + Charged Rain ─────────────────
+    // ─── Resonance Wave Rings — Expanding energy rings from clicks ─────
+    function spawnResonanceWave(x,y,intensity=1){
+    if(cfgWaves<.5)return;
+    const p=PALETTES[paletteIdx];
+    if(resonanceWaves.length>=MAX_WAVES)resonanceWaves.shift();
+    waveIdCounter++;
+    const waveCount=Math.floor(1+intensity*Math.min(2,audioLevel+1));
+    for(let w=0;w<waveCount;w++){
+      resonanceWaves.push({
+        x,y,
+        age:0,
+        speed:rand(80,160)*(.8+intensity*.4)*(.8+audioLevel*.4)*(cfgWaves/5),
+        maxRadius:Math.min(W,H)*(.25+rand(.05,.2)+intensity*.08)*(.7+cfgWaves*.06),
+        life:1,
+        decay:rand(.003,.007)*(6/(cfgWaves+.1)),
+        width:rand(1.5,4)*intensity,
+        hue:((p.partHue[0]+p.partHue[1])/2+rand(-40,40)+360)%360,
+        sat:rand(60,100),
+        lig:rand(60,85),
+        phase:rand(0,PI2),
+        id:waveIdCounter,
+        delay:w*.08, // staggered offset for multi-ring bursts
+        harmonic:1+rand(0,3)|0, // 1-3 harmonic overtones
+        interference:rand(0,PI2),
+      });
+    }
+    }
+
+    function updateResonanceWaves(dt){
+    for(let i=resonanceWaves.length-1;i>=0;i--){
+      const w=resonanceWaves[i];
+      w.age+=dt;
+      if(w.age<w.delay*1000)continue; // wait for delay
+      const effAge=w.age-w.delay*1000;
+      w.radius=Math.min(w.maxRadius,effAge*.016*w.speed);
+      w.life=1-effAge*.016*w.decay;
+      if(w.life<=0||w.radius>=w.maxRadius){resonanceWaves.splice(i,1);continue}
+    }
+    }
+
+    function drawResonanceWaves(time){
+    if(resonanceWaves.length===0)return;
+    const ar=audioLevel*2;
+    ctx.save();
+    for(const w of resonanceWaves){
+      if(w.age<w.delay*1000||w.life<.01)continue;
+      const r=w.radius;
+      if(r<2)continue;
+      const a=w.life*(.3+ar*.2);
+      const pulse=1+Math.sin(time*.004+w.phase)*.08;
+    
+      // ── Primary ring ──
+      ctx.globalAlpha=a*.4;
+      ctx.strokeStyle=`hsla(${w.hue},${w.sat}%,${w.lig+10}%,${a*.5})`;
+      ctx.lineWidth=w.width*pulse*(1+ar*.5)*(.5+w.life*.5);
+      ctx.shadowColor=`hsla(${w.hue},100%,80%,${a*.3})`;
+      ctx.shadowBlur=15+ar*20;
+      ctx.beginPath();
+      ctx.arc(w.x,w.y,r,0,PI2);
+      ctx.stroke();
+    
+      // ── Harmonic overtones (thinner, offset hue rings) ──
+      for(let h=1;h<=w.harmonic;h++){
+        const hR=r*(1+h*.08*Math.sin(time*.003+w.interference+h));
+        const hAlpha=a*.15/h;
+        if(hAlpha<.01)continue;
+        const hHue=(w.hue+h*40+Math.sin(time*.002+w.phase)*20+360)%360;
+        ctx.globalAlpha=hAlpha;
+        ctx.strokeStyle=`hsla(${hHue},${w.sat-10}%,${w.lig+20}%,${hAlpha})`;
+        ctx.lineWidth=w.width*.3/h*(.5+w.life*.5);
+        ctx.shadowBlur=8;
+        ctx.beginPath();
+        ctx.arc(w.x,w.y,hR,0,PI2);
+        ctx.stroke();
+      }
+    
+      // ── Interference pattern (wavy edge modulation) ──
+      if(w.life>.3){
+        const iAlpha=a*.1;
+        ctx.globalAlpha=iAlpha;
+        ctx.lineWidth=w.width*.3;
+        ctx.strokeStyle=`hsla(${w.hue},100%,90%,${iAlpha})`;
+        ctx.beginPath();
+        const segs=24;
+        for(let i=0;i<=segs;i++){
+          const ang=(PI2/segs)*i;
+          const wobble=Math.sin(ang*4+time*.005+w.interference)*w.width*(.5+w.life*.5);
+          const px=w.x+Math.cos(ang)*(r+wobble);
+          const py=w.y+Math.sin(ang)*(r+wobble);
+          if(i===0)ctx.moveTo(px,py);
+          else ctx.lineTo(px,py);
+        }
+        ctx.closePath();
+        ctx.stroke();
+      }
+    
+      // ── Fill glow (inner radius) ──
+      if(w.life>.2){
+        const innerR=r*.7;
+        ctx.globalAlpha=a*.04;
+        ctx.fillStyle=`hsla(${w.hue},${w.sat}%,${w.lig+15}%,${a*.1})`;
+        ctx.shadowBlur=0;
+        ctx.beginPath();
+        ctx.arc(w.x,w.y,innerR,0,PI2);
+        ctx.fill();
+      }
+    
+      // ── Sparkle dots along the ring ──
+      const sparkleCount=Math.floor(6+ar*6);
+      for(let s=0;s<sparkleCount;s++){
+        const sa=(PI2/sparkleCount)*s+time*.003+w.phase;
+        const sr=r+Math.sin(time*.006+s+w.phase)*w.width;
+        const sx=w.x+Math.cos(sa)*sr;
+        const sy=w.y+Math.sin(sa)*sr;
+        const sAlpha=a*.2*Math.sin(time*.01+s*1.3+w.interference)*.5+.5;
+        if(sAlpha<.02)continue;
+        ctx.globalAlpha=sAlpha;
+        ctx.fillStyle=`hsla(${(w.hue+120+s*60)%360},100%,85%,${sAlpha})`;
+        ctx.shadowBlur=5;
+        ctx.beginPath();ctx.arc(sx,sy,w.width*.3+ar*.3,0,PI2);
+        ctx.fill();
+      }
+    
+      ctx.shadowBlur=0;
+    }
+    ctx.globalAlpha=1;
+    ctx.restore();
+    }
+
+    // ─── Cosmic Storm — Lightning + Charged Rain ─────────────────
   let stormMode=false;
 const STORM_CLOUD_COUNT=8;
 const STORM_LIGHTNING_INTERVAL=800;

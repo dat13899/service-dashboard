@@ -73,5 +73,11 @@ let cfgBloomIntensity=5;
 let cfgNebulaSpeed=5;
 let cfgDensity=5;
 let cfgAuroraSpeed=5;
+let cfgWaves=6;
 let showVisualizer=true;
+
+// ─── Resonance Wave Rings ──────────────────────────────────────────
+let resonanceWaves=[];
+const MAX_WAVES=24;
+let waveIdCounter=0;
 

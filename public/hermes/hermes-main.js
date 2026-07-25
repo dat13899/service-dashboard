@@ -47,6 +47,8 @@ function loop(time){
   drawComets(time);
   updateStardust(dt);
   drawStardust();
+  updateResonanceWaves(dt);
+  drawResonanceWaves(time);
   drawParticles(dt);
 
   // Word particles drawn on top
