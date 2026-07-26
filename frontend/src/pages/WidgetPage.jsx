@@ -51,8 +51,9 @@ export default function WidgetPage() {
     w.desc.toLowerCase().includes(search.toLowerCase())
   );
 
+  // Thêm paddingBottom 6rem để bottom nav không che hàng widget cuối (Gradient, Gợi ý)
   return (
-    <div className="page-enter" style={{ padding: '1.5rem 1rem' }}>
+    <div className="page-enter" style={{ paddingTop: '1.5rem', paddingRight: '1rem', paddingBottom: '6rem', paddingLeft: '1rem' }}>
       <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
         {selected ? (
           <div style={{ animation: 'fadeUp .3s ease' }}>
@@ -80,8 +81,9 @@ export default function WidgetPage() {
               {filtered.length === 0 ? (
                 <div className="empty-state">Không tìm thấy widget &quot;{search}&quot;</div>
               ) : filtered.map(w => (
+                /* overflow: hidden để badge NEW không tràn ra ngoài card */
                 <div key={w.id} className="liquid-card" onClick={() => setSelected(w.id)}
-                  style={{ padding: '1rem 0.6rem', textAlign: 'center', position: 'relative', cursor: 'pointer' }}>
+                  style={{ padding: '1rem 0.6rem', textAlign: 'center', position: 'relative', cursor: 'pointer', overflow: 'hidden' }}>
                   {w.badge && <span className="badge badge-accent" style={{ position: 'absolute', top: '6px', right: '6px', fontSize: '0.5rem' }}>{w.badge}</span>}
                   <div style={{ fontSize: '2rem', marginBottom: '0.35rem', lineHeight: '1.2' }}>{w.icon}</div>
                   <div className="font-semibold" style={{ fontSize: '0.85rem', marginBottom: '0.15rem', color: 'var(--text-strong)' }}>{w.name}</div>

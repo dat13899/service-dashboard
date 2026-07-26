@@ -68,7 +68,7 @@ export default function UtilitiesPage() {
   return (
     <>
       <section className="section" style={{ paddingTop: '2rem' }}>
-        <div className="container" style={{ maxWidth: '800px' }}>
+        <div className="container" style={{ maxWidth: '800px', paddingBottom: '6rem' }}>
           <h1 className="title is-4" style={{ color: 'var(--text-strong)', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             🧰 Tiện ích
           </h1>
@@ -92,14 +92,26 @@ export default function UtilitiesPage() {
 
           {/* Player area */}
           <div className="liquid-panel" style={{ padding: '1.2rem', animation: 'fadeIn .25s ease' }}>
-            {/* Input */}
-            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.8rem' }}>
-              <input value={url} onChange={e => setUrl(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && loadYt()}
-                placeholder="Dán link YouTube vào đây..."
-                className="liquid-input"
-                style={{ flex: 1 }}
-              />
+            {/* Input field — có border rõ ràng, full width */}
+            <input value={url} onChange={e => setUrl(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && loadYt()}
+              placeholder="Dán link YouTube vào đây..."
+              className="liquid-input"
+              style={{
+                width: '100%',
+                border: '1px solid var(--glass-border)',
+                borderRadius: '8px',
+                background: 'var(--glass-bg)',
+                padding: '0.6rem 0.8rem',
+                fontSize: '0.85rem',
+                color: 'var(--text-strong)',
+                outline: 'none',
+                marginBottom: '0.75rem',
+              }}
+            />
+
+            {/* Nút Play — hàng riêng bên dưới input, không còn đè lên input */}
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
               <button onClick={loadYt} disabled={loading}
                 className="liquid-btn primary"
                 style={{ opacity: loading ? 0.5 : 1 }}

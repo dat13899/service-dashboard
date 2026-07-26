@@ -37,6 +37,12 @@ function HeroSection() {
         <Scene3D />
       </Suspense>
 
+      {/* Dark overlay cho text dễ đọc trên mobile — 3D wireframe không che chữ */}
+      <div style={{
+        position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none',
+        background: 'radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.25) 60%, transparent 100%)',
+      }} />
+
       <motion.div style={{ y: heroY, opacity: heroOpacity, textAlign: 'center', position: 'relative', zIndex: 1 }}>
         {/* Stagger title */}
         <div style={{ marginBottom: '0.5rem', display: 'flex', justifyContent: 'center', gap: 'clamp(0.2rem, 1vw, 0.5rem)' }}>
@@ -62,6 +68,8 @@ function HeroSection() {
                   : undefined,
                 backgroundSize: '200% auto',
                 animation: ch !== ' ' ? 'shimmer 3s ease-in-out infinite' : undefined,
+                // 💡 Mobile contrast: text-shadow giúp text nổi trên wireframe 3D
+                textShadow: ch !== ' ' ? '0 0 18px rgba(0,0,0,0.45)' : undefined,
               }}
             >
               {ch === ' ' ? '\u00A0' : ch}
@@ -145,7 +153,7 @@ function StatsDashboard({ services = [] }) {
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-60px' }}
+        viewport={{ once: true, amount: 0.1, margin: '-60px' }}
         transition={{ duration: 0.6 }}
         style={{ textAlign: 'center', marginBottom: '1.5rem' }}
       >
@@ -167,7 +175,7 @@ function StatsDashboard({ services = [] }) {
             className="liquid-stat"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, amount: 0.1 }}
             transition={{ delay: 0.1 * i, duration: 0.5 }}
           >
             <div className="liquid-stat-value">
@@ -210,7 +218,7 @@ function AISection() {
       <motion.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
+        viewport={{ once: true, amount: 0.1 }}
         style={{ textAlign: 'center', marginBottom: '1.5rem' }}
       >
         <h2 style={{ fontSize: 'clamp(1.2rem, 3vw, 1.6rem)', fontWeight: 800, color: 'var(--text-strong)' }}>
@@ -231,7 +239,7 @@ function AISection() {
             className="liquid-card"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, amount: 0.1 }}
             transition={{ delay: 0.12 * i, duration: 0.5 }}
             style={{ padding: '1.3rem' }}
             whileHover={{ y: -4 }}
@@ -331,11 +339,11 @@ export default function HomePage() {
 
         <AISection />
 
-        <section id="contact" style={{ padding: '3rem 1rem 5rem', position: 'relative', zIndex: 1 }}>
+        <section id="contact" style={{ padding: '3rem 1rem 7rem', position: 'relative', zIndex: 1 }}>
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, amount: 0.1 }}
             style={{ textAlign: 'center', marginBottom: '1.5rem' }}
           >
             <h2 style={{ fontSize: 'clamp(1.2rem, 3vw, 1.6rem)', fontWeight: 800, color: 'var(--text-strong)' }}>

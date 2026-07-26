@@ -79,7 +79,7 @@ export default function Scene3D() {
           performance={{ min: 0.3 }}
         >
           <ambientLight intensity={0.2} color="#00d4ff" />
-          <FloatingTorus color="#00d4ff" position={[0, 0.3, -1]} scale={0.7} speed={0.5} opacity={0.06} />
+          <FloatingTorus color="#00d4ff" position={[0, 0.3, -1]} scale={0.7} speed={0.5} opacity={0.08} />
           <ParticleField count={particleCount} />
         </Canvas>
       </div>

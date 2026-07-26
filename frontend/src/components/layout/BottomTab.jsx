@@ -7,7 +7,8 @@ import BottomSheet from '../BottomSheet';
 /**
  * Premium floating bottom nav — mobile only.
  * iOS 18-style centered floating pill, 4 tabs + "More" sheet.
- * Active tab shows icon glow + label, inactive = icon only.
+ * Tất cả icon đều có label bên dưới, equal width trong pill.
+ * Fix: label luôn hiển thị, nút "..." nằm gọn trong pill, width đều nhau.
  */
 const MAIN_TABS = [
   { to: '/', icon: 'fa-house', label: 'Home' },
@@ -28,6 +29,7 @@ export default function BottomTab() {
   }, [location.pathname]);
 
   const activeIndex = MAIN_TABS.findIndex(t => isActive(t.to));
+  const isMoreActive = isActive('/utilities') || isActive('/hermes');
 
   const moreActions = [
     {
@@ -42,15 +44,13 @@ export default function BottomTab() {
     },
   ];
 
-  const isMoreActive = isActive('/utilities') || isActive('/hermes');
-
   return (
     <>
-      {/* Floating pill navigation */}
+      {/* Floating pill navigation — equal-width items */}
       <nav
         style={{
           position: 'fixed',
-          bottom: 'calc(14px + var(--safe-bottom))',
+          bottom: 'calc(14px + env(safe-area-inset-bottom, 0px))',
           left: '50%',
           transform: 'translateX(-50%)',
           zIndex: 'var(--z-bottom-nav)',
@@ -61,9 +61,11 @@ export default function BottomTab() {
           borderRadius: '30px',
           display: 'flex',
           alignItems: 'center',
-          padding: '4px',
+          padding: '5px 6px',
           boxShadow: '0 12px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,212,255,0.05) inset',
           gap: '0',
+          minWidth: '300px',
+          maxWidth: 'calc(100vw - 32px)',
         }}
       >
         {MAIN_TABS.map((tab, i) => {
@@ -79,15 +81,16 @@ export default function BottomTab() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '2px',
-                width: active ? '72px' : '56px',
-                height: '50px',
+                flex: '1 1 0',            // equal width cho tất cả item
+                minWidth: 0,
+                height: '54px',
                 borderRadius: '26px',
                 color: active ? '#fff' : 'rgba(148, 163, 184, 0.5)',
                 textDecoration: 'none',
                 position: 'relative',
                 zIndex: 1,
                 WebkitTapHighlightColor: 'transparent',
-                transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s ease',
+                transition: 'color 0.2s ease',
               }}
             >
               {/* Active glow background */}
@@ -96,7 +99,7 @@ export default function BottomTab() {
                   layoutId="btab-bg"
                   style={{
                     position: 'absolute',
-                    inset: '3px 4px',
+                    inset: '2px 2px',
                     borderRadius: '24px',
                     background: 'linear-gradient(135deg, rgba(0,212,255,0.15), rgba(0,168,224,0.1))',
                     zIndex: 0,
@@ -105,44 +108,42 @@ export default function BottomTab() {
                 />
               )}
 
+              {/* Icon */}
               <motion.i
                 className={`fas ${tab.icon}`}
                 animate={{
-                  scale: active ? 1.15 : 1,
-                  y: active ? -2 : 0,
+                  scale: active ? 1.1 : 1,
                 }}
                 transition={{ type: 'spring', stiffness: 500, damping: 22 }}
                 style={{
-                  fontSize: '1.25rem',
+                  fontSize: '1.2rem',
                   position: 'relative',
                   zIndex: 1,
                   filter: active ? 'drop-shadow(0 0 8px rgba(0,212,255,0.6))' : 'none',
                 }}
               />
 
-              {active && (
-                <motion.span
-                  initial={{ opacity: 0, y: 2 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.05, duration: 0.2 }}
-                  style={{
-                    fontSize: '0.6rem',
-                    fontWeight: 700,
-                    letterSpacing: '0.04em',
-                    lineHeight: 1,
-                    position: 'relative',
-                    zIndex: 1,
-                    textShadow: '0 0 10px rgba(0,212,255,0.4)',
-                  }}
-                >
-                  {tab.label}
-                </motion.span>
-              )}
+              {/* Label — luôn hiển thị, nhỏ + mờ khi inactive */}
+              <span
+                style={{
+                  fontSize: active ? '0.65rem' : '0.55rem',
+                  fontWeight: active ? 700 : 500,
+                  letterSpacing: '0.04em',
+                  lineHeight: 1,
+                  position: 'relative',
+                  zIndex: 1,
+                  textShadow: active ? '0 0 10px rgba(0,212,255,0.4)' : 'none',
+                  opacity: active ? 1 : 0.45,
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                {tab.label}
+              </span>
             </Link>
           );
         })}
 
-        {/* More button */}
+        {/* Nút "More" — cùng cấu trúc column, equal width, nằm gọn trong pill */}
         <button
           onClick={() => {
             haptic.medium();
@@ -150,10 +151,13 @@ export default function BottomTab() {
           }}
           style={{
             display: 'flex',
+            flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            width: '44px',
-            height: '50px',
+            gap: '2px',
+            flex: '1 1 0',              // equal width như tab khác
+            minWidth: 0,
+            height: '54px',
             borderRadius: '26px',
             color: isMoreActive ? 'var(--accent)' : 'rgba(148, 163, 184, 0.5)',
             background: isMoreActive ? 'rgba(0, 212, 255, 0.08)' : 'none',
@@ -165,10 +169,44 @@ export default function BottomTab() {
             transition: 'all 0.2s ease',
           }}
         >
+          {/* Glow khi đang ở trang Utilities hoặc Hermes AI */}
+          {isMoreActive && (
+            <motion.div
+              layoutId="btab-bg"
+              style={{
+                position: 'absolute',
+                inset: '2px 2px',
+                borderRadius: '24px',
+                background: 'linear-gradient(135deg, rgba(0,212,255,0.15), rgba(0,168,224,0.1))',
+                zIndex: 0,
+              }}
+              transition={{ type: 'spring', stiffness: 350, damping: 28 }}
+            />
+          )}
+
           <i
             className="fas fa-ellipsis"
-            style={{ fontSize: '1.2rem' }}
+            style={{
+              fontSize: '1.2rem',
+              position: 'relative',
+              zIndex: 1,
+            }}
           />
+
+          <span
+            style={{
+              fontSize: isMoreActive ? '0.65rem' : '0.55rem',
+              fontWeight: isMoreActive ? 700 : 500,
+              letterSpacing: '0.04em',
+              lineHeight: 1,
+              position: 'relative',
+              zIndex: 1,
+              opacity: isMoreActive ? 1 : 0.45,
+              transition: 'all 0.2s ease',
+            }}
+          >
+            More
+          </span>
         </button>
       </nav>
 

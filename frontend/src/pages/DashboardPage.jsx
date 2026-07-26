@@ -94,7 +94,7 @@ export default function DashboardPage() {
 
   // ===== RENDER =====
   return (
-    <div style={{ padding: '0.5rem 1rem' }}>
+    <div style={{ padding: '0.5rem 1rem 6rem 1rem' }}>{/* padding-bottom tránh nav đè trên mobile */}
       {/* Stats bar */}
       <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
         {[
@@ -122,8 +122,8 @@ export default function DashboardPage() {
       {/* ===== SERVICES TAB ===== */}
       {activeTab === 'services' && (
         <>
-          {/* Toolbar */}
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center', marginBottom: '1rem' }}>
+          {/* Toolbar - marginTop tách khỏi border tabs */}
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center', marginTop: '0.5rem', marginBottom: '1rem' }}>
             <input className="liquid-input" placeholder="Search services..." value={search} onChange={e => setSearch(e.target.value)}
               style={{ flex: '1 1 200px', minWidth: 160, maxWidth: 300 }} />
             <button onClick={handleBulkStart} className="liquid-btn primary"><i className="fas fa-play" /> Start All</button>

@@ -7,7 +7,7 @@ import { useInView, motion } from 'motion/react';
  */
 export default function NeuralNodes({ services = [], loading, healthMap, statusColor, uptime, onToggle }) {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-80px' });
+  const inView = useInView(ref, { once: true, amount: 0.1 });
 
   const running = services.filter(s => s.status === 'running').length;
   const total = services.length;
