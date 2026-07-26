@@ -112,7 +112,7 @@ export default function AppLayout() {
             className="liquid-btn"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             style={{
-              position: 'fixed', bottom: isMobile ? 'calc(var(--bottom-nav-height) + 1rem)' : '1.5rem',
+              position: 'fixed', bottom: '4rem',
               right: '1rem', zIndex: 2000, width: '40px', height: '40px',
               borderRadius: '50%', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}

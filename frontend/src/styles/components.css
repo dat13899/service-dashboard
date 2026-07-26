@@ -186,8 +186,7 @@
   transition: transform 0.2s cubic-bezier(.4,0,.2,1), box-shadow 0.2s cubic-bezier(.4,0,.2,1);
 }
 .glass-dock:hover {
-  transform: translateX(-50%) translateY(-2px);
-  box-shadow: 0 6px 28px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,212,255,0.06) inset;
+  /* hover handled via JS onMouseEnter to avoid specificity conflict with inline transform */
 }
 
 @keyframes pulse-dot {
