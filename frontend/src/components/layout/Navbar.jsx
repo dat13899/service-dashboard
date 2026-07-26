@@ -155,7 +155,7 @@ export default function Navbar() {
             className="hamburger-btn liquid-btn" aria-label="Menu"
             onClick={() => setMenuOpen(p => !p)}
             style={{
-              display: 'none', width: '36px', height: '36px', padding: 0,
+              width: '36px', height: '36px', padding: 0,
               flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '5px',
               borderRadius: '10px', minWidth: '36px',
               border: menuOpen ? '1px solid #00d4ff' : '1px solid transparent',
