@@ -2,13 +2,13 @@ import { useRef, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Float, MeshDistortMaterial } from '@react-three/drei';
 import * as THREE from 'three';
+import { useMediaQuery } from '../hooks/useMediaQuery';
 
 /**
  * 3D background scene — floating geometry + particle field.
  * Renders behind all page content as a fixed background layer.
- * Uses instanced particles for performance.
+ * Mobile: reduced particles (150), lower DPR, simplified geometry.
  */
-
 function ParticleField({ count = 400 }) {
   const mesh = useRef();
   const positions = useMemo(() => {
@@ -23,8 +23,8 @@ function ParticleField({ count = 400 }) {
 
   useFrame(({ clock }) => {
     if (mesh.current) {
-      mesh.current.rotation.y = clock.getElapsedTime() * 0.03;
-      mesh.current.rotation.x = Math.sin(clock.getElapsedTime() * 0.1) * 0.05;
+      mesh.current.rotation.y = clock.getElapsedTime() * 0.02;
+      mesh.current.rotation.x = Math.sin(clock.getElapsedTime() * 0.1) * 0.03;
     }
   });
 
@@ -33,57 +33,31 @@ function ParticleField({ count = 400 }) {
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
-      <pointsMaterial size={0.015} color="#00d4ff" transparent opacity={0.4} depthWrite={false} />
+      <pointsMaterial size={0.015} color="#00d4ff" transparent opacity={0.3} depthWrite={false} />
     </points>
   );
 }
 
-function FloatingTorus({ color = '#00d4ff', position = [0, 0, 0], scale = 1, speed = 0.5 }) {
+function FloatingTorus({ color = '#00d4ff', position = [0, 0, 0], scale = 1, speed = 0.5, opacity = 0.08 }) {
   const ref = useRef();
   useFrame(({ clock }) => {
     if (ref.current) {
-      ref.current.rotation.x = clock.getElapsedTime() * 0.2 * speed;
-      ref.current.rotation.y = clock.getElapsedTime() * 0.3 * speed;
+      ref.current.rotation.x = clock.getElapsedTime() * 0.15 * speed;
+      ref.current.rotation.y = clock.getElapsedTime() * 0.2 * speed;
     }
   });
 
   return (
-    <Float speed={1.5} rotationIntensity={0.4} floatIntensity={0.6}>
+    <Float speed={1.2} rotationIntensity={0.3} floatIntensity={0.4}>
       <mesh ref={ref} position={position} scale={scale}>
-        <torusKnotGeometry args={[1, 0.3, 100, 16]} />
+        <torusKnotGeometry args={[1, 0.3, 64, 12]} />
         <MeshDistortMaterial
           color={color}
           transparent
-          opacity={0.08}
+          opacity={opacity}
           wireframe
-          distort={0.15}
-          speed={2}
-        />
-      </mesh>
-    </Float>
-  );
-}
-
-function Icosahedron() {
-  const ref = useRef();
-  useFrame(({ clock }) => {
-    if (ref.current) {
-      ref.current.rotation.x = clock.getElapsedTime() * 0.15;
-      ref.current.rotation.y = clock.getElapsedTime() * 0.25;
-    }
-  });
-
-  return (
-    <Float speed={2} rotationIntensity={0.3} floatIntensity={0.8}>
-      <mesh ref={ref} position={[2.5, -1, -2]}>
-        <icosahedronGeometry args={[0.7, 1]} />
-        <meshStandardMaterial
-          color="#00d4ff"
-          wireframe
-          transparent
-          opacity={0.12}
-          emissive="#00d4ff"
-          emissiveIntensity={0.3}
+          distort={0.12}
+          speed={1.5}
         />
       </mesh>
     </Float>
@@ -91,6 +65,28 @@ function Icosahedron() {
 }
 
 export default function Scene3D() {
+  const { isMobile } = useMediaQuery();
+  const particleCount = isMobile ? 120 : 400;
+
+  if (isMobile) {
+    // Mobile: lightweight — single torus, minimal particles
+    return (
+      <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 0, pointerEvents: 'none' }}>
+        <Canvas
+          camera={{ position: [0, 0, 5], fov: 60 }}
+          dpr={[1, 1]}
+          style={{ background: 'transparent' }}
+          performance={{ min: 0.3 }}
+        >
+          <ambientLight intensity={0.2} color="#00d4ff" />
+          <FloatingTorus color="#00d4ff" position={[0, 0.3, -1]} scale={0.7} speed={0.5} opacity={0.06} />
+          <ParticleField count={particleCount} />
+        </Canvas>
+      </div>
+    );
+  }
+
+  // Desktop: full scene
   return (
     <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 0, pointerEvents: 'none' }}>
       <Canvas
@@ -102,8 +98,7 @@ export default function Scene3D() {
         <directionalLight position={[5, 5, 5]} intensity={0.4} />
         <FloatingTorus color="#00d4ff" position={[-1.8, 0.8, -1]} scale={0.8} speed={0.7} />
         <FloatingTorus color="#00a8e0" position={[2, -0.5, -2]} scale={0.5} speed={1.1} />
-        <Icosahedron />
-        <ParticleField count={500} />
+        <ParticleField count={particleCount} />
       </Canvas>
     </div>
   );

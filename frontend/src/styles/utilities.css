@@ -112,10 +112,32 @@
 
 /* ===== Visibility ===== */
 @media (max-width: 767px) {
-  .mobile\:hidden { display: none; }
+  .mobile-hidden { display: none !important; }
+  .mobile-block { display: block !important; }
+  .mobile-flex { display: flex !important; }
 }
 @media (min-width: 768px) {
-  .desktop\:hidden { display: none; }
+  .desktop-hidden { display: none !important; }
+  .desktop-block { display: block !important; }
+  .desktop-flex { display: flex !important; }
+}
+
+/* ===== Mobile bottom padding (clear bottom nav) ===== */
+.pb-safe {
+  padding-bottom: var(--bottom-nav-height);
+}
+
+/* ===== Tap target enforcement ===== */
+.tap-target {
+  min-height: var(--tap-target-min);
+  min-width: var(--tap-target-min);
+}
+
+/* ===== iOS input zoom prevention ===== */
+@media (max-width: 767px) {
+  input, textarea, select {
+    font-size: 16px !important;
+  }
 }
 
 /* ===== Cursor ===== */

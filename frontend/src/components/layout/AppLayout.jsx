@@ -7,17 +7,19 @@ import BottomTab from './BottomTab';
 import BlobBackground from '../shared/BlobBackground';
 import Cursor from '../Cursor';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
+import { useSwipeBack } from '../../hooks/useSwipeBack';
 
 /**
  * AppLayout — premium cinematic shell.
- * - Lenis smooth scroll
- * - Custom magnetic cursor (desktop only)
- * - AnimatePresence page transitions
- * - Global touch ripple
+ * Mobile-first: bottom tab nav, swipe-back gesture, touch ripple.
+ * Desktop: top navbar, magnetic cursor, smooth scroll.
  */
 export default function AppLayout() {
   const { isMobile } = useMediaQuery();
   const location = useLocation();
+
+  // Swipe-back gesture on mobile
+  useSwipeBack({ enabled: isMobile });
 
   // Lenis smooth scroll
   useEffect(() => {
@@ -25,10 +27,11 @@ export default function AppLayout() {
     import('lenis').then(mod => {
       const Lenis = mod.default;
       lenis = new Lenis({
-        lerp: isMobile ? 0.1 : 0.065,
+        lerp: isMobile ? 0.08 : 0.065,
         wheelMultiplier: 1,
-        smoothWheel: true,
+        smoothWheel: !isMobile,
         syncTouch: true,
+        gestureOrientation: 'vertical',
       });
       const raf = (time) => { lenis.raf(time); requestAnimationFrame(raf); };
       requestAnimationFrame(raf);
@@ -36,10 +39,11 @@ export default function AppLayout() {
     return () => lenis?.destroy();
   }, [isMobile]);
 
-  // Global touch ripple
+  // Global touch ripple — mobile only
   useEffect(() => {
+    if (!isMobile) return;
     const handler = (e) => {
-      const el = e.target.closest('.btn, .card, [role="button"], a[href]');
+      const el = e.target.closest('.btn, .card, [role="button"], a[href], button');
       if (!el) return;
       const rect = el.getBoundingClientRect();
       const size = Math.max(rect.width, rect.height);
@@ -53,30 +57,26 @@ export default function AppLayout() {
       el.appendChild(ripple);
       ripple.addEventListener('animationend', () => ripple.remove());
     };
-    document.addEventListener('click', handler);
     document.addEventListener('touchstart', handler, { passive: true });
-    return () => {
-      document.removeEventListener('click', handler);
-      document.removeEventListener('touchstart', handler);
-    };
-  }, []);
+    return () => document.removeEventListener('touchstart', handler);
+  }, [isMobile]);
 
   const pageVariants = {
-    initial: { opacity: 0, y: 12, scale: 0.985 },
-    animate: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] } },
-    exit: { opacity: 0, y: -8, scale: 0.99, transition: { duration: 0.2, ease: 'easeIn' } },
+    initial: { opacity: 0, y: isMobile ? 20 : 12, scale: isMobile ? 1 : 0.985 },
+    animate: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] } },
+    exit: { opacity: 0, y: isMobile ? -10 : -8, scale: isMobile ? 1 : 0.99, transition: { duration: 0.15, ease: 'easeIn' } },
   };
 
   return (
     <>
-      <Cursor />
+      {!isMobile && <Cursor />}
       <div className="noise-overlay" />
-      <BlobBackground />
-      <Navbar />
+      {!isMobile && <BlobBackground />}
+      {!isMobile && <Navbar />}
       <main
         style={{
-          paddingTop: '56px',
-          paddingBottom: isMobile ? '64px' : '0',
+          paddingTop: isMobile ? '0' : '56px',
+          paddingBottom: isMobile ? 'var(--bottom-nav-height)' : '0',
           minHeight: '100dvh',
           display: 'flex',
           flexDirection: 'column',
@@ -98,7 +98,7 @@ export default function AppLayout() {
         </div>
       </main>
       {isMobile && <BottomTab />}
-      <Footer />
+      {!isMobile && <Footer />}
     </>
   );
 }
