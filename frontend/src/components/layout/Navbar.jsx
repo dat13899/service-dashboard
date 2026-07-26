@@ -39,7 +39,7 @@ function ThemeToggle({ theme, toggle }) {
       className="liquid-btn"
       title={theme === 'dark' ? 'Chế độ sáng' : 'Chế độ tối'}
       whileTap={{ scale: 0.9 }}
-      style={{ width: '36px', height: '36px', padding: 0, minWidth: '36px', borderRadius: '10px' }}
+      style={{ width: '36px', height: '36px', padding: 0, minWidth: '36px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
       aria-label="Toggle theme"
     >
       <AnimatePresence mode="wait">
