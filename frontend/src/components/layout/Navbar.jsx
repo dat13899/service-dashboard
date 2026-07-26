@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'motion/react';
 import useTheme from '../../hooks/useTheme';
 import useScrollNav from '../../hooks/useScrollNav';
 
-/** Nav links — shown in desktop nav + mobile hamburger dropdown. */
+/** Nav links */
 const NAV_LINKS = [
   { to: '/', label: 'Home', icon: 'fa-house' },
   { to: '/dashboard', label: 'Dashboard', icon: 'fa-gauge-high' },
@@ -13,6 +14,69 @@ const NAV_LINKS = [
   { to: '/hermes', label: 'Hermes', icon: 'fa-galaxy' },
 ];
 
+/* ───── SVG gradient logo ───── */
+function Logomark() {
+  return (
+    <svg
+      width="30" height="30" viewBox="0 0 30 30" fill="none"
+      style={{ display: 'block', filter: 'drop-shadow(0 0 8px rgba(0,212,255,0.35))' }}
+    >
+      <defs>
+        <linearGradient id="logo-grad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="var(--accent)" />
+          <stop offset="100%" stopColor="var(--green)" />
+        </linearGradient>
+        <filter id="logo-glow">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="blur" />
+          <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+        </filter>
+      </defs>
+      {/* Rounded square with gradient */}
+      <rect x="2" y="2" width="26" height="26" rx="7"
+        fill="url(#logo-grad)" filter="url(#logo-glow)"
+        className="logo-rect"
+      />
+      {/* Lightning bolt simplified */}
+      <path
+        d="M16 5 L9 15 H13 L11 25 L20 13 H15 L18 5 Z"
+        fill="white" stroke="none"
+      />
+    </svg>
+  );
+}
+
+/* ───── Theme toggle button with animated icon ───── */
+function ThemeToggle({ theme, toggle }) {
+  return (
+    <motion.button
+      onClick={toggle}
+      className="liquid-btn"
+      title={theme === 'dark' ? 'Chế độ sáng' : 'Chế độ tối'}
+      whileTap={{ scale: 0.9 }}
+      style={{
+        width: '36px', height: '36px', padding: 0,
+        borderRadius: '10px', minWidth: '36px',
+      }}
+      aria-label="Toggle theme"
+    >
+      <AnimatePresence mode="wait">
+        <motion.span
+          key={theme}
+          initial={{ rotate: -90, opacity: 0, scale: 0.5 }}
+          animate={{ rotate: 0, opacity: 1, scale: 1 }}
+          exit={{ rotate: 90, opacity: 0, scale: 0.5 }}
+          transition={{ duration: 0.25, ease: 'easeOut' }}
+          style={{ display: 'flex' }}
+        >
+          <i className={`fas ${theme === 'dark' ? 'fa-sun' : 'fa-moon'}`}
+            style={{ color: 'var(--amber)', fontSize: '0.9rem' }}
+          />
+        </motion.span>
+      </AnimatePresence>
+    </motion.button>
+  );
+}
+
 export default function Navbar() {
   const location = useLocation();
   const { theme, toggleTheme } = useTheme();
@@ -20,16 +84,13 @@ export default function Navbar() {
   const currentPath = location.pathname;
   const scrolled = useScrollNav(60);
 
-  // Lock body scroll when mobile menu open
   useEffect(() => {
     document.body.classList.toggle('menu-open', menuOpen);
     return () => document.body.classList.remove('menu-open');
   }, [menuOpen]);
 
-  // Close menu on route change
   useEffect(() => { setMenuOpen(false); }, [currentPath]);
 
-  // Close on Escape
   useEffect(() => {
     const handler = (e) => { if (e.key === 'Escape') setMenuOpen(false); };
     document.addEventListener('keydown', handler);
@@ -38,172 +99,124 @@ export default function Navbar() {
 
   const isActive = useCallback((to) => currentPath === to, [currentPath]);
 
-  // ── Dynamic navbar style ──
-  const navStyle = {
-    position: 'fixed', top: 0, left: 0, right: 0,
-    zIndex: 500, height: '56px',
-    background: scrolled ? 'var(--glass-bg)' : 'rgba(17,24,39,0.2)',
-    backdropFilter: scrolled ? 'blur(20px) saturate(180%)' : 'blur(8px) saturate(100%)',
-    WebkitBackdropFilter: scrolled ? 'blur(20px) saturate(180%)' : 'blur(8px) saturate(100%)',
-    borderBottom: '1px solid transparent',
-    backgroundImage: scrolled
-      ? `linear-gradient(var(--glass-bg), var(--glass-bg)), 
-         linear-gradient(90deg, transparent, var(--accent), rgba(6,182,212,0.6), rgba(168,85,247,0.6), transparent)`
-      : 'none',
-    backgroundOrigin: 'border-box',
-    backgroundClip: scrolled ? 'padding-box, border-box' : 'padding-box',
-    boxShadow: scrolled ? '0 4px 24px rgba(0,0,0,0.15)' : 'none',
-    display: 'flex', alignItems: 'center',
-    padding: '0 0.75rem',
-    gap: '0.5rem',
-    transition: 'all 0.3s cubic-bezier(.4,0,.2,1)',
-  };
-
   return (
     <>
-      {/* Fixed top navbar */}
-      <nav style={navStyle}>
-        {/* ── Brand ── */}
+      <nav
+        style={{
+          position: 'fixed', top: 0, left: 0, right: 0,
+          zIndex: 500, height: '56px',
+          background: scrolled ? 'var(--glass-bg)' : 'rgba(17,24,39,0.15)',
+          backdropFilter: scrolled ? 'blur(20px) saturate(180%)' : 'blur(8px) saturate(100%)',
+          WebkitBackdropFilter: scrolled ? 'blur(20px) saturate(180%)' : 'blur(8px) saturate(100%)',
+          borderBottom: scrolled
+            ? '1px solid var(--liquid-border)'
+            : '1px solid rgba(255,255,255,0.03)',
+          boxShadow: scrolled
+            ? '0 2px 20px rgba(0,0,0,0.12), 0 1px 0 rgba(0,212,255,0.04) inset'
+            : 'none',
+          display: 'flex', alignItems: 'center',
+          padding: '0 1rem', gap: '0.5rem',
+          transition: 'all 0.3s cubic-bezier(.4,0,.2,1)',
+        }}
+      >
+        {/* Brand */}
         <Link to="/" style={{
-          display: 'flex', alignItems: 'center', gap: '0.4rem',
-          color: 'var(--text-strong)', fontWeight: 800, fontSize: '1rem',
+          display: 'flex', alignItems: 'center', gap: '0.5rem',
           textDecoration: 'none', flexShrink: 0,
         }}>
-          <span style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '32px', height: '32px',
-            borderRadius: '10px',
-            background: 'linear-gradient(135deg, var(--accent), var(--green))',
-            color: '#fff',
-            fontSize: '0.85rem',
-            fontWeight: 900,
-            animation: 'logoPulse 3s ease-in-out infinite',
-            boxShadow: '0 0 12px rgba(129,140,248,0.35)',
-          }}>
-            ⚡
-          </span>
-          <span className="mobile:hidden" style={{
-            background: 'linear-gradient(135deg, var(--text-strong) 30%, var(--accent))',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
+          <Logomark />
+          <span className="desktop-only" style={{
+            fontWeight: 800, fontSize: '0.95rem',
+            background: 'linear-gradient(135deg, var(--text-strong) 20%, var(--accent))',
+            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
           }}>btdat.io.vn</span>
         </Link>
 
-        {/* ── Desktop nav links ── */}
-        <div className="desktop-nav flex items-center gap-xs" style={{ flex: 1, justifyContent: 'center' }}>
+        {/* Desktop nav */}
+        <div className="desktop-nav" style={{ flex: 1, display: 'flex', justifyContent: 'center', gap: '0.15rem' }}>
           {NAV_LINKS.map(link => {
             const active = isActive(link.to);
             return (
               <Link
                 key={link.to}
                 to={link.to}
+                className={active ? 'nav-link-active' : 'nav-link'}
                 style={{
                   position: 'relative',
                   display: 'flex', alignItems: 'center', gap: '0.35rem',
-                  padding: '0.4rem 0.75rem', borderRadius: '10px',
-                  fontSize: '0.82rem', fontWeight: active ? 700 : 500,
+                  padding: '0.38rem 0.7rem', borderRadius: '10px',
+                  fontSize: '0.8rem', fontWeight: active ? 600 : 500,
                   color: active ? 'var(--text-strong)' : 'var(--text-dim)',
-                  background: active ? 'rgba(129,140,248,0.08)' : 'transparent',
-                  textDecoration: 'none',
+                  background: active ? 'rgba(0,212,255,0.06)' : 'transparent',
+                  textDecoration: 'none', whiteSpace: 'nowrap',
                   transition: 'all 0.2s cubic-bezier(.4,0,.2,1)',
-                  whiteSpace: 'nowrap',
+                  border: active ? '1px solid rgba(0,212,255,0.12)' : '1px solid transparent',
                 }}
                 onMouseEnter={e => {
                   if (!active) {
                     e.currentTarget.style.color = 'var(--text)';
+                    e.currentTarget.style.background = 'rgba(0,212,255,0.03)';
                     e.currentTarget.style.transform = 'translateY(-1px)';
                   }
                 }}
                 onMouseLeave={e => {
                   if (!active) {
                     e.currentTarget.style.color = 'var(--text-dim)';
+                    e.currentTarget.style.background = 'transparent';
                     e.currentTarget.style.transform = 'translateY(0)';
                   }
                 }}
               >
                 <i className={`fas ${link.icon}`} style={{
-                  fontSize: '0.78rem',
-                  transition: 'transform 0.2s cubic-bezier(.4,0,.2,1)',
+                  fontSize: '0.75rem',
                   transform: active ? 'scale(1.15)' : 'scale(1)',
-                }}
-                onMouseEnter={e => { if (!active) e.currentTarget.style.transform = 'scale(1.1)'; }}
-                onMouseLeave={e => { if (!active) e.currentTarget.style.transform = 'scale(1)'; }}
-                />
-                <span className="nav-label">{link.label}</span>
-                {/* Active pill */}
+                  transition: 'transform 0.2s cubic-bezier(.4,0,.2,1)',
+                  color: active ? 'var(--accent)' : undefined,
+                }} />
+                <span>{link.label}</span>
                 {active && (
-                  <span style={{
-                    position: 'absolute',
-                    bottom: '-2px',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    width: '60%',
-                    height: '2.5px',
-                    borderRadius: '999px',
-                    background: 'linear-gradient(90deg, var(--accent), var(--green))',
-                    animation: 'pillSlide 0.3s cubic-bezier(.4,0,.2,1)',
-                    boxShadow: '0 0 8px rgba(52,211,153,0.4)',
-                  }} />
+                  <motion.span
+                    layoutId="nav-pill"
+                    style={{
+                      position: 'absolute', bottom: '-2px', left: '50%',
+                      transform: 'translateX(-50%)', width: '55%', height: '2.5px',
+                      borderRadius: '999px',
+                      background: 'linear-gradient(90deg, var(--accent), var(--green))',
+                      boxShadow: '0 0 8px rgba(0,212,255,0.4)',
+                    }}
+                    transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                  />
                 )}
               </Link>
             );
           })}
         </div>
 
-        {/* ── Right: theme toggle + hamburger ── */}
+        {/* Right actions */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexShrink: 0, marginLeft: 'auto' }}>
-          <button
-            onClick={toggleTheme}
-            title={theme === 'dark' ? 'Sáng' : 'Tối'}
-            style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              width: '36px', height: '36px', borderRadius: '10px',
-              border: '1px solid var(--glass-border)',
-              background: 'var(--glass-bg)',
-              color: 'var(--text-dim)',
-              cursor: 'pointer', fontSize: '0.85rem',
-              transition: 'all 0.15s',
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.color = 'var(--amber)';
-              e.currentTarget.style.borderColor = 'var(--amber)';
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.color = 'var(--text-dim)';
-              e.currentTarget.style.borderColor = 'var(--glass-border)';
-            }}
-          >
-            <i className={`fas ${theme === 'dark' ? 'fa-sun' : 'fa-moon'}`} />
-          </button>
+          <ThemeToggle theme={theme} toggle={toggleTheme} />
 
-          {/* ── Hamburger ── */}
+          {/* Hamburger */}
           <button
-            className="hamburger-btn"
+            className="hamburger-btn liquid-btn"
             onClick={() => setMenuOpen(p => !p)}
             aria-label="Menu"
             style={{
-              display: 'none',
-              flexDirection: 'column', gap: '5px',
-              padding: '0.45rem',
-              borderRadius: '10px',
+              display: 'none', width: '36px', height: '36px', padding: 0,
+              flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '5px',
+              borderRadius: '10px', minWidth: '36px',
               border: menuOpen ? '1px solid var(--accent)' : '1px solid transparent',
-              background: menuOpen ? 'rgba(129,140,248,0.1)' : 'transparent',
-              cursor: 'pointer',
-              transition: 'all 0.2s cubic-bezier(.4,0,.2,1)',
-              outline: 'none',
+              background: menuOpen ? 'rgba(0,212,255,0.08)' : 'transparent',
             }}
           >
             {[0, 1, 2].map(i => (
               <span key={i} style={{
-                display: 'block', width: '20px', height: '2px',
-                borderRadius: '2px',
-                background: menuOpen ? 'var(--accent)' : 'var(--text)',
+                display: 'block', width: '18px', height: '2px', borderRadius: '2px',
+                background: menuOpen ? 'var(--accent)' : 'var(--text-dim)',
                 transition: 'all 0.25s cubic-bezier(.4,0,.2,1)',
                 ...(menuOpen && i === 0 ? { transform: 'rotate(45deg) translate(5px, 5px)' } : {}),
-                ...(menuOpen && i === 1 ? { opacity: 0, transform: 'scaleX(0)' } : {}),
+                ...(menuOpen && i === 1 ? { opacity: 0 } : {}),
                 ...(menuOpen && i === 2 ? { transform: 'rotate(-45deg) translate(5px, -5px)' } : {}),
               }} />
             ))}
@@ -211,78 +224,76 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* ── Mobile menu overlay ── */}
-      {menuOpen && (
-        <div
-          onClick={() => setMenuOpen(false)}
-          style={{
-            position: 'fixed', inset: 0, zIndex: 499,
-            background: 'rgba(0,0,0,0.4)',
-            backdropFilter: 'blur(4px)',
-            WebkitBackdropFilter: 'blur(4px)',
-            animation: 'fadeIn 0.15s ease',
-          }}
-        >
-          <div
-            onClick={e => e.stopPropagation()}
+      {/* Mobile menu overlay */}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            onClick={() => setMenuOpen(false)}
             style={{
-              position: 'fixed', top: '56px', left: 0, right: 0,
-              background: 'var(--glass-bg)',
-              backdropFilter: 'blur(24px)',
-              WebkitBackdropFilter: 'blur(24px)',
-              borderBottom: '1px solid var(--glass-border)',
-              padding: '0.75rem',
-              animation: 'slideDown 0.25s cubic-bezier(.4,0,.2,1)',
-              display: 'flex', flexDirection: 'column', gap: '0.2rem',
-              maxHeight: 'calc(100dvh - 70px)',
-              overflowY: 'auto',
+              position: 'fixed', inset: 0, zIndex: 499,
+              background: 'rgba(0,0,0,0.35)',
+              backdropFilter: 'blur(3px)', WebkitBackdropFilter: 'blur(3px)',
             }}
           >
-            {NAV_LINKS.map(link => {
-              const active = isActive(link.to);
-              return (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  onClick={() => setMenuOpen(false)}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: '0.65rem',
-                    padding: '0.65rem 0.85rem', borderRadius: '12px',
-                    fontSize: '0.95rem', fontWeight: active ? 700 : 500,
-                    color: active ? 'var(--text-strong)' : 'var(--text-dim)',
-                    background: active ? 'rgba(129,140,248,0.1)' : 'transparent',
-                    textDecoration: 'none',
-                    transition: 'all 0.15s',
-                    borderLeft: active ? '3px solid var(--accent)' : '3px solid transparent',
-                  }}
+            <motion.div
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -20, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+              onClick={e => e.stopPropagation()}
+              className="liquid-panel"
+              style={{
+                position: 'fixed', top: '56px', left: '0.5rem', right: '0.5rem',
+                padding: '0.5rem', borderRadius: '14px',
+                display: 'flex', flexDirection: 'column', gap: '0.15rem',
+                maxHeight: 'calc(100dvh - 70px)', overflowY: 'auto',
+                border: '1px solid var(--liquid-border)',
+              }}
+            >
+              {NAV_LINKS.map(link => {
+                const active = isActive(link.to);
+                return (
+                  <Link
+                    key={link.to}
+                    to={link.to}
+                    onClick={() => setMenuOpen(false)}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '0.65rem',
+                      padding: '0.6rem 0.85rem', borderRadius: '12px',
+                      fontSize: '0.92rem', fontWeight: active ? 600 : 500,
+                      color: active ? 'var(--text-strong)' : 'var(--text-dim)',
+                      background: active ? 'rgba(0,212,255,0.08)' : 'transparent',
+                      textDecoration: 'none', transition: 'all 0.15s',
+                      borderLeft: active ? '3px solid var(--accent)' : '3px solid transparent',
+                    }}
+                  >
+                    <i className={`fas ${link.icon}`} style={{
+                      fontSize: '0.9rem', width: '24px', textAlign: 'center',
+                      color: active ? 'var(--accent)' : 'var(--text-dim)',
+                    }} />
+                    {link.label}
+                    {active && <span style={{ marginLeft: 'auto', color: 'var(--accent)', fontSize: '0.7rem' }}>◆</span>}
+                  </Link>
+                );
+              })}
+              <div style={{ marginTop: '0.4rem', paddingTop: '0.4rem', borderTop: '1px solid var(--liquid-border)' }}>
+                <button
+                  onClick={toggleTheme}
+                  className="liquid-btn"
+                  style={{ width: '100%', justifyContent: 'center', gap: '0.5rem', fontSize: '0.88rem' }}
                 >
-                  <i className={`fas ${link.icon}`} style={{
-                    fontSize: '0.95rem', width: '24px', textAlign: 'center',
-                    color: active ? 'var(--accent)' : 'var(--text-dim)',
-                  }} />
-                  {link.label}
-                  {active && <span style={{ marginLeft: 'auto', color: 'var(--accent)', fontSize: '0.75rem' }}>◆</span>}
-                </Link>
-              );
-            })}
-            <div style={{ marginTop: '0.5rem', paddingTop: '0.5rem', borderTop: '1px solid var(--glass-border)' }}>
-              <button onClick={toggleTheme}
-                style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
-                  width: '100%', padding: '0.6rem', borderRadius: '12px',
-                  border: '1px solid var(--glass-border)',
-                  background: 'var(--surface-2)',
-                  color: 'var(--text-dim)', cursor: 'pointer',
-                  fontSize: '0.9rem', transition: 'all 0.15s',
-                }}
-              >
-                <i className={`fas ${theme === 'dark' ? 'fa-sun' : 'fa-moon'}`} />
-                {theme === 'dark' ? 'Chế độ sáng' : 'Chế độ tối'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+                  <i className={`fas ${theme === 'dark' ? 'fa-sun' : 'fa-moon'}`} style={{ color: 'var(--amber)' }} />
+                  {theme === 'dark' ? 'Chế độ sáng' : 'Chế độ tối'}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

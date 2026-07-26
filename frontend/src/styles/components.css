@@ -174,12 +174,52 @@
   animation: shimmer 1.5s infinite;
   border-radius: 6px;
 }
-@keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+@keyframes skeleton-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
-/* ===== Spinner ===== */
+/* ══════════════════════════════════════════════════════
+   Footer Glass Dock
+   ══════════════════════════════════════════════════════ */
+.glass-dock {
+  transition: transform 0.2s cubic-bezier(.4,0,.2,1), box-shadow 0.2s cubic-bezier(.4,0,.2,1);
+}
+.glass-dock:hover {
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 6px 28px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,212,255,0.06) inset;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { box-shadow: 0 0 6px var(--green), 0 0 2px var(--green); }
+  50% { box-shadow: 0 0 12px var(--green), 0 0 4px var(--green); }
+}
+
+/* ══════════════════════════════════════════════════════
+   Navbar Logo
+   ══════════════════════════════════════════════════════ */
+.logo-rect {
+  animation: logoPulse 3s ease-in-out infinite;
+}
+@keyframes logoPulse {
+  0%, 100% { filter: drop-shadow(0 0 6px rgba(0,212,255,0.3)); }
+  50% { filter: drop-shadow(0 0 14px rgba(0,212,255,0.5)); }
+}
+
+/* ══════════════════════════════════════════════════════
+   DataTheme Light overrides
+   ══════════════════════════════════════════════════════ */
+[data-theme="light"] .glass-dock {
+  background: rgba(255,255,255,0.75);
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.02) inset;
+}
+[data-theme="light"] nav {
+  border-bottom-color: rgba(0,0,0,0.06) !important;
+}
+
+/* ── Hover tooltip for buttons ── */
+[title] { position: relative; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .spinner {
   width: 20px;
