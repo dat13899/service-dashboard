@@ -23,17 +23,21 @@ function BlobBackground() {
 
 export default function AppLayout() {
   const location = useLocation();
-  const navigation = useNavigation();
   const { isMobile } = useMediaQuery();
   const { open: paletteOpen, close: closePalette } = useCommandPalette();
+
+  // Track navigation loading manually (BrowserRouter doesn't support useNavigation)
+  const [navigating, setNavigating] = useState(false);
+  useEffect(() => {
+    setNavigating(true);
+    requestAnimationFrame(() => setNavigating(false));
+  }, [location.pathname]);
 
   useSwipeBack();
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [location.pathname]);
-
-  const isNavigating = navigation.state === 'loading';
 
   return (
     <>
@@ -54,7 +58,7 @@ export default function AppLayout() {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2, ease: 'easeOut' }}
           >
-            {isNavigating ? (
+            {navigating ? (
               <div style={{ padding: '2rem 1rem', display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '800px', margin: '0 auto' }}>
                 <div className="liquid-skeleton" style={{ height: '200px' }} />
                 <div className="liquid-skeleton" style={{ height: '100px', width: '70%' }} />
@@ -70,7 +74,6 @@ export default function AppLayout() {
       <Footer />
       <div className="mobile-only"><BottomTab /></div>
 
-      {/* Command Palette — Ctrl+K global */}
       <CommandPalette open={paletteOpen} onClose={closePalette} />
     </>
   );
