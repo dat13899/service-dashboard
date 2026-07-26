@@ -8,6 +8,7 @@ import { useSwipeBack } from '../../hooks/useSwipeBack';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { useCommandPalette } from '../CommandPalette';
 import CommandPalette from '../CommandPalette';
+import ShortcutHelper, { useShortcutHelper } from '../ShortcutHelper';
 
 function BlobBackground() {
   const { isMobile } = useMediaQuery();
@@ -25,7 +26,9 @@ export default function AppLayout() {
   const location = useLocation();
   const { isMobile } = useMediaQuery();
   const { open: paletteOpen, close: closePalette } = useCommandPalette();
+  const { open: shortcutOpen, close: closeShortcut } = useShortcutHelper();
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   // Track navigation loading manually (BrowserRouter doesn't support useNavigation)
   const [navigating, setNavigating] = useState(false);
@@ -36,7 +39,12 @@ export default function AppLayout() {
 
   // Show back-to-top button on scroll
   useEffect(() => {
-    const onScroll = () => setShowBackToTop(window.scrollY > 400);
+    const onScroll = () => {
+      const scrollY = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      setShowBackToTop(scrollY > 400);
+      setScrollProgress(docHeight > 0 ? (scrollY / docHeight) * 100 : 0);
+    };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
@@ -52,6 +60,15 @@ export default function AppLayout() {
       <BlobBackground />
       <div className="noise-overlay" aria-hidden="true" />
       <Navbar />
+
+      {/* Scroll progress bar */}
+      <div style={{
+        position: 'fixed', top: 'calc(var(--navbar-height) - 2px)', left: 0, zIndex: 1099,
+        height: '2px', width: scrollProgress + '%',
+        background: 'linear-gradient(90deg, var(--accent), var(--green))',
+        transition: 'width 0.1s linear',
+        boxShadow: '0 0 6px var(--accent)',
+      }} />
 
       <main style={{
         paddingTop: 'var(--navbar-height)',
@@ -83,6 +100,7 @@ export default function AppLayout() {
       <div className="mobile-only"><BottomTab /></div>
 
       <CommandPalette open={paletteOpen} onClose={closePalette} />
+      <ShortcutHelper open={shortcutOpen} onClose={closeShortcut} />
 
       {/* Back-to-top floating button */}
       <AnimatePresence>

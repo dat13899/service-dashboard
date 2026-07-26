@@ -1,11 +1,19 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { motion, useScroll, useTransform } from 'motion/react';
 import { fetchServices, startService, stopService, fetchServiceHealth } from '../services/api';
 import { useToastContext } from '../components/shared/Toast';
 import ConfirmModal from '../components/ConfirmModal';
-import Scene3D from '../components/Scene3D';
 import NeuralNodes from '../components/NeuralNodes';
 import TerminalContact from '../components/TerminalContact';
+
+// Lazy-load heavy 3D scene (Three.js is ~300KB compressed)
+const Scene3D = lazy(() => import('../components/Scene3D'));
+
+function Scene3DFallback() {
+  return (
+    <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, rgba(0,212,255,0.03) 0%, transparent 70%)' }} />
+  );
+}
 
 /* ===================================================================
    🎬 SECTION 1 — Cinematic Hero
@@ -25,7 +33,9 @@ function HeroSection() {
       position: 'relative', overflow: 'hidden',
     }}>
       {/* 3D Background */}
-      <Scene3D />
+      <Suspense fallback={<Scene3DFallback />}>
+        <Scene3D />
+      </Suspense>
 
       <motion.div style={{ y: heroY, opacity: heroOpacity, textAlign: 'center', position: 'relative', zIndex: 1 }}>
         {/* Stagger title */}
@@ -113,11 +123,21 @@ function HeroSection() {
 function StatsDashboard({ services = [] }) {
   const running = services.filter(s => s.status === 'running').length;
   const total = services.length;
+
+  // Calculate real uptime from oldest running service
+  const uptimePct = (() => {
+    const runningSvcs = services.filter(s => s.status === 'running' && s.startedAt);
+    if (!runningSvcs.length) return total > 0 ? '—' : '—';
+    // Use the service that's been up the longest as baseline
+    const oldestStart = Math.min(...runningSvcs.map(s => s.startedAt));
+    const sec = Math.floor((Date.now() - oldestStart) / 1000);
+    const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60);
+    return h ? `${h}h ${m}m` : `${m}m`;
+  })();
+
   const stats = [
     { label: 'Services Online', value: running, suffix: `/${total}` },
-    { label: 'Uptime', value: 99.9, suffix: '%' },
-    { label: 'AI Models', value: 3, suffix: ' active' },
-    { label: 'Requests/Day', value: '12K', suffix: '' },
+    { label: 'Uptime', value: uptimePct, suffix: '' },
   ];
 
   return (
