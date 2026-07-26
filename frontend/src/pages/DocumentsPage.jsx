@@ -96,10 +96,10 @@ export default function DocumentsPage() {
   return (
     <div className="doc-page">
       {/* Top bar */}
-      <div className="doc-topbar">
+      <div className="liquid-panel doc-topbar">
         <div className="flex items-center gap-sm">
           {(!isMobile || !docsCtrl.currentDoc) && (
-            <a href="/" className="btn btn-glass btn-sm"><i className="fas fa-arrow-left" /></a>
+            <a href="/" className="liquid-btn sm"><i className="fas fa-arrow-left" /></a>
           )}
           <span className="font-semibold" style={{ color: 'var(--text-strong)', fontSize: '0.9rem' }}>
             <span style={{ color: 'var(--accent)' }}>◆</span> Tài liệu
@@ -107,7 +107,7 @@ export default function DocumentsPage() {
         </div>
 
         {isMobile && docsCtrl.currentDoc && (
-          <button className="btn btn-glass btn-sm" onClick={() => setShowSidebar(p => !p)}>
+          <button className="liquid-btn sm" onClick={() => setShowSidebar(p => !p)}>
             <i className={`fas ${showSidebar ? 'fa-file-lines' : 'fa-bars'}`} />
             {showSidebar ? ' Xem' : ' DS'}
           </button>
@@ -174,29 +174,29 @@ export default function DocumentsPage() {
 
       {/* Bulk bar */}
       {selectedIds.length > 0 && (
-        <div className="doc-bulkbar">
+        <div className="liquid-panel doc-bulkbar">
           <span className="text-dim text-xs">{selectedIds.length} đã chọn</span>
-          <button className="btn btn-danger btn-sm" onClick={() => setShowBulkConfirm(true)}><i className="fas fa-trash" /> Xoá</button>
+          <button className="liquid-btn danger sm" onClick={() => setShowBulkConfirm(true)}><i className="fas fa-trash" /> Xoá</button>
         </div>
       )}
 
       {/* New doc modal */}
       {showNewModal && (
         <div className="doc-modal-overlay" onClick={e => { if (e.target === e.currentTarget) setShowNewModal(false); }}>
-          <div className="doc-modal">
+          <div className="liquid-card doc-modal">
             <div className="doc-modal-header">
               <span style={{ fontWeight: 600, color: 'var(--text-strong)', fontSize: '0.95rem' }}>Tài liệu mới</span>
-              <button onClick={() => setShowNewModal(false)} className="btn btn-glass btn-sm">✕</button>
+              <button onClick={() => setShowNewModal(false)} className="liquid-btn sm">✕</button>
             </div>
             <div className="doc-modal-body">
               <div>
                 <label className="text-xs text-dim">Tên tài liệu</label>
-                <input className="input" value={newDocTitle} onChange={e => setNewDocTitle(e.target.value)}
+                <input className="liquid-input" value={newDocTitle} onChange={e => setNewDocTitle(e.target.value)}
                   placeholder="Tiêu đề..." style={{ width: '100%', marginTop: '0.2rem' }} />
               </div>
               <div>
                 <label className="text-xs text-dim">Tags (phân cách bằng dấu phẩy)</label>
-                <input className="input" value={newDocTags} onChange={e => setNewDocTags(e.target.value)}
+                <input className="liquid-input" value={newDocTags} onChange={e => setNewDocTags(e.target.value)}
                   placeholder="hướng dẫn, devops" style={{ width: '100%', marginTop: '0.2rem' }} />
               </div>
               <div>
@@ -204,14 +204,14 @@ export default function DocumentsPage() {
                 <div className="flex gap-xs mt-xs" style={{ flexWrap: 'wrap' }}>
                   {TEMPLATES.map(t => (
                     <button key={t.id} onClick={() => setNewDocTemplate(t.id)}
-                      className={`btn btn-sm ${newDocTemplate === t.id ? 'btn-primary' : 'btn-glass'}`}>{t.label}</button>
+                      className={`liquid-btn sm ${newDocTemplate === t.id ? 'primary' : ''}`}>{t.label}</button>
                   ))}
                 </div>
               </div>
             </div>
             <div className="doc-modal-footer">
-              <button onClick={() => setShowNewModal(false)} className="btn btn-glass">Huỷ</button>
-              <button onClick={handleCreateDoc} className="btn btn-primary">Tạo</button>
+              <button onClick={() => setShowNewModal(false)} className="liquid-btn">Huỷ</button>
+              <button onClick={handleCreateDoc} className="liquid-btn primary">Tạo</button>
             </div>
           </div>
         </div>

@@ -78,16 +78,7 @@ export default function UtilitiesPage() {
             display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem', marginBottom: '1.5rem',
           }}>
             {UTILITIES.map(ut => (
-              <div key={ut.id} className="card glass-card" style={{
-                cursor: 'pointer',
-                background: 'var(--glass-bg)',
-                backdropFilter: 'blur(16px)',
-                border: selected === ut.id ? '2px solid var(--accent)' : '1px solid var(--glass-border)',
-                borderRadius: 'var(--radius-md)',
-                transition: 'transform .2s, box-shadow .2s',
-                transform: selected === ut.id ? 'translateY(-3px)' : 'none',
-                boxShadow: selected === ut.id ? '0 12px 36px var(--glass-shadow)' : '0 4px 20px rgba(0,0,0,0.08)',
-              }} onClick={() => setSelected(ut.id)}>
+              <div key={ut.id} className={`liquid-card${selected === ut.id ? ' active' : ''}`} onClick={() => setSelected(ut.id)}>
                 <div className="card-header" style={{ borderBottom: '1px solid var(--glass-border)', padding: '0.75rem 1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <span style={{ fontSize: '1.2rem' }}>{ut.icon}</span>
                   <span style={{ fontWeight: 600, fontSize: '0.88rem', color: 'var(--text-strong)' }}>{ut.name}</span>
@@ -100,39 +91,18 @@ export default function UtilitiesPage() {
           </div>
 
           {/* Player area */}
-          <div style={{
-            background: 'var(--glass-bg)',
-            backdropFilter: 'blur(16px)',
-            border: '1px solid var(--glass-border)',
-            borderRadius: 'var(--radius-md)',
-            padding: '1.2rem',
-            animation: 'fadeIn .25s ease',
-          }}>
+          <div className="liquid-panel" style={{ padding: '1.2rem', animation: 'fadeIn .25s ease' }}>
             {/* Input */}
             <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.8rem' }}>
               <input value={url} onChange={e => setUrl(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && loadYt()}
                 placeholder="Dán link YouTube vào đây..."
-                style={{
-                  flex: 1, padding: '0.5rem 0.8rem',
-                  border: '1px solid var(--glass-border)',
-                  borderRadius: 'var(--radius-sm)',
-                  background: 'var(--glass-bg)',
-                  backdropFilter: 'blur(8px)',
-                  color: 'var(--text)',
-                  fontSize: '0.82rem',
-                  outline: 'none',
-                }}
+                className="liquid-input"
+                style={{ flex: 1 }}
               />
               <button onClick={loadYt} disabled={loading}
-                style={{
-                  padding: '0.45rem 1rem', border: 'none',
-                  borderRadius: 'var(--radius-sm)',
-                  background: 'var(--accent)', color: '#fff',
-                  fontWeight: 600, cursor: 'pointer',
-                  fontSize: '0.82rem', opacity: loading ? 0.5 : 1,
-                  display: 'flex', alignItems: 'center', gap: '0.35rem',
-                }}
+                className="liquid-btn primary"
+                style={{ opacity: loading ? 0.5 : 1 }}
               >
                 <i className="fas fa-play"></i> {loading ? '...' : 'Play'}
               </button>
@@ -186,14 +156,7 @@ export default function UtilitiesPage() {
                     { label: '30p', sec: 1800 },
                   ].map(t => (
                     <button key={t.sec} onClick={() => setTimerSec(t.sec)}
-                      style={{
-                        border: timer === t.sec ? '1px solid var(--accent)' : '1px solid var(--glass-border)',
-                        background: timer === t.sec ? 'var(--accent)' : 'rgba(255,255,255,0.04)',
-                        color: timer === t.sec ? '#fff' : 'var(--text-dim)',
-                        padding: '0.2rem 0.5rem', borderRadius: 'var(--radius-sm)',
-                        fontSize: '0.68rem', cursor: 'pointer',
-                        fontWeight: timer === t.sec ? 600 : 400,
-                      }}
+                      className={`liquid-btn sm${timer === t.sec ? ' primary' : ''}`}
                     >
                       {t.label}
                     </button>

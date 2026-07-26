@@ -16,7 +16,7 @@ export default function LogMonitor({ logs, services, filter, onFilterChange, aut
           <input type="checkbox" checked={autoScroll} onChange={e => onAutoScrollChange(e.target.checked)} />Auto-scroll
         </label>
       </div>
-      <div className="glass-panel" style={{ height: 200, overflowY: 'auto', fontFamily: 'var(--font-mono)', fontSize: '0.72rem', padding: '0.5rem' }}>
+      <div className="liquid-panel" style={{ height: 200, overflowY: 'auto', fontFamily: 'var(--font-mono)', fontSize: '0.72rem', padding: '0.5rem' }}>
         {filtered.slice(-100).map((l, i) => (
           <div key={i} style={{ color: /[Ee]rror|\\[E\\]|crash/.test(l.line || '') ? 'var(--red)' : l.line?.includes('Stopped') ? 'var(--amber)' : l.line?.includes('Started') ? 'var(--green)' : 'var(--text-dim)' }}>
             <span style={{ opacity: 0.4, marginRight: '0.5rem' }}>[{new Date(l.ts).toLocaleTimeString()}]</span>

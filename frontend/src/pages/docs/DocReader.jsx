@@ -382,7 +382,7 @@ export default function DocReader({ doc, onEdit, onDelete, onRename, onConvert, 
 
   if (!doc) {
     return (
-      <div style={s.container}>
+      <div className="liquid-panel" style={{ ...s.container, background: 'none', backdropFilter: 'none', WebkitBackdropFilter: 'none', border: 'none', borderRadius: 0 }}>
         <div style={s.empty}>
           <i className="fas fa-file-lines" style={{ fontSize: '2rem', opacity: 0.4 }}></i>
           <span>Chọn một tài liệu để xem</span>
@@ -409,7 +409,7 @@ export default function DocReader({ doc, onEdit, onDelete, onRename, onConvert, 
   };
 
   return (
-    <div style={s.container}>
+    <div className="liquid-panel" style={{ ...s.container, background: 'none', backdropFilter: 'none', WebkitBackdropFilter: 'none', border: 'none', borderRadius: 0 }}>
       {/* Fixed reading progress bar */}
       <div style={{ ...s.readingProgress, width: `${readProgress}%` }} />
 
@@ -450,11 +450,11 @@ export default function DocReader({ doc, onEdit, onDelete, onRename, onConvert, 
           {/* Font size controls — md only */}
           {!isDocx && (
             <div style={s.fontCtrl}>
-              <button style={s.fontBtn} onClick={decreaseFont} title="Thu nhỏ chữ">
+              <button className="liquid-btn sm" onClick={decreaseFont} title="Thu nhỏ chữ">
                 <i className="fas fa-font" style={{ fontSize: '0.55rem' }}></i><span style={{ fontSize: '0.55rem' }}>⁻</span>
               </button>
               <span style={{ fontSize: '0.65rem', color: 'var(--text-dim)', padding: '0 0.2rem' }}>{Math.round(fontSize * 100)}%</span>
-              <button style={s.fontBtn} onClick={increaseFont} title="Phóng to chữ">
+              <button className="liquid-btn sm" onClick={increaseFont} title="Phóng to chữ">
                 <i className="fas fa-font" style={{ fontSize: '0.7rem' }}></i><span style={{ fontSize: '0.65rem' }}>⁺</span>
               </button>
             </div>
@@ -464,7 +464,7 @@ export default function DocReader({ doc, onEdit, onDelete, onRename, onConvert, 
           {!isDocx && toc.length > 0 && (
             <div ref={tocRef} style={{ position: 'relative' }}>
               <button
-                style={s.tocBtn}
+                className="liquid-btn sm"
                 onClick={() => setShowToc(p => !p)}
                 title="Mục lục"
               >
@@ -491,7 +491,7 @@ export default function DocReader({ doc, onEdit, onDelete, onRename, onConvert, 
 
           {/* Convert to PDF — docx only */}
           {isDocx && (
-            <button style={s.actionBtn('var(--amber)')} onClick={() => onConvert?.(doc.id)} title="Chuyển sang PDF">
+            <button className="liquid-btn sm" style={{ color: 'var(--amber)' }} onClick={() => onConvert?.(doc.id)} title="Chuyển sang PDF">
               <i className="fas fa-file-pdf"></i>
               <span>PDF</span>
             </button>
@@ -499,24 +499,24 @@ export default function DocReader({ doc, onEdit, onDelete, onRename, onConvert, 
 
           {/* Edit — md only */}
           {!isDocx && (
-            <button style={s.actionBtn()} onClick={() => onEdit?.(doc)} title="Chỉnh sửa">
+            <button className="liquid-btn sm" onClick={() => onEdit?.(doc)} title="Chỉnh sửa">
               <i className="fas fa-pen"></i>
             </button>
           )}
 
-          <button style={s.actionBtn()} onClick={handleStartRename} title="Đổi tên">
+          <button className="liquid-btn sm" onClick={handleStartRename} title="Đổi tên">
             <i className="fas fa-pencil"></i>
           </button>
 
-          <button style={s.actionBtn()} onClick={handleDownload} title={isDocx ? 'Tải xuống .docx' : 'Tải xuống .md'}>
+          <button className="liquid-btn sm" onClick={handleDownload} title={isDocx ? 'Tải xuống .docx' : 'Tải xuống .md'}>
             <i className="fas fa-download"></i>
           </button>
 
-          <button style={s.actionBtn()} onClick={handlePrint} title="In ấn">
+          <button className="liquid-btn sm" onClick={handlePrint} title="In ấn">
             <i className="fas fa-print"></i>
           </button>
 
-          <button style={s.actionBtn('var(--red)')} onClick={() => onDelete?.(doc)} title="Xoá">
+          <button className="liquid-btn danger sm" onClick={() => onDelete?.(doc)} title="Xoá">
             <i className="fas fa-trash"></i>
           </button>
         </div>

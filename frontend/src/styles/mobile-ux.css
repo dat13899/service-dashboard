@@ -186,3 +186,31 @@
 .rotating-border:hover::before {
   opacity: 1;
 }
+
+/* ══════════════════════════════════════════════════════
+   Liquid Glass — Mobile performance
+   ══════════════════════════════════════════════════════ */
+
+/* Reduce blur intensity on mobile to prevent jank */
+@media (max-width: 768px) {
+  .liquid-card,
+  .liquid-panel,
+  .liquid-stat {
+    backdrop-filter: blur(12px) saturate(140%) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(140%) !important;
+  }
+
+  .liquid-input {
+    backdrop-filter: blur(6px) !important;
+    -webkit-backdrop-filter: blur(6px) !important;
+  }
+
+  /* Disable prismatic overlay on mobile (saves GPU) */
+  .liquid-card::before { display: none; }
+}
+
+/* Momentum scroll for glass panels on iOS */
+.liquid-panel-scroll {
+  -webkit-overflow-scrolling: touch;
+  overflow-y: auto;
+}

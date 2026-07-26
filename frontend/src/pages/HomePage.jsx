@@ -149,25 +149,16 @@ function StatsDashboard({ services = [] }) {
         {stats.map((s, i) => (
           <motion.div
             key={s.label}
+            className="liquid-stat"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 * i, duration: 0.5 }}
-            style={{
-              background: 'rgba(10,14,23,0.6)', borderRadius: 'var(--radius-md)',
-              padding: '1.2rem', textAlign: 'center',
-              border: '1px solid rgba(52,211,153,0.1)',
-              backdropFilter: 'blur(8px)',
-            }}
-            whileHover={{ borderColor: 'rgba(52,211,153,0.25)', scale: 1.02 }}
           >
-            <div style={{
-              fontSize: 'clamp(1.6rem, 4vw, 2.5rem)', fontWeight: 800,
-              color: 'var(--accent)', fontFamily: 'var(--font-mono)',
-            }}>
+            <div className="liquid-stat-value">
               {s.value}<span style={{ fontSize: '0.5em', fontWeight: 500, opacity: 0.6 }}>{s.suffix}</span>
             </div>
-            <div style={{ fontSize: '0.7rem', color: 'var(--text-dim)', marginTop: '0.25rem' }}>
+            <div className="liquid-stat-label">
               {s.label}
             </div>
           </motion.div>

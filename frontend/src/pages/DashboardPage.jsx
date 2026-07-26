@@ -102,18 +102,18 @@ export default function DashboardPage() {
           { label: 'stopped', count: services.filter(s => s.status !== 'running').length, color: '#6b7280' },
           { label: 'error', count: services.filter(s => s.status === 'error').length, color: '#ef4444' },
         ].map(stat => (
-          <div key={stat.label} className="glass-panel" style={{ flex: '1 1 100px', textAlign: 'center', minWidth: 80, padding: '0.75rem 0.5rem' }}>
-            <div style={{ fontSize: '1.25rem', fontWeight: 700, color: stat.color }}>{stat.count}</div>
-            <div style={{ fontSize: '0.65rem', color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{stat.label}</div>
+          <div key={stat.label} className="liquid-stat" style={{ flex: '1 1 100px', textAlign: 'center', minWidth: 80, padding: '0.75rem 0.5rem' }}>
+            <div className="liquid-stat-value" style={{ fontSize: '1.25rem', fontWeight: 700, color: stat.color }}>{stat.count}</div>
+            <div className="liquid-stat-label" style={{ fontSize: '0.65rem', color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{stat.label}</div>
           </div>
         ))}
       </div>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: '0.3rem', marginBottom: '1rem', borderBottom: '1px solid var(--glass-border)', paddingBottom: 0 }}>
+      <div className="liquid-tabs" style={{ display: 'flex', gap: '0.3rem', marginBottom: '1rem', borderBottom: '1px solid var(--glass-border)', paddingBottom: 0 }}>
         {TABS.map(tab => (
           <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-            className={`btn ${activeTab === tab.id ? 'btn-primary' : 'btn-glass'} btn-sm`}>
+            className={`liquid-tab ${activeTab === tab.id ? 'is-active' : ''}`}>
             <i className={`fas ${tab.icon}`} /> {tab.label}
           </button>
         ))}
@@ -124,11 +124,11 @@ export default function DashboardPage() {
         <>
           {/* Toolbar */}
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center', marginBottom: '1rem' }}>
-            <input className="input" placeholder="Search services..." value={search} onChange={e => setSearch(e.target.value)}
+            <input className="liquid-input" placeholder="Search services..." value={search} onChange={e => setSearch(e.target.value)}
               style={{ flex: '1 1 200px', minWidth: 160, maxWidth: 300 }} />
-            <button onClick={handleBulkStart} className="btn btn-primary btn-sm"><i className="fas fa-play" /> Start All</button>
-            <button onClick={() => setConfirmState({ type: 'bulk-stop' })} className="btn btn-danger btn-sm"><i className="fas fa-stop" /> Stop All</button>
-            <button onClick={() => setShowAddModal(true)} className="btn btn-glass btn-sm"><i className="fas fa-plus" /> Add</button>
+            <button onClick={handleBulkStart} className="liquid-btn primary"><i className="fas fa-play" /> Start All</button>
+            <button onClick={() => setConfirmState({ type: 'bulk-stop' })} className="liquid-btn danger"><i className="fas fa-stop" /> Stop All</button>
+            <button onClick={() => setShowAddModal(true)} className="liquid-btn"><i className="fas fa-plus" /> Add</button>
           </div>
 
           {/* Service list */}
@@ -212,7 +212,7 @@ function ResourcesTab({ resources, onRefresh }) {
     <>
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
         <h2 style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-strong)' }}>Process Resources</h2>
-        <button onClick={onRefresh} className="btn btn-glass btn-sm"><i className="fas fa-sync-alt" /> Refresh</button>
+        <button onClick={onRefresh} className="liquid-btn"><i className="fas fa-sync-alt" /> Refresh</button>
       </div>
       {!resources.length ? <div className="empty-state">No resource data</div> : (
         <div style={{ overflowX: 'auto' }}><TableCard cols={cols} rows={resources} /></div>
@@ -227,7 +227,7 @@ function PortsTab({ ports, onRefresh }) {
     <>
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
         <h2 style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-strong)' }}>Active Ports</h2>
-        <button onClick={onRefresh} className="btn btn-glass btn-sm"><i className="fas fa-sync-alt" /> Refresh</button>
+        <button onClick={onRefresh} className="liquid-btn"><i className="fas fa-sync-alt" /> Refresh</button>
       </div>
       {!ports.length ? <div className="empty-state">No ports data</div> : (
         <div style={{ overflowX: 'auto' }}><TableCard cols={cols} rows={ports.map(p => ({ port: p.port || p, pid: p.pid || '—' }))} /></div>
@@ -244,10 +244,10 @@ function FilesTab({ files, filePath, onNavigate }) {
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
         <h2 style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-strong)' }}>File Browser</h2>
         <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>Path: {filePath}</span>
-        <button onClick={up} className="btn btn-glass btn-sm" disabled={filePath === '/'}><i className="fas fa-arrow-up" /></button>
+        <button onClick={up} className="liquid-btn" disabled={filePath === '/'}><i className="fas fa-arrow-up" /></button>
       </div>
       <div style={{ overflowX: 'auto' }}>
-        <table className="card" style={{ width: '100%', fontSize: '0.78rem' }}>
+        <table className="liquid-panel" style={{ width: '100%', fontSize: '0.78rem' }}>
           <thead><tr>{cols.map(h => <th key={h} style={{ borderBottom: '1px solid var(--glass-border)', padding: '0.4rem 0.6rem', textAlign: 'left', fontSize: '0.7rem', color: 'var(--text-dim)' }}>{h}</th>)}</tr></thead>
           <tbody>
             {files.map((f, i) => (
@@ -269,7 +269,7 @@ function FilesTab({ files, filePath, onNavigate }) {
 
 function TableCard({ cols, rows }) {
   return (
-    <table className="card" style={{ width: '100%', fontSize: '0.78rem' }}>
+    <table className="liquid-panel" style={{ width: '100%', fontSize: '0.78rem' }}>
       <thead><tr>{cols.map(h => <th key={h} style={{ borderBottom: '1px solid var(--glass-border)', padding: '0.4rem 0.6rem', textAlign: 'left', fontSize: '0.7rem', color: 'var(--text-dim)' }}>{h}</th>)}</tr></thead>
       <tbody>
         {rows.map((r, i) => (

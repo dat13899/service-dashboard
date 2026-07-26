@@ -57,7 +57,7 @@ export default function WidgetPage() {
         {selected ? (
           <div style={{ animation: 'fadeUp .3s ease' }}>
             <div className="flex items-center gap-sm mb-md" style={{ flexWrap: 'wrap' }}>
-              <button onClick={() => setSelected(null)} className="btn btn-glass btn-sm"><i className="fas fa-arrow-left" /> Back</button>
+              <button onClick={() => setSelected(null)} className="liquid-btn sm"><i className="fas fa-arrow-left" /> Back</button>
               <span className="font-semibold" style={{ fontSize: '1.05rem', color: 'var(--text-strong)' }}>{activeInfo?.icon} {activeInfo?.name}</span>
             </div>
             <Suspense fallback={<div className="card" style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-dim)' }}><div className="spinner" /> Loading...</div>}>
@@ -72,7 +72,7 @@ export default function WidgetPage() {
             </div>
 
             <div className="flex justify-center mb-md">
-              <input className="input" type="text" value={search} onChange={e => setSearch(e.target.value)}
+              <input className="liquid-input" type="text" value={search} onChange={e => setSearch(e.target.value)}
                 placeholder="🔍 Tìm widget..." style={{ maxWidth: '360px', width: '100%' }} />
             </div>
 
@@ -80,8 +80,8 @@ export default function WidgetPage() {
               {filtered.length === 0 ? (
                 <div className="empty-state">Không tìm thấy widget &quot;{search}&quot;</div>
               ) : filtered.map(w => (
-                <div key={w.id} className="card card-hover" onClick={() => setSelected(w.id)}
-                  style={{ padding: '1rem 0.6rem', textAlign: 'center', position: 'relative' }}>
+                <div key={w.id} className="liquid-card" onClick={() => setSelected(w.id)}
+                  style={{ padding: '1rem 0.6rem', textAlign: 'center', position: 'relative', cursor: 'pointer' }}>
                   {w.badge && <span className="badge badge-accent" style={{ position: 'absolute', top: '6px', right: '6px', fontSize: '0.5rem' }}>{w.badge}</span>}
                   <div style={{ fontSize: '2rem', marginBottom: '0.35rem', lineHeight: '1.2' }}>{w.icon}</div>
                   <div className="font-semibold" style={{ fontSize: '0.85rem', marginBottom: '0.15rem', color: 'var(--text-strong)' }}>{w.name}</div>

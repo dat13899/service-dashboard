@@ -405,10 +405,10 @@ export default function DocSidebar({
         <div style={s.headerTitle}>
           <span><i className="fas fa-file-lines" style={{ marginRight: '0.35rem', color: 'var(--accent)' }}></i>Tài liệu</span>
           <div style={{ display: 'flex', gap: '0.25rem' }}>
-            <button style={s.newBtn} onClick={() => onCreateDoc?.()} title="Tạo mới">
+            <button className="liquid-btn sm" onClick={() => onCreateDoc?.()} title="Tạo mới">
               <i className="fas fa-plus" style={{ fontSize: '0.65rem' }}></i> Mới
             </button>
-            <button style={s.newBtn} onClick={() => fileRef.current?.click()} title="Tải lên">
+            <button className="liquid-btn sm" onClick={() => fileRef.current?.click()} title="Tải lên">
               <i className="fas fa-upload" style={{ fontSize: '0.65rem' }}></i>
             </button>
             <input
@@ -426,7 +426,8 @@ export default function DocSidebar({
         </div>
         <div ref={searchWrapRef} style={s.searchWrap}>
           <input
-            style={s.searchInput}
+            className="liquid-input"
+            style={{ width: '100%' }}
             placeholder="Tìm tài liệu..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
@@ -538,7 +539,17 @@ export default function DocSidebar({
         {!loading && filteredDocs.map(doc => (
           <div
             key={doc.id}
-            style={s.docItem(currentDoc?.id === doc.id)}
+            className={`liquid-card ${currentDoc?.id === doc.id ? 'active' : ''}`}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              padding: '0.5rem 0.6rem',
+              borderRadius: 'var(--radius-sm)',
+              cursor: 'pointer',
+              transition: 'all .15s',
+              border: currentDoc?.id === doc.id ? '1px solid var(--accent)' : '1px solid transparent',
+            }}
             onClick={() => onSelectDoc(doc.id)}
           >
             <input
@@ -567,7 +578,7 @@ export default function DocSidebar({
       {/* Footer: cache clear */}
       <div style={s.footer}>
         <span style={{ color: 'var(--text-dim)' }}>{filteredDocs.length} tài liệu</span>
-        <button style={s.footerBtn()} onClick={onCacheClear} title="Xoá cache">
+        <button className="liquid-btn sm" style={{ color: 'var(--text-dim)' }} onClick={onCacheClear} title="Xoá cache">
           <i className="fas fa-eraser"></i> Xoá cache
         </button>
       </div>

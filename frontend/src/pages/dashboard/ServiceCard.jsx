@@ -6,7 +6,7 @@ export default function ServiceCard({ svc: s, expanded, onToggle, onStart, onSto
   const statusColor = { running: '#22c55e', stopped: '#6b7280', error: '#ef4444' }[s.status] || '#6b7280';
 
   return (
-    <div className="card">
+    <div className="liquid-card">
       {/* Header row */}
       <div className="flex items-center gap-sm px-md py-sm cursor-pointer" onClick={onToggle}
         style={{ minHeight: 44 }}>
@@ -16,11 +16,11 @@ export default function ServiceCard({ svc: s, expanded, onToggle, onStart, onSto
         {s.port && <a href={`http://localhost:${s.port}`} target="_blank" rel="noopener" className="badge" onClick={e => e.stopPropagation()}>:{s.port}</a>}
         {s.autoRestart && <span className="badge badge-amber">↻ auto</span>}
         <div className="flex gap-xs" style={{ marginLeft: 'auto' }}>
-          {!running && <button onClick={e => { e.stopPropagation(); onStart(); }} className="btn btn-primary btn-sm" style={{ minWidth: 32 }}>▶</button>}
-          {running && <button onClick={e => { e.stopPropagation(); onStop(); }} className="btn btn-danger btn-sm" style={{ minWidth: 32 }}>⏹</button>}
-          {running && <button onClick={e => { e.stopPropagation(); onRestart(); }} className="btn btn-glass btn-sm" style={{ minWidth: 32 }}>⟳</button>}
-          <button onClick={e => { e.stopPropagation(); onEdit(); }} className="btn btn-glass btn-sm">✎</button>
-          <button onClick={e => { e.stopPropagation(); onDelete(); }} className="btn btn-glass btn-sm" style={{ color: 'var(--red)' }}>✕</button>
+          {!running && <button onClick={e => { e.stopPropagation(); onStart(); }} className="liquid-btn primary" style={{ minWidth: 32 }}>▶</button>}
+          {running && <button onClick={e => { e.stopPropagation(); onStop(); }} className="liquid-btn danger" style={{ minWidth: 32 }}>⏹</button>}
+          {running && <button onClick={e => { e.stopPropagation(); onRestart(); }} className="liquid-btn" style={{ minWidth: 32 }}>⟳</button>}
+          <button onClick={e => { e.stopPropagation(); onEdit(); }} className="liquid-btn">✎</button>
+          <button onClick={e => { e.stopPropagation(); onDelete(); }} className="liquid-btn" style={{ color: 'var(--red)' }}>✕</button>
         </div>
       </div>
 

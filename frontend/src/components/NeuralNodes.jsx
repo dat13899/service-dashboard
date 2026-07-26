@@ -49,21 +49,23 @@ export default function NeuralNodes({ services = [], loading, healthMap, statusC
         {services.map((svc, i) => (
           <motion.div
             key={svc.id}
+            className="liquid-card"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={inView ? { opacity: 1, scale: 1 } : {}}
             transition={{ delay: 0.08 * i, duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
             style={{
               background: svc.status === 'running'
                 ? 'rgba(34,197,94,0.08)'
-                : 'rgba(107,114,128,0.06)',
-              border: `1px solid ${svc.status === 'running' ? 'rgba(34,197,94,0.2)' : 'rgba(107,114,128,0.12)'}`,
-              borderRadius: 'var(--radius-md)', padding: '1rem',
-              cursor: 'pointer', position: 'relative', overflow: 'hidden',
-              backdropFilter: 'blur(8px)',
+                : undefined,
+              border: svc.status === 'running'
+                ? '1px solid rgba(34,197,94,0.2)'
+                : undefined,
+              cursor: 'default',
+              position: 'relative', overflow: 'hidden',
+              padding: '1rem',
             }}
-            whileHover={{ scale: 1.02, borderColor: 'rgba(52,211,153,0.3)' }}
+            whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            onClick={() => onToggle?.(svc, svc.status === 'running' ? 'stop' : 'start')}
           >
             {/* Pulse ring for running services */}
             {svc.status === 'running' && (
@@ -104,6 +106,15 @@ export default function NeuralNodes({ services = [], loading, healthMap, statusC
                 CPU {healthMap[svc.id].cpu ?? '?'}%
               </div>
             )}
+
+            {/* Toggle button */}
+            <button
+              className={`liquid-btn sm ${svc.status === 'running' ? 'danger' : 'primary'}`}
+              onClick={(e) => { e.stopPropagation(); onToggle?.(svc, svc.status === 'running' ? 'stop' : 'start'); }}
+              style={{ marginTop: '0.6rem', width: '100%' }}
+            >
+              {svc.status === 'running' ? 'Stop' : 'Start'}
+            </button>
           </motion.div>
         ))}
       </div>
