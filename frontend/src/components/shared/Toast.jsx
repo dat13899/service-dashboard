@@ -1,9 +1,26 @@
 import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 
-/** Toast Provider — wraps app to provide toast context. */
 const ToastCtx = createContext(null);
 let _id = 0;
 
+const ICONS = {
+  success: 'fa-check-circle',
+  error: 'fa-circle-exclamation',
+  info: 'fa-info-circle',
+  warning: 'fa-triangle-exclamation',
+};
+
+const COLORS = {
+  success: '#22c55e',
+  error: '#ef4444',
+  info: '#00d4ff',
+  warning: '#f59e0b',
+};
+
+/**
+ * Liquid-glass toast provider. Renders floating glass toasts top-right.
+ */
 export function ToastProvider({ children }) {
   const [toasts, setToasts] = useState([]);
   const timers = useRef({});
@@ -12,7 +29,7 @@ export function ToastProvider({ children }) {
     clearTimeout(timers.current[id]);
     delete timers.current[id];
     setToasts(t => t.map(x => x.id === id ? { ...x, leaving: true } : x));
-    setTimeout(() => setToasts(t => t.filter(x => x.id !== id)), 250);
+    setTimeout(() => setToasts(t => t.filter(x => x.id !== id)), 300);
   }, []);
 
   const toast = useCallback((msg, type = 'info', duration = 3500) => {
@@ -28,25 +45,40 @@ export function ToastProvider({ children }) {
     <ToastCtx.Provider value={toast}>
       {children}
       <div style={{
-        position: 'fixed', top: '0.75rem', right: '0.75rem',
+        position: 'fixed', top: 'calc(var(--navbar-height) + 0.5rem)', right: '0.75rem',
         zIndex: 3000, display: 'flex', flexDirection: 'column', gap: '0.5rem',
         pointerEvents: 'none', maxWidth: 'min(360px, 90vw)',
       }}>
-        {toasts.map(t => (
-          <div key={t.id} onClick={() => dismiss(t.id)}
-            style={{
-              pointerEvents: 'auto', cursor: 'pointer',
-              padding: '0.6rem 1rem', borderRadius: '8px', fontSize: '0.82rem', fontWeight: 500,
-              color: '#fff', boxShadow: '0 8px 32px rgba(0,0,0,0.25)',
-              background: t.type === 'success' ? 'var(--green)' : t.type === 'error' ? 'var(--red)' : 'var(--accent)',
-              animation: t.leaving ? 'slideInRight 0.2s ease reverse forwards' : 'slideInRight 0.25s ease',
-              display: 'flex', alignItems: 'center', gap: '0.5rem',
-            }}
-          >
-            <i className={`fas ${t.type === 'success' ? 'fa-check-circle' : t.type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}`} />
-            {t.msg}
-          </div>
-        ))}
+        <AnimatePresence>
+          {toasts.map(t => (
+            <motion.div
+              key={t.id}
+              initial={{ opacity: 0, x: 60, scale: 0.95 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, x: 40, scale: 0.95 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 28 }}
+              onClick={() => dismiss(t.id)}
+              className="liquid-panel"
+              style={{
+                pointerEvents: 'auto', cursor: 'pointer',
+                padding: '0.65rem 0.9rem',
+                fontSize: '0.82rem', fontWeight: 500,
+                display: 'flex', alignItems: 'center', gap: '0.5rem',
+                boxShadow: `0 8px 32px rgba(0,0,0,0.3), 0 0 0 1px ${COLORS[t.type]}20 inset`,
+              }}
+            >
+              <span style={{
+                width: '24px', height: '24px', borderRadius: '50%',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: `${COLORS[t.type]}18`,
+                flexShrink: 0,
+              }}>
+                <i className={`fas ${ICONS[t.type] || ICONS.info}`} style={{ color: COLORS[t.type], fontSize: '0.75rem' }} />
+              </span>
+              <span style={{ color: 'var(--text)', lineHeight: 1.3 }}>{t.msg}</span>
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
     </ToastCtx.Provider>
   );

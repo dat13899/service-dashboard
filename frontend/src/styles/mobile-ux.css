@@ -214,3 +214,53 @@
   -webkit-overflow-scrolling: touch;
   overflow-y: auto;
 }
+
+/* ══════════════════════════════════════════════════════
+   Animated Blob Backgrounds
+   ══════════════════════════════════════════════════════ */
+.animated-blobs {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.animated-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.12;
+  animation: blobDrift 20s ease-in-out infinite;
+}
+.animated-blob:nth-child(1) {
+  width: 400px; height: 400px;
+  background: var(--blob-1);
+  top: -10%; left: -5%;
+  animation-delay: 0s;
+  animation-duration: 22s;
+}
+.animated-blob:nth-child(2) {
+  width: 350px; height: 350px;
+  background: var(--blob-2);
+  top: 40%; right: -8%;
+  animation-delay: -8s;
+  animation-duration: 25s;
+}
+.animated-blob:nth-child(3) {
+  width: 300px; height: 300px;
+  background: var(--blob-3);
+  bottom: -10%; left: 20%;
+  animation-delay: -15s;
+  animation-duration: 18s;
+}
+@keyframes blobDrift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(40px, -30px) scale(1.15); }
+  50% { transform: translate(-20px, 20px) scale(0.9); }
+  75% { transform: translate(30px, 10px) scale(1.1); }
+}
+
+/* Reduce blob intensity on mobile */
+@media (max-width: 768px) {
+  .animated-blob { opacity: 0.06; filter: blur(60px); }
+}
