@@ -79,14 +79,9 @@ function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.3, duration: 0.5 }}
-          style={{
-            display: 'inline-block', marginTop: '2rem',
-            background: 'linear-gradient(135deg, #00d4ff, #00a8e0)',
-            color: '#fff', padding: '0.7rem 2rem', borderRadius: 'var(--radius-sm)',
-            fontWeight: 700, textDecoration: 'none', fontSize: '0.9rem',
-            boxShadow: '0 0 30px rgba(52,211,153,0.25)',
-          }}
-          whileHover={{ scale: 1.04, boxShadow: '0 0 50px rgba(52,211,153,0.4)' }}
+          className="liquid-btn primary"
+          style={{ marginTop: '2rem', textDecoration: 'none', fontSize: '0.9rem', padding: '0.7rem 2rem' }}
+          whileHover={{ scale: 1.04 }}
           whileTap={{ scale: 0.97 }}
         >
           View Dashboard →
@@ -213,27 +208,14 @@ function AISection() {
         {features.map((f, i) => (
           <motion.div
             key={f.title}
+            className="liquid-card"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.12 * i, duration: 0.5 }}
-            style={{
-              background: 'rgba(10,14,23,0.5)', borderRadius: 'var(--radius-md)',
-              padding: '1.3rem', border: '1px solid rgba(52,211,153,0.08)',
-              backdropFilter: 'blur(10px)', position: 'relative', overflow: 'hidden',
-            }}
-            whileHover={{
-              y: -4,
-              borderColor: 'rgba(52,211,153,0.2)',
-              boxShadow: '0 8px 30px rgba(52,211,153,0.06)',
-            }}
+            style={{ padding: '1.3rem' }}
+            whileHover={{ y: -4 }}
           >
-            {/* Gradient accent line */}
-            <div style={{
-              position: 'absolute', top: 0, left: 0, right: 0, height: 2,
-              background: 'linear-gradient(90deg, transparent, var(--accent), transparent)',
-              opacity: 0.6,
-            }} />
 
             <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-strong)', marginBottom: '0.4rem' }}>
               {f.title}

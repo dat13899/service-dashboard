@@ -428,13 +428,13 @@
   white-space: nowrap;
   -webkit-tap-highlight-color: transparent;
 }
-.liquid-tab.active {
+.liquid-tab.is-active {
   background: var(--liquid-glow);
   color: var(--accent);
   font-weight: 600;
   box-shadow: 0 0 12px rgba(0, 212, 255, 0.1);
 }
-.liquid-tab:hover:not(.active) {
+.liquid-tab:hover:not(.is-active) {
   color: var(--text);
   background: rgba(255, 255, 255, 0.03);
 }

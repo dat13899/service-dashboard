@@ -25,6 +25,7 @@ export default function AppLayout() {
   const location = useLocation();
   const { isMobile } = useMediaQuery();
   const { open: paletteOpen, close: closePalette } = useCommandPalette();
+  const [showBackToTop, setShowBackToTop] = useState(false);
 
   // Track navigation loading manually (BrowserRouter doesn't support useNavigation)
   const [navigating, setNavigating] = useState(false);
@@ -32,6 +33,13 @@ export default function AppLayout() {
     setNavigating(true);
     requestAnimationFrame(() => setNavigating(false));
   }, [location.pathname]);
+
+  // Show back-to-top button on scroll
+  useEffect(() => {
+    const onScroll = () => setShowBackToTop(window.scrollY > 400);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   useSwipeBack();
 
@@ -75,6 +83,27 @@ export default function AppLayout() {
       <div className="mobile-only"><BottomTab /></div>
 
       <CommandPalette open={paletteOpen} onClose={closePalette} />
+
+      {/* Back-to-top floating button */}
+      <AnimatePresence>
+        {showBackToTop && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            className="liquid-btn"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            style={{
+              position: 'fixed', bottom: isMobile ? 'calc(var(--bottom-nav-height) + 1rem)' : '1.5rem',
+              right: '1rem', zIndex: 2000, width: '40px', height: '40px',
+              borderRadius: '50%', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}
+            aria-label="Back to top"
+          >
+            <i className="fas fa-arrow-up" />
+          </motion.button>
+        )}
+      </AnimatePresence>
     </>
   );
 }

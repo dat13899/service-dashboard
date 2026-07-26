@@ -134,7 +134,7 @@ export default function DashboardPage() {
           {/* Service list */}
           {loadingSvcs ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              {['60%','80%','40%'].map((w,i) => <div key={i} className="skeleton skeleton-card" style={{ width: w }} />)}
+              {['60%','80%','40%'].map((w,i) => <div key={i} className="liquid-skeleton" style={{ width: w, height: '60px' }} />)}
             </div>
           ) : filteredSvcs.length === 0 ? (
             <div className="empty-state">📭 <p>Không có service nào</p></div>
@@ -189,18 +189,18 @@ export default function DashboardPage() {
 function ServiceModal({ title, form, onChange, onSubmit, onCancel }) {
   return (
     <div className="modal is-active" style={{ zIndex: 9999 }} onClick={e => { if (e.target === e.currentTarget) onCancel(); }}>
-      <div className="modal-background" onClick={onCancel} />
-      <div className="modal-card glass-panel" style={{ maxWidth: 480 }}>
-        <header className="modal-card-head" style={{ borderBottom: '1px solid var(--glass-border)', background: 'transparent' }}>
-          <p className="modal-card-title" style={{ fontSize: '1rem', color: 'var(--text-strong)' }}>{title}</p>
-        </header>
-        <section className="modal-card-body" style={{ background: 'transparent' }}>
-          <ServiceForm form={form} onChange={onChange} />
-        </section>
-        <footer className="modal-card-foot" style={{ borderTop: '1px solid var(--glass-border)', background: 'transparent' }}>
-          <button onClick={onCancel} className="btn btn-glass">Cancel</button>
-          <button onClick={onSubmit} className="btn btn-primary">{title === 'Add Service' ? 'Add' : 'Save'}</button>
-        </footer>
+    <div className="modal-background" onClick={onCancel} />
+    <div className="modal-card liquid-panel" style={{ maxWidth: 480 }}>
+      <header className="modal-card-head" style={{ borderBottom: '1px solid var(--liquid-border)', background: 'transparent' }}>
+        <p className="modal-card-title" style={{ fontSize: '1rem', color: 'var(--text-strong)' }}>{title}</p>
+      </header>
+      <section className="modal-card-body" style={{ background: 'transparent' }}>
+        <ServiceForm form={form} onChange={onChange} />
+      </section>
+      <footer className="modal-card-foot" style={{ borderTop: '1px solid var(--liquid-border)', background: 'transparent' }}>
+        <button onClick={onCancel} className="liquid-btn">Cancel</button>
+        <button onClick={onSubmit} className="liquid-btn primary">{title === 'Add Service' ? 'Add' : 'Save'}</button>
+      </footer>
       </div>
     </div>
   );
