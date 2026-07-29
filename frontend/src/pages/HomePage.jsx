@@ -1,364 +1,565 @@
-import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
-import { motion, useScroll, useTransform } from 'motion/react';
-import { fetchServices, startService, stopService, fetchServiceHealth } from '../services/api';
-import { useToastContext } from '../components/shared/Toast';
-import ConfirmModal from '../components/ConfirmModal';
-import NeuralNodes from '../components/NeuralNodes';
-import TerminalContact from '../components/TerminalContact';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'motion/react';
+import { fetchServices } from '../services/api';
 
-// Lazy-load heavy 3D scene (Three.js is ~300KB compressed)
-const Scene3D = lazy(() => import('../components/Scene3D'));
+/* ───────────────────────────────────────────────
+   HOOK: Boot Sequence
+   ─────────────────────────────────────────────── */
+const BOOT_LINES = [
+  { msg: '▸ SYSTEM INITIALIZATION...', delay: 200 },
+  { msg: '  ✓ BIOS v3.0 RETRO EDITION', delay: 300 },
+  { msg: '  ✓ CPU: CORE i7 / 16GB RAM', delay: 250 },
+  { msg: '▸ LOADING KERNEL...', delay: 350 },
+  { msg: '  ✓ Linux 6.8 x86_64', delay: 200 },
+  { msg: '  ✓ Memory: OK', delay: 200 },
+  { msg: '  ✓ Disks: OK', delay: 200 },
+  { msg: '▸ NETWORK INIT...', delay: 300 },
+  { msg: '  ✓ IPv4: 192.168.1.x', delay: 200 },
+  { msg: '  ✓ Tunnel: CLOUDFLARED ACTIVE', delay: 300 },
+  { msg: '▸ STARTING SERVICES...', delay: 400 },
+];
 
-function Scene3DFallback() {
-  return (
-    <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, rgba(0,212,255,0.03) 0%, transparent 70%)' }} />
-  );
-}
+const BOOT_COMPLETE = '✓ All systems nominal. Press any key to continue.';
 
-/* ===================================================================
-   🎬 SECTION 1 — Cinematic Hero
-   =================================================================== */
-function HeroSection() {
-  const { scrollY } = useScroll();
-  const heroY = useTransform(scrollY, [0, 500], [0, 120]);
-  const heroOpacity = useTransform(scrollY, [0, 400], [1, 0]);
-  const sphereOpacity = useTransform(scrollY, [0, 300], [0.15, 0]);
-
-  // Split "BT DAT" into individual chars for stagger
-  const chars = 'BT DAT'.split('');
-
-  return (
-    <section style={{
-      height: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-      position: 'relative', overflow: 'hidden',
-    }}>
-      {/* 3D Background */}
-      <Suspense fallback={<Scene3DFallback />}>
-        <Scene3D />
-      </Suspense>
-
-      {/* Dark overlay cho text dễ đọc trên mobile — 3D wireframe không che chữ */}
-      <div style={{
-        position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none',
-        background: 'radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.25) 60%, transparent 100%)',
-      }} />
-
-      <motion.div style={{ y: heroY, opacity: heroOpacity, textAlign: 'center', position: 'relative', zIndex: 1 }}>
-        {/* Stagger title */}
-        <div style={{ marginBottom: '0.5rem', display: 'flex', justifyContent: 'center', gap: 'clamp(0.2rem, 1vw, 0.5rem)' }}>
-          {chars.map((ch, i) => (
-            <motion.span
-              key={i}
-              initial={{ opacity: 0, y: 60, rotateX: 90 }}
-              animate={{ opacity: 1, y: 0, rotateX: 0 }}
-              transition={{
-                delay: 0.2 + i * 0.06,
-                duration: 0.7,
-                ease: [0.25, 0.46, 0.45, 0.94],
-              }}
-              style={{
-                fontSize: 'clamp(3rem, 10vw, 7rem)',
-                fontWeight: 900,
-                color: ch === ' ' ? 'transparent' : 'var(--text-strong)',
-                letterSpacing: ch === ' ' ? '0.5em' : '0',
-                WebkitBackgroundClip: ch !== ' ' ? 'text' : undefined,
-                WebkitTextFillColor: ch !== ' ' ? 'transparent' : undefined,
-                backgroundImage: ch !== ' '
-                  ? 'linear-gradient(135deg, #fff 20%, #00d4ff 50%, #fff 80%)'
-                  : undefined,
-                backgroundSize: '200% auto',
-                animation: ch !== ' ' ? 'shimmer 3s ease-in-out infinite' : undefined,
-                // 💡 Mobile contrast: text-shadow giúp text nổi trên wireframe 3D
-                textShadow: ch !== ' ' ? '0 0 18px rgba(0,0,0,0.45)' : undefined,
-              }}
-            >
-              {ch === ' ' ? '\u00A0' : ch}
-            </motion.span>
-          ))}
-        </div>
-
-        {/* Subtitle */}
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1, duration: 0.6 }}
-          style={{
-            fontSize: 'clamp(0.85rem, 2vw, 1.1rem)',
-            color: 'var(--text-dim)', maxWidth: 500, margin: '0 auto',
-            fontFamily: 'var(--font-mono)',
-          }}
-        >
-          Home lab • AI Agent • Minecraft • 24/7
-        </motion.p>
-
-        {/* CTA */}
-        <motion.a
-          href="/dashboard"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.3, duration: 0.5 }}
-          className="liquid-btn primary"
-          style={{ marginTop: '2rem', textDecoration: 'none', fontSize: '0.9rem', padding: '0.7rem 2rem' }}
-          whileHover={{ scale: 1.04 }}
-          whileTap={{ scale: 0.97 }}
-        >
-          View Dashboard →
-        </motion.a>
-
-        {/* Scroll indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.5 }}
-          transition={{ delay: 2 }}
-          style={{ position: 'absolute', bottom: 30, left: '50%', transform: 'translateX(-50%)' }}
-        >
-          <motion.div
-            animate={{ y: [0, 8, 0] }}
-            transition={{ repeat: Infinity, duration: 1.5 }}
-            style={{ width: 24, height: 40, border: '2px solid var(--text-dim)', borderRadius: 12, display: 'flex', justifyContent: 'center', paddingTop: 6 }}
-          >
-            <div style={{ width: 4, height: 8, background: 'var(--text-dim)', borderRadius: 2 }} />
-          </motion.div>
-        </motion.div>
-      </motion.div>
-    </section>
-  );
-}
-
-/* ===================================================================
-   📊 SECTION 2 — Stats Dashboard
-   =================================================================== */
-function StatsDashboard({ services = [] }) {
-  const running = services.filter(s => s.status === 'running').length;
-  const total = services.length;
-
-  // Calculate real uptime from oldest running service
-  const uptimePct = (() => {
-    const runningSvcs = services.filter(s => s.status === 'running' && s.startedAt);
-    if (!runningSvcs.length) return total > 0 ? '—' : '—';
-    // Use the service that's been up the longest as baseline
-    const oldestStart = Math.min(...runningSvcs.map(s => s.startedAt));
-    const sec = Math.floor((Date.now() - oldestStart) / 1000);
-    const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60);
-    return h ? `${h}h ${m}m` : `${m}m`;
-  })();
-
-  const stats = [
-    { label: 'Services Online', value: running, suffix: `/${total}` },
-    { label: 'Uptime', value: uptimePct, suffix: '' },
-  ];
-
-  return (
-    <section style={{ padding: '4rem 1rem', position: 'relative', zIndex: 1 }}>
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.1, margin: '-60px' }}
-        transition={{ duration: 0.6 }}
-        style={{ textAlign: 'center', marginBottom: '1.5rem' }}
-      >
-        <h2 style={{
-          fontSize: 'clamp(1.2rem, 3vw, 1.6rem)', fontWeight: 800,
-          color: 'var(--text-strong)',
-        }}>
-          System Status
-        </h2>
-      </motion.div>
-
-      <div style={{
-        display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-        gap: '0.8rem', maxWidth: 900, margin: '0 auto', padding: '0 1rem',
-      }}>
-        {stats.map((s, i) => (
-          <motion.div
-            key={s.label}
-            className="liquid-stat"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.1 }}
-            transition={{ delay: 0.1 * i, duration: 0.5 }}
-          >
-            <div className="liquid-stat-value">
-              {s.value}<span style={{ fontSize: '0.5em', fontWeight: 500, opacity: 0.6 }}>{s.suffix}</span>
-            </div>
-            <div className="liquid-stat-label">
-              {s.label}
-            </div>
-          </motion.div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-/* ===================================================================
-   🧠 SECTION 3 — AI Features
-   =================================================================== */
-function AISection() {
-  const features = [
-    {
-      title: 'Hermes Agent',
-      desc: 'AI agent tự động giám sát, deploy, xử lý sự cố 24/7. Tích hợp Telegram & memory.',
-      tags: ['LLM', 'RAG', 'Cron Jobs'],
-    },
-    {
-      title: 'Knowledge Base',
-      desc: 'RAG system lưu trữ tài liệu, codebase. Truy vấn bằng ngôn ngữ tự nhiên.',
-      tags: ['Vector DB', 'Embedding', 'Search'],
-    },
-    {
-      title: 'AI Tools',
-      desc: 'Multi-modal: text gen, image analysis, code review, data processing.',
-      tags: ['Vision', 'Code Gen', 'Analytics'],
-    },
-  ];
-
-  return (
-    <section style={{ padding: '3rem 1rem', position: 'relative', zIndex: 1 }}>
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true, amount: 0.1 }}
-        style={{ textAlign: 'center', marginBottom: '1.5rem' }}
-      >
-        <h2 style={{ fontSize: 'clamp(1.2rem, 3vw, 1.6rem)', fontWeight: 800, color: 'var(--text-strong)' }}>
-          🧠 AI-Powered
-        </h2>
-        <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)', marginTop: '0.25rem' }}>
-          Everything runs on your own hardware
-        </p>
-      </motion.div>
-
-      <div style={{
-        display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-        gap: '1rem', maxWidth: 1000, margin: '0 auto', padding: '0 1rem',
-      }}>
-        {features.map((f, i) => (
-          <motion.div
-            key={f.title}
-            className="liquid-card"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.1 }}
-            transition={{ delay: 0.12 * i, duration: 0.5 }}
-            style={{ padding: '1.3rem' }}
-            whileHover={{ y: -4 }}
-          >
-
-            <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-strong)', marginBottom: '0.4rem' }}>
-              {f.title}
-            </h3>
-            <p style={{ fontSize: '0.78rem', color: 'var(--text-dim)', lineHeight: 1.5, marginBottom: '0.8rem' }}>
-              {f.desc}
-            </p>
-            <div style={{ display: 'flex', gap: '0.3rem', flexWrap: 'wrap' }}>
-              {f.tags.map(t => (
-                <span key={t} style={{
-                  fontSize: '0.6rem', padding: '0.15rem 0.5rem',
-                  borderRadius: 'var(--radius-full)', background: 'rgba(52,211,153,0.08)',
-                  color: 'var(--accent)', border: '1px solid rgba(52,211,153,0.1)',
-                }}>
-                  {t}
-                </span>
-              ))}
-            </div>
-          </motion.div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-/* ===================================================================
-   🏠 HomePage — Main Export
-   =================================================================== */
-export default function HomePage() {
-  const toast = useToastContext();
-  const [services, setServices] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [healthMap, setHealthMap] = useState({});
-  const [confirmSvc, setConfirmSvc] = useState(null);
-  const [confirmAction, setConfirmAction] = useState(null);
-
-  const loadServices = useCallback(async () => {
-    try { setServices(await fetchServices()); } catch { toast('Không thể tải services', 'error'); }
-    setLoading(false);
-  }, [toast]);
-
-  useEffect(() => { loadServices(); }, [loadServices]);
+/* ───────────────────────────────────────────────
+   HOOK: Typing effect
+   ─────────────────────────────────────────────── */
+function useTypewriter(text, speed = 30, onDone) {
+  const [displayed, setDisplayed] = useState('');
+  const [done, setDone] = useState(false);
+  const idxRef = useRef(0);
 
   useEffect(() => {
-    if (!services.length) return;
-    const timers = services.map(s => setInterval(() => {
-      fetchServiceHealth(s.id).then(h => setHealthMap(m => ({ ...m, [s.id]: h }))).catch(() => {});
-    }, 30000));
-    return () => timers.forEach(clearInterval);
-  }, [services]);
+    idxRef.current = 0;
+    setDisplayed('');
+    setDone(false);
+    const interval = setInterval(() => {
+      if (idxRef.current < text.length) {
+        setDisplayed(text.slice(0, idxRef.current + 1));
+        idxRef.current++;
+      } else {
+        clearInterval(interval);
+        setDone(true);
+        onDone?.();
+      }
+    }, speed);
+    return () => clearInterval(interval);
+  }, [text, speed]);
 
-  const handleToggle = async (svc, action) => {
-    if (action === 'stop' || action === 'restart') {
-      setConfirmSvc(svc); setConfirmAction(action);
-    } else {
-      try { await startService(svc.id); toast(`Đã khởi động ${svc.name || svc.id}`, 'success'); loadServices(); }
-      catch { toast(`Không thể khởi động ${svc.name || svc.id}`, 'error'); }
+  return { displayed, done };
+}
+
+/* ───────────────────────────────────────────────
+   Boot Sequence Overlay
+   ─────────────────────────────────────────────── */
+function BootSequence({ onComplete }) {
+  const [visibleLines, setVisibleLines] = useState([]);
+  const [current, setCurrent] = useState(0);
+  const [typingComplete, setTypingComplete] = useState(false);
+  const [finished, setFinished] = useState(false);
+
+  useEffect(() => {
+    if (current >= BOOT_LINES.length) {
+      setTimeout(() => setTypingComplete(true), 300);
+      return;
     }
+    const t = setTimeout(() => {
+      setVisibleLines(prev => [...prev, current]);
+      setCurrent(c => c + 1);
+    }, BOOT_LINES[current].delay);
+    return () => clearTimeout(t);
+  }, [current]);
+
+  const { displayed: lastLine } = useTypewriter(
+    typingComplete ? BOOT_COMPLETE : '',
+    20,
+    () => {
+      setTimeout(() => {
+        setFinished(true);
+        setTimeout(onComplete, 300);
+      }, 1000);
+    }
+  );
+
+  if (finished) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+      style={{
+        position: 'fixed', inset: 0, zIndex: 9999,
+        background: '#050805',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: '1rem',
+        fontFamily: 'var(--font-mono)',
+      }}
+    >
+      <div style={{ maxWidth: 600, width: '100%' }}>
+        <pre style={{ color: '#00ff41', fontSize: '0.55rem', lineHeight: 1.1, marginBottom: '1.5rem', textAlign: 'center' }}>
+{`╔══╗╔═══╗╔══╗╔═══╗╔═══╗╔══╗╔═══╗
+║  ║║   ║║  ║║   ║║   ║║  ║║   ║
+║  ║║   ║║  ║║   ║║   ║║  ║║   ║
+║  ║║   ║║  ║║   ║║   ║║  ║║   ║
+╚══╝╚═══╝╚══╝╚═══╝╚═══╝╚══╝╚═══╝`}
+        </pre>
+
+        <div style={{ fontSize: '0.78rem', lineHeight: 1.7, color: '#00ff41' }}>
+          {visibleLines.map((idx) => (
+            <div key={idx}>{BOOT_LINES[idx].msg}</div>
+          ))}
+          {typingComplete && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+              <span>{lastLine}</span>
+              {lastLine.length < BOOT_COMPLETE.length && (
+                <span className="terminal-cursor" />
+              )}
+            </div>
+          )}
+          {!typingComplete && current >= BOOT_LINES.length && (
+            <div><span className="terminal-cursor" style={{ width: 6, height: 14 }} /></div>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ───────────────────────────────────────────────
+   ASCII Logo
+   ─────────────────────────────────────────────── */
+function AsciiLogo() {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <pre className="ascii-line" style={{ fontSize: 'clamp(0.35rem, 1.2vw, 0.55rem)', lineHeight: 1.1, textAlign: 'center', marginBottom: '0.5rem' }}>
+{`╔══╗╔═══╗╔══╗╔═══╗╔═══╗╔══╗╔═══╗
+║  ║║   ║║  ║║   ║║   ║║  ║║   ║
+║  ║║   ║║  ║║   ║║   ║║  ║║   ║
+║  ║║   ║║  ║║   ║║   ║║  ║║   ║
+╚══╝╚═══╝╚══╝╚═══╝╚═══╝╚══╝╚═══╝`}
+      </pre>
+      <div style={{ textAlign: 'center', fontSize: '0.65rem', color: 'var(--text-dim)', marginBottom: '1rem', fontFamily: 'var(--font-mono)' }}>
+        Home Lab v3.0 / RETRO TERMINAL MODE
+        <span style={{ marginLeft: '0.5rem' }}>|</span>
+        <span style={{ marginLeft: '0.5rem' }}>UPTIME: <span id="uptime-display" className="terminal-glow">—</span></span>
+      </div>
+      <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
+        {'─'.repeat(40)}
+      </div>
+    </motion.div>
+  );
+}
+
+/* ───────────────────────────────────────────────
+   Interactive Prompt
+   ─────────────────────────────────────────────── */
+function TerminalPrompt({ onCommand }) {
+  const [input, setInput] = useState('');
+  const [history, setHistory] = useState([]);
+  const [showCursor, setShowCursor] = useState(true);
+  const inputRef = useRef(null);
+
+  const COMMANDS = {
+    help: 'Available commands: whoami, uptime, services, stack, contact, date, clear, neofetch, help',
+    whoami: 'dat — developer / homelab operator / AI enthusiast',
+    date: () => new Date().toLocaleString('vi-VN'),
+    neofetch: `OS: Windows 10 x86_64
+Kernel: NT 10.0
+Uptime: 24/7 since 2023
+Shell: Hermes Agent v3
+Resolution: 1920x1080
+Theme: CRT Terminal`,
   };
 
-  const confirmToggle = async () => {
-    if (!confirmSvc) return;
-    try {
-      if (confirmAction === 'stop') { await stopService(confirmSvc.id); toast(`Đã dừng ${confirmSvc.name || confirmSvc.id}`, 'info'); }
-      else if (confirmAction === 'restart') { await stopService(confirmSvc.id); await startService(confirmSvc.id); toast(`Đã restart ${confirmSvc.name || confirmSvc.id}`, 'info'); }
-      loadServices();
-    } catch { toast('Thao tác thất bại', 'error'); }
-    setConfirmSvc(null); setConfirmAction(null);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const cmd = input.trim().toLowerCase();
+    const response = COMMANDS[cmd]
+      ? (typeof COMMANDS[cmd] === 'function' ? COMMANDS[cmd]() : COMMANDS[cmd])
+      : `bash: ${input}: command not found`;
+    setHistory(prev => [...prev, { input, response }]);
+    setInput('');
+    onCommand?.(cmd);
   };
 
-  const uptime = (s) => {
-    if (!s.startedAt) return null;
-    const sec = Math.floor((Date.now() - s.startedAt) / 1000);
-    const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60);
-    return h ? `${h}h ${m}m` : `${m}m`;
+  useEffect(() => {
+    if (history.length > 0) {
+      setTimeout(() => {
+        inputRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, 50);
+    }
+  }, [history]);
+
+  return (
+    <div style={{
+      background: 'rgba(0,5,0,0.6)',
+      border: '1px solid rgba(0,255,65,0.15)',
+      padding: '0.75rem 1rem',
+      fontFamily: 'var(--font-mono)',
+      fontSize: '0.78rem',
+      marginBottom: '1.5rem',
+    }}>
+      {/* Title bar */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.5rem', paddingBottom: '0.4rem', borderBottom: '1px solid rgba(0,255,65,0.1)' }}>
+        <span style={{ color: '#ff3355', fontSize: '0.6rem' }}>●</span>
+        <span style={{ color: '#ffb000', fontSize: '0.6rem' }}>●</span>
+        <span style={{ color: '#00ff41', fontSize: '0.6rem' }}>●</span>
+        <span style={{ marginLeft: '0.5rem', color: 'var(--text-dim)', fontSize: '0.65rem' }}>btdat@home-lab:~ — ▯</span>
+      </div>
+
+      {/* History */}
+      {history.map((h, i) => (
+        <div key={i} style={{ marginBottom: '0.3rem', lineHeight: 1.5 }}>
+          <div style={{ color: 'var(--text-dim)' }}>
+            <span style={{ color: '#00ff41' }}>$ </span>{h.input}
+          </div>
+          <div style={{ color: 'var(--accent)', paddingLeft: '0.8rem', whiteSpace: 'pre-wrap' }}>
+            {h.response}
+          </div>
+        </div>
+      ))}
+
+      {/* Input line */}
+      <form onSubmit={handleSubmit} style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+        <span style={{ color: '#00ff41' }}>$</span>
+        <input
+          ref={inputRef}
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          autoFocus
+          spellCheck={false}
+          autoComplete="off"
+          style={{
+            flex: 1, background: 'transparent', border: 'none',
+            color: 'var(--accent)', fontFamily: 'var(--font-mono)',
+            fontSize: '0.78rem', outline: 'none', caretColor: '#00ff41',
+          }}
+        />
+      </form>
+    </div>
+  );
+}
+
+/* ───────────────────────────────────────────────
+   Services Section (terminal style)
+   ─────────────────────────────────────────────── */
+function TerminalServices() {
+  const [services, setServices] = useState([]);
+
+  useEffect(() => {
+    fetchServices().then(d => setServices(d || [])).catch(() => {});
+  }, []);
+
+  const fmtUptime = (s) => {
+    if (!s.uptime || s.uptime <= 0) return '';
+    const h = Math.floor(s.uptime / 3600);
+    const m = Math.floor((s.uptime % 3600) / 60);
+    return `${h}h ${m}m`;
   };
+
+  if (services.length === 0) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5 }}
+      style={{ marginBottom: '1.5rem' }}
+    >
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-dim)', marginBottom: '0.4rem', letterSpacing: '0.05em' }}>
+        ── SERVICES ──────────────────────────
+      </div>
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem', lineHeight: 1.8 }}>
+        {services.map(s => (
+          <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.15rem 0' }}>
+            <span className={`term-dot ${s.status === 'running' ? 'on' : s.status === 'error' ? 'err' : 'off'} ${s.status === 'running' ? 'terminal-pulse' : ''}`} />
+            <span style={{ color: 'var(--text)', minWidth: '16ch' }}>{s.name || s.id}</span>
+            <span style={{ color: s.status === 'running' ? 'var(--accent)' : 'var(--text-dim)', fontFamily: 'var(--font-mono)', fontSize: '0.7rem' }}>
+              [{s.status === 'running' ? 'RUNNING' : s.status === 'error' ? 'ERROR' : 'STOPPED'}]
+            </span>
+            {s.status === 'running' && fmtUptime(s) && (
+              <span style={{ color: 'var(--text-dim)', fontSize: '0.65rem' }}>
+                {fmtUptime(s)}
+              </span>
+            )}
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
+/* ───────────────────────────────────────────────
+   Tech Stack
+   ─────────────────────────────────────────────── */
+function TerminalTechStack() {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5 }}
+      style={{ marginBottom: '1.5rem' }}
+    >
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-dim)', marginBottom: '0.4rem', letterSpacing: '0.05em' }}>
+        ── TECH STACK ─────────────────────────
+      </div>
+      <div style={{
+        fontFamily: 'var(--font-mono)', fontSize: '0.75rem',
+        display: 'flex', flexWrap: 'wrap', gap: '0.3rem 1rem',
+        color: 'var(--text)',
+      }}>
+        {['Node.js 24', 'React 19', 'Vite', 'Three.js', 'MongoDB', 'Docker', 'Cloudflare', 'Hermes AI', 'Bulma'].map(t => (
+          <span key={t} style={{ padding: '0.1rem 0', borderBottom: '1px solid rgba(0,255,65,0.15)' }}>
+            {t}
+          </span>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
+/* ───────────────────────────────────────────────
+   Contact / Terminal Contact
+   ─────────────────────────────────────────────── */
+function TerminalContact() {
+  const [showConnecting, setShowConnecting] = useState(false);
+  const [connected, setConnected] = useState(false);
+  const [typed, setTyped] = useState('');
+  const SSH_CMD = 'ssh btdat@home-lab';
+  const timeoutRef = useRef(null);
+
+  useEffect(() => {
+    return () => clearTimeout(timeoutRef.current);
+  }, []);
+
+  const handleSsh = () => {
+    setShowConnecting(true);
+    setConnected(false);
+    setTyped('');
+    let i = 0;
+    const typeInt = setInterval(() => {
+      if (i <= SSH_CMD.length) {
+        setTyped(SSH_CMD.slice(0, i));
+        i++;
+      } else {
+        clearInterval(typeInt);
+        timeoutRef.current = setTimeout(() => setConnected(true), 600);
+      }
+    }, 40);
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5 }}
+      style={{ marginBottom: '1.5rem' }}
+    >
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-dim)', marginBottom: '0.4rem', letterSpacing: '0.05em' }}>
+        ── CONTACT ────────────────────────────
+      </div>
+
+      <div style={{
+        background: 'rgba(0,5,0,0.6)',
+        border: '1px solid rgba(0,255,65,0.12)',
+        padding: '0.75rem 1rem',
+        fontFamily: 'var(--font-mono)', fontSize: '0.78rem',
+      }}>
+        {!showConnecting ? (
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+            <span style={{ color: 'var(--text-dim)' }}>$</span>
+            <button
+              onClick={handleSsh}
+              style={{
+                background: 'transparent', border: 'none',
+                color: 'var(--accent)', fontFamily: 'var(--font-mono)',
+                fontSize: '0.78rem', cursor: 'pointer', padding: '0.2rem 0',
+                textDecoration: 'underline', textUnderlineOffset: '2px',
+              }}
+            >
+              ssh btdat@home-lab
+            </button>
+            <span style={{ color: 'var(--text-dim)', fontSize: '0.65rem' }}># or</span>
+            {[
+              { label: 'github', url: 'https://github.com/dat13899' },
+              { label: 'email', action: () => navigator.clipboard?.writeText('dat@btdat.io.vn') },
+              { label: 'telegram', url: 'https://t.me/tiendat' },
+            ].map(btn => (
+              btn.url ? (
+                <a key={btn.label} href={btn.url} target="_blank" rel="noopener noreferrer"
+                  style={{ color: 'var(--text-dim)', fontSize: '0.7rem', textDecoration: 'underline', textUnderlineOffset: '2px' }}>
+                  {btn.label}
+                </a>
+              ) : (
+                <button key={btn.label} onClick={btn.action}
+                  style={{ background: 'transparent', border: 'none', color: 'var(--text-dim)', fontSize: '0.7rem', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '2px', fontFamily: 'var(--font-mono)' }}>
+                  {btn.label}
+                </button>
+              )
+            ))}
+          </div>
+        ) : (
+          <div style={{ lineHeight: 1.7 }}>
+            <div style={{ color: 'var(--text-dim)' }}>
+              <span style={{ color: 'var(--accent)' }}>$</span> {typed}
+              {!connected && typed.length === SSH_CMD.length && <span className="terminal-cursor" style={{ width: 6, height: 12 }} />}
+            </div>
+            {connected && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
+                <div style={{ color: 'var(--accent)' }}>  ✓ Connected to btdat.io.vn</div>
+                <div style={{ color: 'var(--text-dim)', marginTop: '0.4rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <a href="https://github.com/dat13899" target="_blank" rel="noopener noreferrer"
+                    style={{ color: 'var(--accent)', fontSize: '0.7rem' }}>github</a>
+                  <a href="https://t.me/tiendat" target="_blank" rel="noopener noreferrer"
+                    style={{ color: 'var(--accent)', fontSize: '0.7rem' }}>telegram</a>
+                  <span style={{ color: 'var(--text-dim)', fontSize: '0.65rem' }}>
+                    email: dat@btdat.io.vn
+                  </span>
+                </div>
+              </motion.div>
+            )}
+          </div>
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
+/* ───────────────────────────────────────────────
+   Footer
+   ─────────────────────────────────────────────── */
+function TerminalFooter() {
+  const [time, setTime] = useState('');
+
+  useEffect(() => {
+    const tick = () => setTime(new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  return (
+    <div style={{
+      fontFamily: 'var(--font-mono)', fontSize: '0.65rem', color: 'var(--text-dim)',
+      textAlign: 'center', padding: '1.5rem 1rem',
+      borderTop: '1px solid rgba(0,255,65,0.1)',
+      marginTop: '1rem',
+    }}>
+      {'─'.repeat(40)}
+      <div style={{ marginTop: '0.5rem', display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+        <span>[BT Dat]</span>
+        <span>[2026]</span>
+        <span>[v3.0-RETRO]</span>
+        <span>[<span className="terminal-pulse" style={{ display: 'inline-block' }}>●</span> {time}]</span>
+      </div>
+    </div>
+  );
+}
+
+/* ───────────────────────────────────────────────
+   MAIN: HomePage
+   ─────────────────────────────────────────────── */
+export default function HomePage() {
+  const [bootDone, setBootDone] = useState(
+    () => sessionStorage.getItem('crts_boot') === '1'
+  );
+  const [showHints, setShowHints] = useState(false);
+
+  const handleBootComplete = useCallback(() => {
+    sessionStorage.setItem('crts_boot', '1');
+    setBootDone(true);
+  }, []);
+
+  // Show "type help" hint after a delay
+  useEffect(() => {
+    if (bootDone) {
+      const t = setTimeout(() => setShowHints(true), 2000);
+      return () => clearTimeout(t);
+    }
+  }, [bootDone]);
 
   return (
     <>
-      {/* Ensure 3D canvas is global-scope by putting it at root */}
-      <div className="homepage">
-        <HeroSection />
+      {/* CRT Overlay */}
+      <div className="crt-overlay crt-flicker" />
+      <div className="crt-curve" />
 
-        <StatsDashboard services={services} />
+      {/* Boot Sequence */}
+      <AnimatePresence>
+        {!bootDone && (
+          <BootSequence onComplete={handleBootComplete} />
+        )}
+      </AnimatePresence>
 
-        <section id="services" style={{ padding: '2rem 0 4rem', position: 'relative', zIndex: 1 }}>
-          <NeuralNodes
-            services={services} loading={loading}
-            healthMap={healthMap} uptime={uptime}
-            onToggle={handleToggle}
-          />
-        </section>
+      {/* Main Content */}
+      <div style={{
+        maxWidth: 700,
+        margin: '0 auto',
+        padding: '2rem 1rem',
+        position: 'relative',
+        zIndex: 1,
+      }}>
+        <AsciiLogo />
 
-        <AISection />
+        <TerminalPrompt onCommand={(cmd) => cmd === 'clear' && setShowHints(false)} />
 
-        <section id="contact" style={{ padding: '3rem 1rem 7rem', position: 'relative', zIndex: 1 }}>
-          <motion.div
+        {showHints && (
+          <motion.p
             initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true, amount: 0.1 }}
-            style={{ textAlign: 'center', marginBottom: '1.5rem' }}
+            animate={{ opacity: 1 }}
+            style={{ fontFamily: 'var(--font-mono)', fontSize: '0.7rem', color: 'var(--text-dim)', marginBottom: '0.5rem', textAlign: 'center' }}
           >
-            <h2 style={{ fontSize: 'clamp(1.2rem, 3vw, 1.6rem)', fontWeight: 800, color: 'var(--text-strong)' }}>
-              ⌨️ Connect
-            </h2>
-          </motion.div>
-          <TerminalContact toast={toast} />
-        </section>
+            Try: <span style={{ color: 'var(--accent)', cursor: 'pointer' }}>whoami</span> · <span style={{ color: 'var(--accent)', cursor: 'pointer' }}>uptime</span> · <span style={{ color: 'var(--accent)', cursor: 'pointer' }}>services</span> · <span style={{ color: 'var(--accent)', cursor: 'pointer' }}>stack</span> · <span style={{ color: 'var(--accent)', cursor: 'pointer' }}>contact</span> · <span style={{ color: 'var(--accent)', cursor: 'pointer' }}>neofetch</span> · <span style={{ color: 'var(--accent)', cursor: 'pointer' }}>help</span>
+          </motion.p>
+        )}
 
-        <ConfirmModal show={confirmSvc !== null}
-          title={confirmAction === 'stop' ? 'Dừng service' : 'Restart service'}
-          message={`⚠️ ${confirmAction === 'stop' ? 'Stop' : 'Restart'} service <strong>${confirmSvc?.name || confirmSvc?.id}</strong>?`}
-          confirmLabel={confirmAction === 'stop' ? 'Dừng' : 'Restart'} danger
-          onConfirm={confirmToggle}
-          onCancel={() => { setConfirmSvc(null); setConfirmAction(null); }} />
+        {/* Auto sections — visible immediately */}
+        <TerminalServices />
+        <TerminalTechStack />
+        <TerminalContact />
+
+        {/* Links to other pages */}
+        <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '0.5rem' }}>
+          {[
+            { to: '/dashboard', label: 'dashboard' },
+            { to: '/documents', label: 'documents' },
+            { to: '/widgets', label: 'widgets' },
+            { to: '/utilities', label: 'utilities' },
+            { to: '/hermes', label: 'hermes' },
+          ].map(link => (
+            <a key={link.to} href={link.to}
+              style={{
+                color: 'var(--accent)', fontFamily: 'var(--font-mono)',
+                fontSize: '0.75rem', textDecoration: 'none',
+                border: '1px solid rgba(0,255,65,0.2)',
+                padding: '0.3rem 0.7rem',
+                transition: 'all 0.15s',
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = 'rgba(0,255,65,0.1)';
+                e.currentTarget.style.borderColor = 'var(--accent)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = 'transparent';
+                e.currentTarget.style.borderColor = 'rgba(0,255,65,0.2)';
+              }}
+            >
+              [{link.label}]
+            </a>
+          ))}
+        </div>
+
+        <TerminalFooter />
       </div>
     </>
   );

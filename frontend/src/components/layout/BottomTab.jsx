@@ -33,6 +33,11 @@ export default function BottomTab() {
 
   const moreActions = [
     {
+      label: 'Stream',
+      icon: 'fas fa-play',
+      onClick: () => navigate('/stream'),
+    },
+    {
       label: 'Utilities',
       icon: 'fas fa-toolbox',
       onClick: () => navigate('/utilities'),

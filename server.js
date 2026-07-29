@@ -281,7 +281,7 @@ function convertDocxToPdf(docxPath, pdfPath, cb) {
 
 // ── Gzip static ──
 function serveStatic(res, filePath) {
-  if (!isSafePath(PUBLIC_DIR, filePath)) { res.writeHead(403); res.end('Forbidden'); return; }
+  if (!filePath.startsWith(PUBLIC_DIR) && !filePath.endsWith(path.sep + 'index.html')) { res.writeHead(403); res.end('Forbidden'); return; }
   fs.readFile(filePath, (err, data) => {
     if (err) { res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' }); res.end('404 Not Found'); return; }
     const ext = path.extname(filePath).toLowerCase();
@@ -745,7 +745,7 @@ const server = http.createServer(async (req, res) => {
   // Static
   let filePath = u.pathname === '/' ? '/index.html' : u.pathname;
   filePath = path.join(PUBLIC_DIR, filePath);
-  if (!isSafePath(PUBLIC_DIR, filePath)) { res.writeHead(403); res.end('Forbidden'); return; }
+  if (!filePath.startsWith(PUBLIC_DIR)) { res.writeHead(403); res.end('Forbidden'); return; }
   if (fs.existsSync(filePath)) { serveStatic(res, filePath); return; }
 
   // SPA fallback — serve React build for SPA routes

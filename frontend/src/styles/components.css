@@ -512,16 +512,151 @@
   letter-spacing: 0.06em;
 }
 
-/* ── Liquid Skeleton Loader ── */
-.liquid-skeleton {
-  background: linear-gradient(110deg, rgba(255,255,255,0.03) 8%, rgba(255,255,255,0.08) 18%, rgba(255,255,255,0.03) 33%);
-  background-size: 200% 100%;
-  animation: liquidShimmer 1.8s ease-in-out infinite;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--liquid-border);
+/* ══════════════════════════════════════════════════════
+   CRT Terminal Effects — Retro CRT Theme
+   ══════════════════════════════════════════════════════ */
+
+/* ── CRT Scanlines overlay ── */
+.crt-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-crt);
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.03) 0px,
+    rgba(0, 0, 0, 0.03) 1px,
+    transparent 1px,
+    transparent 3px
+  );
 }
-@keyframes liquidShimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+
+/* ── CRT screen curvature (subtle) ── */
+.crt-curve {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-crt) - 1);
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 60%,
+    rgba(0, 0, 0, 0.25) 100%
+  );
 }
+
+/* ── CRT screen flicker ── */
+@keyframes crtFlicker {
+  0% { opacity: 0.96; }
+  5% { opacity: 0.98; }
+  10% { opacity: 0.95; }
+  15% { opacity: 0.97; }
+  20% { opacity: 0.96; }
+  50% { opacity: 0.98; }
+  80% { opacity: 0.96; }
+  90% { opacity: 0.95; }
+  100% { opacity: 0.97; }
+}
+.crt-flicker {
+  animation: crtFlicker 8s infinite;
+}
+
+/* ── Terminal text glow ── */
+.terminal-glow {
+  text-shadow: 0 0 4px rgba(0, 255, 65, 0.5), 0 0 8px rgba(0, 255, 65, 0.2);
+}
+.terminal-glow-strong {
+  text-shadow: 0 0 8px rgba(0, 255, 65, 0.6), 0 0 16px rgba(0, 255, 65, 0.3), 0 0 32px rgba(0, 255, 65, 0.1);
+}
+
+/* ── Blinking cursor ── */
+@keyframes cursorBlink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+.terminal-cursor {
+  display: inline-block;
+  width: 10px;
+  height: 1.2em;
+  background: var(--accent);
+  vertical-align: text-bottom;
+  margin-left: 2px;
+  animation: cursorBlink 1s step-end infinite;
+  box-shadow: 0 0 8px rgba(0, 255, 65, 0.4);
+}
+
+/* ── Typewriter reveal ── */
+@keyframes typeReveal {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0% 0 0); }
+}
+.typewriter {
+  overflow: hidden;
+  white-space: nowrap;
+  animation: typeReveal 1.5s steps(40, end);
+}
+
+/* ── Terminal border (ASCII-style frame) ── */
+.terminal-frame {
+  border: 1px solid var(--border);
+  position: relative;
+}
+.terminal-frame::before {
+  content: '┌── ' attr(data-title);
+  position: absolute;
+  top: -0.6em;
+  left: 1rem;
+  background: var(--bg);
+  padding: 0 0.4rem;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  letter-spacing: 0.05em;
+}
+
+/* ── ASCII art line ── */
+.ascii-line {
+  color: var(--text-dim);
+  font-size: 0.65rem;
+  line-height: 1.1;
+  white-space: pre;
+  font-family: var(--font-mono);
+  overflow-x: auto;
+}
+
+/* ── Pulse dot (terminal style) ── */
+@keyframes terminalPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+.terminal-pulse {
+  animation: terminalPulse 2s ease-in-out infinite;
+}
+
+/* ── Data stream (scrolling hex/numbers) ── */
+@keyframes dataScroll {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+}
+.data-stream {
+  overflow: hidden;
+  height: 1.2em;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+}
+.data-stream-inner {
+  animation: dataScroll 4s linear infinite;
+}
+
+/* ── Status dot (terminal) ── */
+.term-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 0;
+  margin-right: 4px;
+}
+.term-dot.on { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+.term-dot.off { background: var(--text-dim); }
+.term-dot.err { background: var(--red); box-shadow: 0 0 6px var(--red); }
 

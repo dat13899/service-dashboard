@@ -10,6 +10,7 @@ const DocumentsPage = lazy(() => import('./pages/DocumentsPage'));
 const UtilitiesPage = lazy(() => import('./pages/UtilitiesPage'));
 const WidgetPage = lazy(() => import('./pages/WidgetPage'));
 const HermesPage = lazy(() => import('./pages/HermesPage'));
+const StreamPage = lazy(() => import('./pages/StreamPage'));
 
 function PageFallback() {
   return (
@@ -85,6 +86,7 @@ export default function App() {
           <Route path="utilities" element={<Suspense fallback={<PageFallback />}><UtilitiesPage /></Suspense>} />
           <Route path="widgets" element={<Suspense fallback={<PageFallback />}><WidgetPage /></Suspense>} />
           <Route path="hermes" element={<Suspense fallback={<PageFallback />}><HermesPage /></Suspense>} />
+          <Route path="stream" element={<Suspense fallback={<PageFallback />}><StreamPage /></Suspense>} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>
